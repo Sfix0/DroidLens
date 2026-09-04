@@ -10,7 +10,7 @@
 
 ---
 
-## 📁 Repository Structure
+## <img src="assets/icons/folder.svg" width="20" height="20"> Repository Structure
 
 This monorepo contains both sides of the DroidLens ecosystem:
 
@@ -25,7 +25,7 @@ DroidLens/
 
 ---
 
-## ✨ Key Highlights
+## <img src="assets/icons/star.svg" width="20" height="20"> Key Highlights
 
 * **Two Transports, One Workflow:** Automatic discovery over local Wi-Fi via mDNS (`_DroidLens._tcp.`) or plug-and-play USB connection through ADB port forwarding.
 * **H.265 (HEVC), H.264 & MJPEG:** Real-time hardware encoding on Android (`MediaCodec`) and hardware decoding on Windows (FFmpeg `D3D11VA` with CPU fallback).
@@ -37,7 +37,7 @@ DroidLens/
 
 ---
 
-## 🌐 Network Protocol & Ports
+## <img src="assets/icons/network.svg" width="20" height="20"> Network Protocol & Ports
 
 | Port | Transport | Direction | Purpose |
 |:---:|:---:|:---:|:---|
@@ -48,7 +48,7 @@ DroidLens/
 
 ---
 
-## 🚀 Getting Started
+## <img src="assets/icons/rocket.svg" width="20" height="20"> Getting Started
 
 ### 1. Download Releases
 Pre-built Windows binaries and Android APKs are available on the [**Releases**](https://github.com/Sfix0/DroidLens/releases) page.
@@ -59,6 +59,6 @@ Pre-built Windows binaries and Android APKs are available on the [**Releases**](
 
 ---
 
-## 📜 License
+## <img src="assets/icons/license.svg" width="20" height="20"> License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
