@@ -2,6 +2,10 @@
 
 > Turn your Android phone into a high-performance wireless or USB webcam for Windows, with a DirectShow virtual camera output compatible with OBS, Discord, Zoom, and web browsers.
 
+<p align="center">
+  <img src="assets/banner.png" alt="DroidLens — turn your Android phone into a high-performance PC webcam" />
+</p>
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20x64-0078D6?logo=windows)](client/)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android%208.0%2B-3DDC84?logo=android)](android/)
