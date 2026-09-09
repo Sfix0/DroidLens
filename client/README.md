@@ -35,6 +35,13 @@ The desktop receiver and virtual camera pipeline for DroidLens.
       <em>Light theme — same workflow in Fluent light variant</em>
     </td>
   </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="../assets/screenshots/client-settings-light-theme.png" alt="Settings dialog with theme, language and preview options" width="600" />
+      <br />
+      <em>Settings — theme, language, UI scale, preview FPS limit and ambient light fill</em>
+    </td>
+  </tr>
 </table>
 
 ## 🛠️ Tech Stack
