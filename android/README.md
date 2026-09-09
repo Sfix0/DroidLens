@@ -12,13 +12,20 @@ The mobile camera streamer for DroidLens.
 
 <table>
   <tr>
-    <td align="center" width="35%">
-      <img src="../assets/screenshots/android-idle.png" alt="Ready to stream screen with lens, quality and codec selection" width="270" />
+    <td align="center" width="50%">
+      <img src="../assets/screenshots/android-idle.png" alt="Ready to stream screen in dark theme" width="270" />
       <br />
-      <em>Ready to stream — front lens, quality and codec (H.265) selection</em>
+      <em>Ready to stream — dark theme, front lens, quality and codec (H.264) selection</em>
     </td>
-    <td align="center" width="65%">
-      <img src="../assets/screenshots/android-preview-paused.jpg" alt="Live stream stats overlay with FPS, ISO, codec and quality" width="520" />
+    <td align="center" width="50%">
+      <img src="../assets/screenshots/android-idle-light.png" alt="Ready to stream screen in light theme" width="270" />
+      <br />
+      <em>Ready to stream — same setup in Fluent light variant</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="../assets/screenshots/android-preview-paused.jpg" alt="Live stream stats overlay with FPS, ISO, codec and quality" width="600" />
       <br />
       <em>Stream stats — live FPS, ISO/exposure, codec and quality overlay</em>
     </td>
