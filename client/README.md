@@ -47,7 +47,7 @@ The desktop receiver for DroidLens: it discovers the phone, decodes its camera s
 ## <img src="../assets/icons/handyman.svg" width="20" height="20"> Tech Stack
 * **Runtime:** .NET 10 (`net10.0-windows`, `win-x64`, self-contained)
 * **UI Framework:** [Avalonia UI 11](https://avaloniaui.net/) with Fluent styling and Material Icons
-* **Video Decoding:** [Sdcb.FFmpeg](https://github.com/sdcb/Sdcb.FFmpeg) 7.0 + `FFmpeg.LGPL` (D3D11VA hardware decoding for H.264 and HEVC, transparent CPU fallback)
+* **Video Decoding:** [Sdcb.FFmpeg](https://github.com/sdcb/Sdcb.FFmpeg) 7.0 + [`FFmpeg.LGPL`](https://www.nuget.org/packages/FFmpeg.LGPL) native runtime ([upstream FFmpeg](https://ffmpeg.org), LGPL-licensed — D3D11VA hardware decoding for H.264 and HEVC, transparent CPU fallback)
 * **Virtual Camera:** DirectShow filter powered by [softcam](https://github.com/tshino/softcam) (MIT)
 * **Service Discovery:** real mDNS / DNS-SD (`_droidlens._tcp`) via [Makaretu.Dns.Multicast](https://github.com/StephenCleary/Makaretu.Dns.Multicast)
 * **USB Transport:** [AdvancedSharpAdbClient](https://github.com/quamotion/madb) driving the bundled `adb.exe` — no system-wide ADB install needed
