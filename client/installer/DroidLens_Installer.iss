@@ -8,10 +8,12 @@
 #define MyAppPublisher "DroidLens"
 #define MyAppURL "https://github.com/Sfix0/DroidLens"
 #define MyAppExeName "DroidLens.exe"
-; Local default — override from the command line on other machines with:
+; Default assumes the sources are checked out as documented (script lives in
+; client/installer/, publish output lands in client/bin/...). Override from
+; the command line on other layouts with:
 ;   ISCC.exe /DPublishDir="C:\path\to\publish" DroidLens_Installer.iss
 #ifndef PublishDir
-  #define PublishDir "C:\Users\Rafik\Documents\C# Project\DroidLens.Client\bin\Release\net10.0-windows\win-x64\publish"
+  #define PublishDir SourcePath + "\..\bin\Release\net10.0-windows\win-x64\publish"
 #endif
 
 [Setup]
