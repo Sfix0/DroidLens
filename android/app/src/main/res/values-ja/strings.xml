@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">配信の準備完了</string>
+    <string name="select_config">下で設定を選択</string>
+    <string name="preview_active">プレビュー中</string>
+
+    <!-- Camera -->
+    <string name="front_lens">フロントカメラ</string>
+    <string name="back_lens">リアカメラ</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">配信を開始</string>
+    <string name="stop">停止</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">画質</string>
+    <string name="quality_low">低</string>
+    <string name="quality_medium">中</string>
+    <string name="quality_high">高</string>
+
+    <!-- Codec -->
+    <string name="codec">コーデック</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">回転</string>
+    <string name="panel_screen">画面</string>
+    <string name="panel_flashlight">ライト</string>
+
+    <!-- Network -->
+    <string name="no_wifi">WI-FI なし</string>
+    <string name="usb_connected">USB 接続中</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / 露出</string>
+
+    <!-- About -->
+    <string name="about_button_desc">このアプリについて</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">開発者</string>
+    <string name="about_developer_role">プロジェクト作成者</string>
+    <string name="about_section_project">プロジェクト</string>
+    <string name="about_repo_title">プロジェクトのリポジトリ</string>
+    <string name="about_pc_client_title">PC クライアント</string>
+    <string name="about_link_copy_desc">リンクをコピー</string>
+    <string name="about_link_open_desc">リンクを開く</string>
+    <string name="about_link_copied">リンクをコピーしました</string>
+    <string name="about_close">閉じる</string>
+
+</resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">جاهز للبث</string>
+    <string name="select_config">حدد الإعدادات أدناه</string>
+    <string name="preview_active">المعاينة نشطة</string>
+
+    <!-- Camera -->
+    <string name="front_lens">الكاميرا الأمامية</string>
+    <string name="back_lens">الكاميرا الخلفية</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">بدء البث</string>
+    <string name="stop">إيقاف</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">الجودة</string>
+    <string name="quality_low">منخفضة</string>
+    <string name="quality_medium">متوسطة</string>
+    <string name="quality_high">عالية</string>
+
+    <!-- Codec -->
+    <string name="codec">الترميز</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">تدوير</string>
+    <string name="panel_screen">الشاشة</string>
+    <string name="panel_flashlight">المصباح</string>
+
+    <!-- Network -->
+    <string name="no_wifi">لا يوجد WI-FI</string>
+    <string name="usb_connected">متصل عبر USB</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / التعريض</string>
+
+    <!-- About -->
+    <string name="about_button_desc">حول التطبيق</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">المطور</string>
+    <string name="about_developer_role">مؤلف المشروع</string>
+    <string name="about_section_project">المشروع</string>
+    <string name="about_repo_title">مستودع المشروع</string>
+    <string name="about_pc_client_title">عميل الكمبيوتر</string>
+    <string name="about_link_copy_desc">نسخ الرابط</string>
+    <string name="about_link_open_desc">فتح الرابط</string>
+    <string name="about_link_copied">تم نسخ الرابط</string>
+    <string name="about_close">إغلاق</string>
+
+</resources>

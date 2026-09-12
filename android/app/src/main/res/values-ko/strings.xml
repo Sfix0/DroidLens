@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">스트리밍 준비 완료</string>
+    <string name="select_config">아래에서 설정을 선택하세요</string>
+    <string name="preview_active">미리보기 활성화됨</string>
+
+    <!-- Camera -->
+    <string name="front_lens">전면 렌즈</string>
+    <string name="back_lens">후면 렌즈</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">스트리밍 시작</string>
+    <string name="stop">중지</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">화질</string>
+    <string name="quality_low">낮음</string>
+    <string name="quality_medium">중간</string>
+    <string name="quality_high">높음</string>
+
+    <!-- Codec -->
+    <string name="codec">코덱</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">회전</string>
+    <string name="panel_screen">화면</string>
+    <string name="panel_flashlight">플래시</string>
+
+    <!-- Network -->
+    <string name="no_wifi">WI-FI 없음</string>
+    <string name="usb_connected">USB 연결됨</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / 노출</string>
+
+    <!-- About -->
+    <string name="about_button_desc">앱 정보</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">개발자</string>
+    <string name="about_developer_role">프로젝트 제작자</string>
+    <string name="about_section_project">프로젝트</string>
+    <string name="about_repo_title">프로젝트 저장소</string>
+    <string name="about_pc_client_title">PC 클라이언트</string>
+    <string name="about_link_copy_desc">링크 복사</string>
+    <string name="about_link_open_desc">링크 열기</string>
+    <string name="about_link_copied">링크가 복사되었습니다</string>
+    <string name="about_close">닫기</string>
+
+</resources>

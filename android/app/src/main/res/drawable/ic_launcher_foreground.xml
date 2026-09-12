@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- All content scaled to fit fully inside the ~66dp safe zone (radius 33 from
+         center 54,54) with margin, so antennas and body bottom survive circular /
+         squircle launcher masks. Body kept rectangular (wider than tall) per reference. -->
+
+    <!-- Left antenna -->
+    <path android:strokeColor="#818CF8" android:strokeWidth="2.059" android:strokeLineCap="round"
+        android:pathData="M38.041,43.961 L33.923,33.665"/>
+    <path android:fillColor="#818CF8"
+        android:pathData="M33.923,32.121 m-2.059,0 a2.059,2.059 0 1,0 4.118,0 a2.059,2.059 0 1,0 -4.118,0 z"/>
+
+    <!-- Right antenna -->
+    <path android:strokeColor="#818CF8" android:strokeWidth="2.059" android:strokeLineCap="round"
+        android:pathData="M69.959,43.961 L74.077,33.665"/>
+    <path android:fillColor="#818CF8"
+        android:pathData="M74.077,32.121 m-2.059,0 a2.059,2.059 0 1,0 4.118,0 a2.059,2.059 0 1,0 -4.118,0 z"/>
+
+    <!-- Body: rectangular (51.48 x 33.98), vertical gradient -->
+    <path android:pathData="M33.923,43.961 h41.297 a5.663,5.663 0 0 1 5.663,5.663 v22.651 a5.663,5.663 0 0 1 -5.663,5.663 h-41.297 a5.663,5.663 0 0 1 -5.663,-5.663 v-22.651 a5.663,5.663 0 0 1 5.663,-5.663 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="54" android:startY="43.961"
+                android:endX="54" android:endY="77.938"
+                android:startColor="#818CF8"
+                android:endColor="#5B63D3"/>
+        </aapt:attr>
+    </path>
+
+    <!-- Lens outer ring (diagonal gradient) -->
+    <path android:strokeColor="#6366E8" android:strokeWidth="0.35"
+        android:pathData="M59.148,60.95 m-12.87,0 a12.87,12.87 0 1,0 25.74,0 a12.87,12.87 0 1,0 -25.74,0 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="51.426" android:startY="53.228"
+                android:endX="66.87" android:endY="68.672"
+                android:startColor="#2A2850"
+                android:endColor="#0E0D14"/>
+        </aapt:attr>
+    </path>
+
+    <!-- Lens ring -->
+    <path android:fillColor="#161420" android:strokeColor="#818CF8" android:strokeWidth="0.3"
+        android:pathData="M59.148,60.95 m-9.781,0 a9.781,9.781 0 1,0 19.562,0 a9.781,9.781 0 1,0 -19.562,0 z"/>
+
+    <!-- Lens glass (diagonal gradient) -->
+    <path android:pathData="M59.148,60.95 m-6.178,0 a6.178,6.178 0 1,0 12.356,0 a6.178,6.178 0 1,0 -12.356,0 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="55.441" android:startY="57.243"
+                android:endX="62.855" android:endY="64.657"
+                android:startColor="#818CF8"
+                android:endColor="#4F56C7"/>
+        </aapt:attr>
+    </path>
+
+    <!-- Lens pupil -->
+    <path android:fillColor="#0E0D14"
+        android:pathData="M59.148,60.95 m-3.089,0 a3.089,3.089 0 1,0 6.178,0 a3.089,3.089 0 1,0 -6.178,0 z"/>
+
+    <!-- Lens highlights -->
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.45"
+        android:pathData="M57.089,58.891 m-1.287,0 a1.287,1.287 0 1,0 2.574,0 a1.287,1.287 0 1,0 -2.574,0 z"/>
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.2"
+        android:pathData="M60.435,57.861 m-0.515,0 a0.515,0.515 0 1,0 1.03,0 a0.515,0.515 0 1,0 -1.03,0 z"/>
+
+    <!-- Grille lines -->
+    <path android:fillColor="#6366E8" android:fillAlpha="0.8"
+        android:pathData="M30.319,51.683 h9.266 a1.287,1.287 0 0 1 0,2.574 h-9.266 a1.287,1.287 0 0 1 0,-2.574 z"/>
+    <path android:fillColor="#4F56C7" android:fillAlpha="0.6"
+        android:pathData="M30.319,55.802 h6.178 a0.901,0.901 0 0 1 0,1.802 h-6.178 a0.901,0.901 0 0 1 0,-1.802 z"/>
+
+    <!-- Shutter / flash indicator -->
+    <path android:fillColor="#EF4444"
+        android:pathData="M74.592,47.565 m-2.059,0 a2.059,2.059 0 1,0 4.118,0 a2.059,2.059 0 1,0 -4.118,0 z"/>
+    <path android:fillColor="#FCA5A5" android:fillAlpha="0.6"
+        android:pathData="M74.592,47.565 m-1.03,0 a1.03,1.03 0 1,0 2.06,0 a1.03,1.03 0 1,0 -2.06,0 z"/>
+
+</vector>

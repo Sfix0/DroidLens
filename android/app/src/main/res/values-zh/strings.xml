@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">准备串流</string>
+    <string name="select_config">在下方选择配置</string>
+    <string name="preview_active">预览已启用</string>
+
+    <!-- Camera -->
+    <string name="front_lens">前置镜头</string>
+    <string name="back_lens">后置镜头</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">开始串流</string>
+    <string name="stop">停止</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">画质</string>
+    <string name="quality_low">低</string>
+    <string name="quality_medium">中</string>
+    <string name="quality_high">高</string>
+
+    <!-- Codec -->
+    <string name="codec">编解码器</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">旋转</string>
+    <string name="panel_screen">屏幕</string>
+    <string name="panel_flashlight">闪光灯</string>
+
+    <!-- Network -->
+    <string name="no_wifi">无 WI-FI</string>
+    <string name="usb_connected">USB 已连接</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / 曝光</string>
+
+    <!-- About -->
+    <string name="about_button_desc">关于</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">开发者</string>
+    <string name="about_developer_role">项目作者</string>
+    <string name="about_section_project">项目</string>
+    <string name="about_repo_title">项目仓库</string>
+    <string name="about_pc_client_title">PC 客户端</string>
+    <string name="about_link_copy_desc">复制链接</string>
+    <string name="about_link_open_desc">打开链接</string>
+    <string name="about_link_copied">链接已复制</string>
+    <string name="about_close">关闭</string>
+
+</resources>

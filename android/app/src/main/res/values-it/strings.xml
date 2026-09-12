@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">Pronto per lo streaming</string>
+    <string name="select_config">SELEZIONA CONFIGURAZIONE SOTTO</string>
+    <string name="preview_active">ANTEPRIMA ATTIVA</string>
+
+    <!-- Camera -->
+    <string name="front_lens">Fotocamera frontale</string>
+    <string name="back_lens">Fotocamera posteriore</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">AVVIA STREAMING</string>
+    <string name="stop">STOP</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">QUALITÀ</string>
+    <string name="quality_low">Bassa</string>
+    <string name="quality_medium">Media</string>
+    <string name="quality_high">Alta</string>
+
+    <!-- Codec -->
+    <string name="codec">CODEC</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">Ruota</string>
+    <string name="panel_screen">Schermo</string>
+    <string name="panel_flashlight">Torcia</string>
+
+    <!-- Network -->
+    <string name="no_wifi">NESSUN WI-FI</string>
+    <string name="usb_connected">USB CONNESSO</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / esposizione</string>
+
+    <!-- About -->
+    <string name="about_button_desc">Info</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">SVILUPPATORE</string>
+    <string name="about_developer_role">Autore del progetto</string>
+    <string name="about_section_project">PROGETTO</string>
+    <string name="about_repo_title">Repository del progetto</string>
+    <string name="about_pc_client_title">Client PC</string>
+    <string name="about_link_copy_desc">Copia link</string>
+    <string name="about_link_open_desc">Apri link</string>
+    <string name="about_link_copied">Link copiato</string>
+    <string name="about_close">Chiudi</string>
+
+</resources>

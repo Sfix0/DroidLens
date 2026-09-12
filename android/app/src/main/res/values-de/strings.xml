@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">Bereit zum Streamen</string>
+    <string name="select_config">KONFIGURATION UNTEN AUSWÄHLEN</string>
+    <string name="preview_active">VORSCHAU AKTIV</string>
+
+    <!-- Camera -->
+    <string name="front_lens">Frontkamera</string>
+    <string name="back_lens">Hauptkamera</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">STREAM STARTEN</string>
+    <string name="stop">STOPP</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">QUALITÄT</string>
+    <string name="quality_low">Niedrig</string>
+    <string name="quality_medium">Mittel</string>
+    <string name="quality_high">Hoch</string>
+
+    <!-- Codec -->
+    <string name="codec">CODEC</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">Drehen</string>
+    <string name="panel_screen">Bildschirm</string>
+    <string name="panel_flashlight">Taschenlampe</string>
+
+    <!-- Network -->
+    <string name="no_wifi">KEIN WLAN</string>
+    <string name="usb_connected">USB VERBUNDEN</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / Belichtung</string>
+
+    <!-- About -->
+    <string name="about_button_desc">Über die App</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">ENTWICKLER</string>
+    <string name="about_developer_role">Projektautor</string>
+    <string name="about_section_project">PROJEKT</string>
+    <string name="about_repo_title">Projekt-Repository</string>
+    <string name="about_pc_client_title">PC-Client</string>
+    <string name="about_link_copy_desc">Link kopieren</string>
+    <string name="about_link_open_desc">Link öffnen</string>
+    <string name="about_link_copied">Link kopiert</string>
+    <string name="about_close">Schließen</string>
+
+</resources>

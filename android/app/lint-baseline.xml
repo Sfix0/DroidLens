@@ -1,0 +1,1324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.1.0" type="baseline" client="gradle" dependencies="false" name="AGP (9.1.0)" variant="fatal" version="9.1.0">
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>الإعدادات&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>EINSTELLUNGEN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>AJUSTES&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>PARAMÈTRES&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>IMPOSTAZIONI&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>設定&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>설정&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>USTAWIENIA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>CONFIGURAÇÕES&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;system_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;system_settings&quot;>设置&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>جلسة نشطة&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>AKTIVE SITZUNG&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>SESIÓN ACTIVA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>SESSION ACTIVE&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>SESSIONE ATTIVA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>配信中&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>방송 중&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>AKTYWNA SESJA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>SESSÃO ATIVA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;active_session&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;active_session&quot;>直播中&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>الكاميرا&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>KAMERA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>CÁMARA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>CAMÉRA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>FOTOCAMERA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>カメラ&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>카메라&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>KAMERA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>CÂMERA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;hardware_camera&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;hardware_camera&quot;>摄像头&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>إعدادات البث&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>STREAM-EINSTELLUNGEN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>AJUSTES DE TRANSMISIÓN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>PARAMÈTRES DU FLUX&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>IMPOSTAZIONI STREAM&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>配信設定&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>스트림 설정&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>USTAWIENIA STRUMIENIA&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>CONFIGURAÇÕES DE STREAM&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;stream_settings&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;stream_settings&quot;>直播设置&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>معدل البت&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>BITRATE&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>TASA DE BITS&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>DÉBIT&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>BITRATE&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>ビットレート&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>비트레이트&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>BITRATE&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>TAXA DE BITS&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;bitrate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;bitrate&quot;>比特率&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>بدء البث&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>STREAM STARTEN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>INICIAR TRANSMISIÓN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>DÉMARRER&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>AVVIA STREAM&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>配信開始&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>방송 시작&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>ROZPOCZNIJ TRANSMISJĘ&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>INICIAR STREAM&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;connect_stream&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;connect_stream&quot;>开始直播&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>قطع الاتصال&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>TRENNEN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>DESCONECTAR&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>DÉCONNECTER&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>DISCONNETTI&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>切断&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>종료&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>ROZŁĄCZ&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>DESCONECTAR&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;disconnect&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;disconnect&quot;>断开&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>تبديل&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>Wechseln&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>Cámara&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>Caméra&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>Fotocamera&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>切替&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>전환&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>Kamera&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>Câmera&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flip&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flip&quot;>切换&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>تدوير&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>Drehen&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>Rotar&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>Rotation&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>Ruota&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>回転&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>회전&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>Obróć&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>Girar&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;rotate&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;rotate&quot;>旋转&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>شاشة سوداء&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>Schwarz&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>Negro&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>Noir&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>Nero&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>画面オフ&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>화면 끄기&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>Czarny&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>Negro&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;black&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;black&quot;>黑屏&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>إظهار&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>Zeigen&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>Mostrar&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>Afficher&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>Mostra&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>表示&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>표시&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>Pokaż&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>Mostrar&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;show&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;show&quot;>显示&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="20"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>مصباح يدوي&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ar/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>Taschenlampe&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-de/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>Linterna&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-es/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>Lampe torche&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-fr/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>Torcia&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-it/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>懐中電灯&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ja/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>손전등&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-ko/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>Latarka&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pl/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>Lanterna&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-pt/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;flashlight&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;flashlight&quot;>手电筒&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+</issues>

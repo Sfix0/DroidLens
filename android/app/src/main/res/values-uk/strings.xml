@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name" translatable="false">DroidLens</string>
+
+    <!-- Idle Screen -->
+    <string name="ready_to_stream">Готовий до трансляції</string>
+    <string name="select_config">ОБЕРІТЬ КОНФІГУРАЦІЮ НИЖЧЕ</string>
+    <string name="preview_active">ПОПЕРЕДНІЙ ПЕРЕГЛЯД</string>
+
+    <!-- Camera -->
+    <string name="front_lens">Передня</string>
+    <string name="back_lens">Задня</string>
+
+    <!-- Stream Controls -->
+    <string name="start_stream">ПОЧАТИ ТРАНСЛЯЦІЮ</string>
+    <string name="stop">СТОП</string>
+    <string name="live">LIVE</string>
+
+    <!-- Quality -->
+    <string name="quality">ЯКІСТЬ</string>
+    <string name="quality_low">Низька</string>
+    <string name="quality_medium">Середня</string>
+    <string name="quality_high">Висока</string>
+
+    <!-- Codec -->
+    <string name="codec">КОДЕК</string>
+
+    <!-- Overlay Panel -->
+    <string name="panel_stats">Stats</string>
+    <string name="panel_rotate">Поворот</string>
+    <string name="panel_screen">Екран</string>
+    <string name="panel_flashlight">Ліхтарик</string>
+
+    <!-- Network -->
+    <string name="no_wifi">NO WI-FI</string>
+    <string name="usb_connected">ПІДКЛЮЧЕНО USB</string>
+
+    <!-- Metrics -->
+    <string name="stat_fps">FPS</string>
+    <string name="stat_iso_exposure">ISO / витримка</string>
+
+    <!-- About -->
+    <string name="about_button_desc">Про застосунок</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="about_section_developer">РОЗРОБНИК</string>
+    <string name="about_developer_role">Автор проєкту</string>
+    <string name="about_section_project">ПРОЄКТ</string>
+    <string name="about_repo_title">Репозиторій проєкту</string>
+    <string name="about_pc_client_title">PC-клієнт</string>
+    <string name="about_link_copy_desc">Копіювати посилання</string>
+    <string name="about_link_open_desc">Відкрити посилання</string>
+    <string name="about_link_copied">Посилання скопійовано</string>
+    <string name="about_close">Закрити</string>
+
+</resources>
