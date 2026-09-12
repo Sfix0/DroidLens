@@ -1,0 +1,244 @@
+# ─── App ───
+app.title = DroidLens
+
+# ─── Language names (endonym, own .lang only) ───
+lang.name = English
+
+# ─── Buttons ───
+btn.connect = Connect
+btn.connecting = Connecting…
+btn.disconnect = Disconnect
+btn.scan = Scan network
+btn.scanning = Scanning…
+btn.start = Start stream
+btn.starting = Starting…
+btn.stop = Stop stream
+btn.flip = Flip camera
+btn.blackscreen = Black screen
+btn.flashlight = Flashlight
+btn.rotate = Rotate
+btn.manual_connect = Connect manually
+btn.autoconnect = Auto-connect when found
+
+# ─── Tabs (connection screen) ───
+tab.auto_discovery = Auto-discovery
+tab.manual_ip = Manual
+
+# ─── Labels: connection state ───
+label.notconnected = Not connected
+label.connected = Connected
+label.disconnected = Disconnected
+label.unstable = unstable
+label.no_devices = No devices found
+
+# ─── Labels: stream / session info ───
+label.camera = Camera
+label.quality = Quality
+label.codec = Codec
+label.display = Display
+label.session = Session
+label.live_controls = Live controls
+label.client = Client
+label.stream = Stream
+label.fps = FPS
+label.fps_cap_hint = Preview render is capped to half rate — the stream itself is unaffected
+label.status = Status
+label.rtt = RTT
+label.latency = Decode
+label.resolution = Resolution
+
+# ─── Labels: device status ───
+label.battery = Battery
+label.charging = Charging
+label.temp = Temp
+label.wifi = Wi-Fi
+label.network_ip = Network IP
+
+# ─── Labels: camera / orientation ───
+label.front = Front
+label.back = Back
+label.landscape = Landscape
+label.reverse_landscape = Landscape (reversed)
+label.portrait = Portrait
+
+# ─── Labels: stream status badges ───
+label.live = LIVE
+label.idle = IDLE
+label.stale = STALE
+
+# ─── Labels: preview / virtual camera ───
+label.no_signal = Preview will appear here
+label.no_signal_hint = Start a stream to see it live
+label.virtual_camera = Virtual camera
+label.hide_preview = Hide preview
+label.show_preview = Show preview
+label.preview_paused = Preview rendering paused
+label.preview_paused_hint = Virtual camera keeps streaming normally
+label.screenshot = Screenshot
+label.win11_required = Driver not registered (regsvr32)
+
+# ─── Quality levels ───
+quality.low = Low
+quality.medium = Medium
+quality.high = High
+
+# ─── Settings: quick-access (tray popup etc.) ───
+settings.language = Language
+settings.host = IP Address
+settings.theme = Theme
+settings.ui_scale = UI Scale
+settings.ui_scale_hint = Scales all interface elements proportionally to the window size
+scale.compact_xs = 75% (Compact XS)
+scale.compact = 85% (Compact)
+scale.default = 100% (Default)
+scale.large = 115% (Large)
+scale.large_xl = 125% (Large XL)
+settings.limit_preview_fps = Limit preview FPS
+settings.limit_preview_fps_hint = Renders the preview at a lower frame rate to save CPU — doesn't affect the phone's stream or the virtual camera
+settings.ambient_fill = Ambient light fill
+settings.ambient_fill_hint = Fills the letterbox bars around streams with a soft color glow sampled from the video, instead of flat black
+theme.dark = Dark
+theme.light = Light
+
+# ─── Settings: settings window ───
+settings.title = Settings
+settings.section_interface = Interface
+settings.section_stream_behavior = Stream behavior
+settings.section_about = About
+settings.stop_on_disconnect = Stop stream on disconnect
+settings.stop_on_disconnect_hint = Sends a stop command to the phone before disconnecting
+settings.stop_on_app_close = Stop stream on app close
+settings.stop_on_app_close_hint = Sends a stop command to the phone when you close DroidLens
+settings.screenshot_path = Screenshot save location
+settings.screenshot_path_hint = All camera screenshots will be saved to the specified folder
+settings.screenshot_path_reset = Reset to default
+settings.copy_path = Copy path
+settings.browse = Browse…
+settings.open_folder = Open folder
+
+# ─── About: about panel ───
+about.title = About the app
+about.tab_about = About
+about.tab_help = Help
+about.section_app = About Application
+about.tagline = A free, open-source and ad-free virtual webcam app.
+about.view_on_github = View on GitHub
+about.developer = Developed by:
+about.section_licenses = Third-party libraries & licenses
+about.section_core = Core components
+about.core_ffmpeg_desc = Real-time H.264/H.265/MJPEG decoding.
+about.core_softcam_desc = Registers DroidLens as a virtual webcam.
+about.core_adb_desc = Fast, low-latency USB streaming.
+about.core_adb_link_label = developer.android.com
+
+# ─── Help: nav (left sidebar section labels) ───
+help.nav.start = Getting started
+help.nav.settings = Stream settings
+help.nav.quality = Video quality
+help.nav.controls = Live controls
+help.nav.preview = Preview & capture
+help.nav.vcam = Virtual camera
+help.nav.tray = Compact mode
+
+# ─── Help: Getting started ───
+help.start.title = Getting started
+help.start.step1_title = 1. Install the Android app
+help.start.step1_body = Grab the DroidLens app from the GitHub releases page and install it on your phone.
+help.start.download_app = Download Android app
+help.start.step2_title = 2. Open the app on your phone
+help.start.step2_body = Keep DroidLens open on your phone in the foreground. You'll see your IP address and a badge at the top.
+help.start.step3_title = 3. Connect over USB or Wi-Fi
+help.start.step3_body = DroidLens finds your phone automatically and lists it below. Pick a device and press Start stream — streaming starts only after you press it, not automatically. Both USB and Wi-Fi work the same way.
+help.start.connection_hint = The badge next to the device shows how it's connected — USB icon for USB, Wi-Fi icon for Wi-Fi. No device showing up? For USB make sure debugging is enabled (see below); for Wi-Fi make sure both devices are on the same network.
+help.start.lock_hint = Heads up: locking your phone's screen interrupts the connection. DroidLens keeps the screen awake automatically while a stream is active, so this shouldn't happen on its own — just don't lock it manually mid-stream.
+help.start.usb_debug_title = How to enable USB debugging
+help.start.usb_debug_intro = Needed only for USB. For Wi-Fi you can skip this.
+help.start.usb_debug_step1 = On your phone open Settings → About phone → tap Build number 7 times until you see “You are now a developer”.
+help.start.usb_debug_step2 = Go back to Settings → System → Developer options (on some phones: Settings → Developer options) → enable USB debugging.
+help.start.usb_debug_step3 = Connect the phone via USB, allow the “Allow USB debugging?” prompt on the phone (tick “Always allow from this computer”).
+help.start.usb_debug_hint2 = If the device does not appear, check the cable integrity or try turning USB debugging off and on again on the device.
+help.start.badge_hint = Indigo badge with your IP means waiting. It turns green with a link icon once this PC connects — USB shows the same green badge with “USB connected”.
+help.start.autoconnect_hint = Auto-connect (↻) remembers this device and connects automatically next time it appears. You can toggle it on the connected device row.
+
+# ─── Help: Stream settings ───
+help.settings.title = Stream settings
+help.settings.body = Quality and codec can be changed **anytime**, even mid-stream.
+help.settings.resolution_label = Resolution can only be changed **before** you start streaming.\nIt's locked once a stream is active.
+help.settings.start_button_hint = The start button turns **yellow** once a stream is active,\nand doubles as the stop button.
+help.settings.resolution_hint = Virtual camera lets other apps (Zoom, OBS, Discord) use your phone as a **regular webcam**.
+
+# ─── Help: Live controls ───
+help.controls.title = Live controls
+help.controls.body = These four buttons send commands straight to your phone, so they work even while it's out of reach.
+help.controls.active_hint = The amber highlight means the feature is active — here flashlight is on. Tap again to turn it off.
+help.controls.flip = Flip camera — switches between the front and back lens.
+help.controls.rotate = Rotate — only available in landscape (regular or reversed).
+help.controls.preview = Hide preview — turns off the phone's own screen while streaming, to save battery.
+help.controls.flashlight = Flashlight — brightens the screen on the front camera, or turns on the flash on the back camera.
+
+# ─── Help: Video quality ───
+help.quality.title = Video quality
+help.quality.body = Pick the balance between sharpness, smoothness and CPU usage. Quality and codec can be changed mid-stream — resolution only before you start.
+help.quality.codec_title = Codec
+help.quality.codec_list = - `H.264` — best compatibility. Works everywhere, lowest CPU on the PC.\n- `H.265` — sharper at the same bitrate, but needs more CPU to decode.\n- `MJPEG` — fallback when hardware encoders are busy. Bigger traffic, no inter-frame compression.
+help.quality.quality_title = Quality
+help.quality.quality_list = - Low — less traffic, softer picture. Good for slow Wi-Fi.\n- Medium — balanced. Recommended for most phones.\n- High — maximum detail. Needs stable Wi-Fi or USB.
+help.quality.resolution_title = Resolution
+help.quality.resolution_list = - SD · ≈4:3 — 640×480 — near-square, lightest on Wi-Fi/CPU.\n- HD · 16:9 — 1280×720 — balanced, default.\n- Full HD · 16:9 — 1920×1080 — sharpest, needs stable Wi-Fi or USB.
+help.quality.variability_title = Actual FPS & resolution may vary
+help.quality.variability_body = The phone's camera controls the real frame rate. In low light, on older phones or when the device is hot, it may drop FPS or lower resolution automatically — this is not a bug. What you see in the preview is what the phone actually sends.
+
+# ─── Help: Preview & capture ───
+help.preview.title = Preview & capture
+help.preview.body = The preview on your PC is just a viewer — pausing it never stops the stream or the virtual camera.
+help.preview.screenshot_title = Screenshot
+help.preview.screenshot_body = Hover over the preview to reveal the bottom capsule and click the highlighted camera button. Saves a PNG to `Pictures\DroidLens` — change the folder in Settings → Screenshot save location. Flash animation confirms the capture. Disabled while preview is paused.
+help.preview.paused_title = Preview paused
+help.preview.paused_body = Pauses rendering on this PC only — the phone keeps streaming and VCam keeps sending video. The preview freezes on the last frame and shows a centered amber banner. Click the same button again to resume.
+help.preview.footnote = Don't confuse with Black screen (Eye button in Live controls) — that turns off the phone's own screen to save battery, not the PC preview.
+help.preview.metrics_title = Metrics under the preview
+help.preview.metrics_body = FPS — preview render rate (½ badge when Limit preview FPS is on). RTT — round-trip to phone in ms. Decode — time to decode one frame (— for MJPEG). Resolution — current stream size (e.g. 1280×720).
+
+# ─── Help: Virtual camera ───
+help.vcam.title = Virtual camera
+help.vcam.body = Exposes your phone as a regular webcam so Zoom, OBS, Discord, Chrome and any other app can use it.
+help.vcam.how_title = How to select it
+help.vcam.how_body = When an app asks for a camera, choose `DirectShow Softcam`. If you don't see it, restart the app after starting the stream.
+help.vcam.win11_hint = Requires Windows 11 — the DirectShow filter doesn't register on Windows 10.
+help.vcam.state_title = States (switch)
+help.vcam.state_off = Off — virtual camera disabled.
+help.vcam.state_indigo = On (indigo) — VCam active, no stream yet. Ready for apps to connect.
+help.vcam.state_amber = On (amber) — VCam active and streaming. Apps receive live video.
+help.vcam.tip = Tip: some apps cache the camera list. If Softcam doesn't appear, close and reopen the camera picker.
+
+# ─── Help: Compact mode ───
+help.tray.title = Compact mode
+help.tray.body = Minimize the window and DroidLens shrinks to a small floating card with the same live controls and a stop button, so you can keep an eye on the stream without the full window open.
+help.tray.minimize_hint = The ▼ button in the title bar (next to Minimize/Close) sends DroidLens to tray — stream and VCam keep running. Click the tray icon to open this card or use the tray menu to restore the window.
+help.tray.side_live = LIVE/IDLE — stream status. ↗ expands to full window.
+help.tray.side_vcam = VCam — amber when live, indigo when idle.
+help.tray.side_commands = 4 quick commands — in sync with the sidebar.
+help.tray.side_stream = Start/Stop — same as sidebar, disabled without a device.
+
+# ─── Notices (top-right banner) ───
+notice.dismiss = Dismiss
+notice.connect_failed = Couldn't connect to the device
+notice.connection_lost = Connection lost
+notice.unstable = Unstable connection
+notice.stream_start_failed = Couldn't start the stream
+notice.stream_stop_failed = Couldn't stop the stream cleanly
+notice.vcam_not_installed = Virtual camera driver not registered
+notice.vcam_failed = Couldn't start the virtual camera
+notice.decoder_failed = Hardware decoding failed for this codec
+notice.screenshot_failed = Couldn't save the screenshot
+notice.usb_failed = ADB unavailable — USB discovery is off
+
+# ─── Window ───
+window.minimize = Minimize
+window.close = Close
+
+# ─── Tray ───
+tray.show = Show DroidLens
+tray.exit = Exit
+tray.expand = Expand to window
+tray.minimize = Minimize to tray

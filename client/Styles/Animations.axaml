@@ -1,0 +1,504 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+
+    <!--
+        Shared animation vocabulary, mirroring the Android (Compose) motion language:
+          - press-scale   ~ animateFloatAsState + graphicsLayer{ scaleX/Y }  (used on almost every clickable)
+          - pulse         ~ rememberInfiniteTransition                       (LIVE dot, preview indicator)
+          - pulse-ring    ~ rememberInfiniteTransition, slower/wider swing    (no-signal badge halo)
+          - fade-slide-in ~ cascadeEnter()                                   (cards / panels appearing)
+          - hover-fade    ~ pointerover opacity, now with a real transition instead of an instant snap
+        Apply by adding the matching Class to any Button / Border / Ellipse.
+    -->
+
+    <!-- ============================= PRESS SCALE ============================= -->
+    <!--
+        Spring parameters chosen to mirror Android's rememberPressScale:
+          spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)
+        Stiffness=350 / Damping=16 gives a comparable snappy-with-a-touch-of-
+        overshoot feel on release (scale 0.94 -> 1 settles with a tiny bounce
+        rather than a flat ease-out).
+    -->
+    <!-- Apply Classes="press" to any clickable Border/Button for a tactile tap-down effect. -->
+    <Style Selector="Border.press, Button.press">
+        <Setter Property="RenderTransform" Value="scale(1)"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35">
+                    <TransformOperationsTransition.Easing>
+                        <SpringEasing Mass="1" Stiffness="350" Damping="16"/>
+                    </TransformOperationsTransition.Easing>
+                </TransformOperationsTransition>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Border.press:pointerpressed, Button.press:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.94)"/>
+    </Style>
+
+    <!-- Slightly stronger squash, for the big square icon tiles (Flip / Rotate / Black screen / Flashlight). -->
+    <Style Selector="Button.ctrl">
+        <Setter Property="RenderTransform" Value="scale(1)"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35">
+                    <TransformOperationsTransition.Easing>
+                        <SpringEasing Mass="1" Stiffness="350" Damping="16"/>
+                    </TransformOperationsTransition.Easing>
+                </TransformOperationsTransition>
+                <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.ctrl:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.94)"/>
+    </Style>
+
+    <!-- ============================= HOVER FADE ============================= -->
+    <!-- Replaces the instant pointerover opacity snap with a soft crossfade.
+         ALSO the single surviving home for the stream button's background/scale
+         morphs: Buttons.axaml loads BEFORE this file, so for the SAME selector
+         (Button.primary, Button.danger) this later Transitions collection wins
+         over the brush/opacity ones declared there. If that brush morph were not
+         carried here, the indigo<->amber color change would snap instead of fade,
+         and the scale-on-stop return wouldn't ease back. -->
+    <Style Selector="Button.primary, Button.danger">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+                <BrushTransition Property="Background" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- ============================= PULSE ============================= -->
+    <!-- Apply Classes="pulse" to an Ellipse — used by the LIVE dot and the -->
+    <!-- "preview active" indicator. Mirrors Android's rememberInfiniteTransition. -->
+    <Style Selector="Ellipse.pulse, materialIcons|MaterialIcon.pulse">
+        <Style.Animations>
+            <Animation Duration="0:0:0.9" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="CubicEaseInOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="1.0"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.4"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- ============================= PULSE (SUBTLE) ============================= -->
+    <!-- Same cadence as .pulse, but scoped to the watermark icon's already-low base
+         opacity (0.14) — oscillates within that low range instead of swinging
+         through the full 1.0-0.4 span, which read as a bright glare on top of a
+         faded icon. Apply instead of .pulse on Border.chip-row watermark icons. -->
+    <Style Selector="materialIcons|MaterialIcon.pulse-subtle">
+        <Style.Animations>
+            <Animation Duration="0:0:0.9" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="CubicEaseInOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0.14"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.26"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+<!-- Apply Classes="btn-pulse" to a Button while a stream handshake is in flight
+         (IsStreamBusy: starting OR stopping — the client has sent the command and is
+         waiting for the phone's ACK back). Two things happen for the whole duration:
+           - Background settles to a neutral gray (SystemGray-style #6E737E): the
+             indigo<->amber brush morph is deferred to the BrushTransition in the
+             HOVER FADE style above, so entering/exiting the busy state fades smoothly.
+           - The button gently BREATHES in size (scale 1 -> 1.05 -> 1, infinite alternate)
+             so it reads as "working / awaiting response". RenderTransformOrigin is pinned
+             here so the growth stays centered.
+         IMPORTANT: the keyframes animate the DOUBLE properties (ScaleTransform.ScaleX/ScaleY)
+         attached-notation, NOT RenderTransform — a raw RenderTransform has no registered
+         keyframe animator ("No animator for property RenderTransform"). Following the same
+         pattern as the .spin-loop class below. The <Button> carrying Classes="btn-pulse" must
+         declare <Button.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></...> (and a
+         DoubleTransition on ScaleX/ScaleY there) for this to take effect and settle smoothly. -->
+    <Style Selector="Button.btn-pulse">
+        <Setter Property="Background" Value="#6E737E"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Style.Animations>
+            <Animation Duration="0:0:0.8" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="CubicEaseInOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.05"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1.05"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- ========================= AUTO-DISCOVER PULSE (background requery) ========================= -->
+    <!-- Apply Classes="auto-discover-pulse" to the AutoTabButton's Wifi icon
+         each time a background mDNS requery actually fires (see MdnsDiscovery's
+         RequeryInterval — every 4s — and its new RequeryStarted event), not
+         continuously. One-shot: color/opacity pop from muted gray to indigo
+         with a scale bump and a settle-wobble (rotate through +10° → -5° →
+         +2° → 0°), then rests back at muted gray until the next requery tick.
+         Replaces the old .breathe class, which ran an infinite alternating
+         loop for the entire time IsAutoDiscovering was true — animating
+         constantly even between requery ticks, which read as motion for its
+         own sake rather than signaling an actual event. Deliberately distinct
+         from:
+           - .pulse     (LIVE dot: faster 0.9s cycle, opacity-only, reads as
+                         "alive right now")
+           - .scan-spin (manual scan button: one-shot spin+overshoot, reads as
+                         "user-triggered action in progress")
+         Requires an explicit RotateTransform in the view (same pattern as
+         .scan-spin) instead of a shorthand RenderTransform string:
+            <MaterialIcon Kind="Wifi" RenderTransformOrigin="50%,50%">
+              <MaterialIcon.RenderTransform>
+                <RotateTransform Angle="0"/>
+              </MaterialIcon.RenderTransform>
+            </MaterialIcon> -->
+    <Style Selector="materialIcons|MaterialIcon.auto-discover-pulse">
+        <Style.Animations>
+            <Animation Duration="0:0:0.65" FillMode="None">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0.5"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+                    <Setter Property="(RotateTransform.Angle)" Value="0"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+                <KeyFrame Cue="40%">
+                    <Setter Property="Opacity" Value="1.0"/>
+                    <Setter Property="Foreground" Value="{DynamicResource AccentIndigoBrush}"/>
+                    <Setter Property="(RotateTransform.Angle)" Value="10"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.25"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1.25"/>
+                </KeyFrame>
+                <KeyFrame Cue="70%">
+                    <Setter Property="Opacity" Value="1.0"/>
+                    <Setter Property="Foreground" Value="{DynamicResource AccentIndigoBrush}"/>
+                    <Setter Property="(RotateTransform.Angle)" Value="-5"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+                <KeyFrame Cue="85%">
+                    <Setter Property="(RotateTransform.Angle)" Value="2"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.03"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1.03"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.5"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+                    <Setter Property="(RotateTransform.Angle)" Value="0"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- ============================= SPIN (continuous) ============================= -->
+    <!-- The continuous spin itself is now code-driven (MainWindow.axaml.cs,
+         SetupScanSpinTimer) rather than a Style.Animations keyframe loop — a
+         keyframe loop can only be stopped by removing its class, which snaps
+         the property straight to the plain Setter's value from wherever mid-
+         rotation the icon happened to be, so a bounce added right after had
+         no consistent position to bounce from. Driving Angle by hand lets the
+         stop be deferred until it naturally lands on a multiple of 360°, so
+         .spin-settle below always starts its transition from the same place. -->
+
+    <!-- Refresh icon spin — one-shot declarative KeyFrame animation, fully
+         decoupled from the real scan duration. Applied via Classes="scan-spin"
+         on click (see ScanBtn_Click in MainWindow.Sidebar.cs) and removed after
+         ScanSpinAnimationDuration elapses — not tied to IsScanning/MdnsDiscovery
+         timing at all. Replaces the earlier DispatcherTimer + SpringEasing
+         approach: that hand-ticked Angle frame-by-frame and needed a Dispatcher.
+         Post hop to get a bounce to render at all, which never read as smooth.
+         A single Animation lets Avalonia's own engine interpolate the whole
+         spin-overshoot-settle arc in one continuous curve. -->
+    <Style Selector="materialIcons|MaterialIcon.scan-spin">
+        <Style.Animations>
+            <Animation Duration="0:0:0.9" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="RotateTransform.Angle" Value="0"/>
+                    <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                    <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                </KeyFrame>
+                <KeyFrame Cue="60%">
+                    <Setter Property="RotateTransform.Angle" Value="380"/>
+                    <Setter Property="ScaleTransform.ScaleX" Value="1.08"/>
+                    <Setter Property="ScaleTransform.ScaleY" Value="1.08"/>
+                </KeyFrame>
+                <KeyFrame Cue="80%">
+                    <Setter Property="RotateTransform.Angle" Value="345"/>
+                    <Setter Property="ScaleTransform.ScaleX" Value="0.97"/>
+                    <Setter Property="ScaleTransform.ScaleY" Value="0.97"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="RotateTransform.Angle" Value="360"/>
+                    <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                    <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- ============================= FADE + SLIDE IN ============================= -->
+    <!-- Apply Classes="enter" to a Border/StackPanel that should animate in on load, -->
+    <!-- mirroring Android's cascadeEnter() cascade (panel / logo / badge stagger). -->
+    <Style Selector=":is(Control).enter">
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="RenderTransform" Value="translateY(28px)"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.6" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector=":is(Control).enter.shown">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="RenderTransform" Value="translateY(0px)"/>
+    </Style>
+    <!-- Staggered variants — add alongside "enter" for a cascade effect across sibling cards. -->
+    <Style Selector=":is(Control).enter-1.shown">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.08"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.08"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector=":is(Control).enter-2.shown">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.16"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.16"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector=":is(Control).enter-3.shown">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.24"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.24"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector=":is(Control).enter-4.shown">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.32"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" Easing="CubicEaseOut" Delay="0:0:0.32"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- ============================= NOTICE BANNER ============================= -->
+    <!-- Top-right toast: springy pop-in from its own corner + fade, same two-step
+         hidden/shown convention as .enter and PreviewArea's state cards —
+         IsVisible=true first, THEN "shown" on the next render pass, otherwise the
+         Transitions have no "before" value to interpolate from and it just snaps.
+         Hiding is the reverse (see MainWindow.axaml.cs: RefreshNoticeBanner):
+         remove "shown", let it spring back, unmap after ~300ms.
+         Spring is a touch snappier than .press (380/15 vs 350/16) so a 6-second
+         toast reads alive without wobbling around. Origin pinned to 100%,0% so
+         the scale pop grows out of the corner the banner lives in. -->
+    <Style Selector=":is(Control).notice">
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="RenderTransform" Value="translateY(-14px) scale(0.96)"/>
+        <Setter Property="RenderTransformOrigin" Value="100%,0%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.45">
+                    <TransformOperationsTransition.Easing>
+                        <SpringEasing Mass="1" Stiffness="380" Damping="15"/>
+                    </TransformOperationsTransition.Easing>
+                </TransformOperationsTransition>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector=":is(Control).notice.shown">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="RenderTransform" Value="translateY(0px) scale(1)"/>
+    </Style>
+
+    <!-- ============================= VALUE CHANGE CROSSFADE ============================= -->
+    <!-- For TextBlocks whose Text is rebound often (metric values, quality/codec labels). -->
+    <!-- Mirrors Android's AnimatedContent fade+slide on value swap. -->
+    <Style Selector="TextBlock.value-anim">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- ============================= STATE CROSSFADE ============================= -->
+    <!--
+        Used by the Connection card to crossfade between the Idle and Connected
+        panels instead of an instant IsVisible snap. Both panels are stacked in
+        the same Grid cell; toggling Classes="hidden" on each (driven from
+        code-behind alongside IsVisible, see MainWindow.axaml.cs) fades opacity
+        while IsVisible keeps them both interactive-safe.
+
+        Usage: give both panels Classes="state-fade", then toggle "hidden".
+        Keep IsVisible bound as before — this only adds the opacity transition
+        that plays in the moment right before/after the visibility flips.
+    -->
+    <Style Selector=":is(Control).state-fade">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector=":is(Control).state-fade.hidden">
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+
+    <!-- ============================= TOGGLE SWITCH THUMB ============================= -->
+    <!-- The slide transition itself lives directly on the thumb's TranslateTransform in
+         MainWindow.axaml (Avalonia transitions only fire when the property they're
+         declared against changes value directly — a style-level transition on
+         Ellipse.RenderTransform never sees a binding that only touches the nested
+         TranslateTransform.X property). Nothing to declare here anymore; kept as a
+         marker/anchor comment so this section isn't mistaken for missing. -->
+
+    <!-- ============================= THEME SWITCH (Sun / Saturn) ============================= -->
+    <!-- Used only by Controls/ThemeSwitch.axaml. Ports the HTML reference's
+         spinSunContinuous / pulseStar keyframes. Kept as dedicated classes rather
+         than reusing .spin-loop / .pulse so the sun's clock never restarts or
+         desyncs if the day/night crossfade or a second ThemeSwitch instance ever
+         shares the same visual tree. -->
+    <Style Selector="Ellipse.sun-spin">
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Style.Animations>
+            <Animation Duration="0:0:12" IterationCount="Infinite">
+                <KeyFrame Cue="0%">
+                    <Setter Property="(RotateTransform.Angle)" Value="0"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(RotateTransform.Angle)" Value="360"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- One-shot "flourish" spin played on the toggle click itself, layered on
+         top of the slow continuous .sun-spin idle rotation. The 12s idle spin
+         is too subtle to read as "the switch animated" in the ~0.5s window the
+         user actually looks at it right after a toggle — this gives a fast,
+         visible 360° kick exactly at the moment of the click.
+         NOTE: targets the sun Ellipse's own RotateTransform (declared in
+         ThemeSwitch.axaml as x:Name="SunRotate"), not the parent Panel's
+         RenderTransform — Panel.body-swap already owns RenderTransform via
+         its own Setter + TransformOperationsTransition for the scale/rotate
+         "pop" swap effect, so animating the same property on the same
+         element from two places causes an animator conflict at runtime. -->
+    <Style Selector="Ellipse.sun-body.toggle-spin">
+        <Style.Animations>
+            <Animation Duration="0:0:0.6" FillMode="Forward" Easing="CubicEaseOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="(RotateTransform.Angle)" Value="0"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(RotateTransform.Angle)" Value="360"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    <Style Selector="Ellipse.saturn-body.toggle-spin">
+        <Style.Animations>
+            <Animation Duration="0:0:0.6" FillMode="Forward" Easing="CubicEaseOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0.7"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="0.7"/>
+                </KeyFrame>
+                <KeyFrame Cue="50%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.15"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1.15"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- Star twinkle for the thumb's night state — same cadence/feel as .pulse but
+         adds a scale swing (reference's pulseStar goes 0.8->1.4 scale), which the
+         opacity-only .pulse doesn't cover.
+         IMPORTANT: scoped to exclude .hidden. Style.Animations run independently
+         of ordinary Setters and were previously overriding the Opacity:0 that
+         Ellipse.cloud-swap.hidden sets below — that's why stars never actually
+         disappeared in the light theme even though the "hidden" class was being
+         applied correctly from code-behind. -->
+    <Style Selector="Ellipse.star-pulse:not(.hidden)">
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Style.Animations>
+            <Animation Duration="0:0:2" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0.6"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0.8"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="0.8"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1.0"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.3"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1.3"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    <!-- Explicit hard stop: forces opacity to 0 with no competing animation
+         once .hidden is applied, so stars are fully gone in daylight. -->
+    <Style Selector="Ellipse.star-pulse.hidden">
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+
+    <!-- Sun/Saturn body crossfade + scale/rotate "pop" as one swaps in for the
+         other. Applied to the two Panels stacked in the thumb; toggled via
+         Classes="hidden" from ThemeSwitch.axaml.cs, same hidden/shown convention
+         as .state-fade elsewhere in this file. -->
+    <Style Selector="Panel.body-swap">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="RenderTransform" Value="scale(1) rotate(0deg)"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.5" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Panel.body-swap.hidden">
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="RenderTransform" Value="scale(0.1) rotate(160deg)"/>
+    </Style>
+
+    <!-- Cloud -> star crossfade behind the thumb, same hidden/shown convention. -->
+    <Style Selector="Ellipse.cloud-swap, Border.cloud-swap">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.4" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Ellipse.cloud-swap.hidden, Border.cloud-swap.hidden">
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+
+</Styles>

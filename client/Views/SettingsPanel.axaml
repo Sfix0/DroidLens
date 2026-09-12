@@ -1,0 +1,432 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:DroidLens.Client.Views"
+        xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+        x:Class="DroidLens.Client.Views.Controls.SettingsPanel"
+        Width="420" Height="540"
+        FontFamily="Inter,Segoe UI,sans-serif">
+
+    <!-- Was a standalone Window (SettingsWindow, ShowDialog) — now an in-window
+         overlay UserControl instead, so there's no separate taskbar entry.
+         Only the root element + window-only properties changed; the card body
+         below is untouched. -->
+
+    <!-- Background moved from the UserControl root onto this Border: the root
+         is a plain rectangle and paints its Background behind/outside the
+         rounded Border below, so its square corners were poking out past the
+         CornerRadius — moving Background here means everything square-edged
+         is now clipped by the same ClipToBounds="True" rounded rect. -->
+    <Border CornerRadius="14" ClipToBounds="True"
+            Background="{DynamicResource BgBaseBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1"
+            BoxShadow="0 12 40 0 #66000000"
+            Focusable="True"
+            PointerPressed="RootBorder_PointerPressed">
+
+        <Panel>
+
+            <!-- Same texture MainWindow itself uses under its content — kept here
+                 too (rather than relying on MainWindow's own copy showing through)
+                 since this panel now has its own opaque Background + rounded card
+                 border, which would otherwise fully hide it. Gives the cards inside
+                 the same subtle depth/glow they had as a standalone window. -->
+            <controls:AppBackgroundTexture HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                           GlowColor="{DynamicResource AccentIndigoColor}"
+                                           BackgroundTintColor="{DynamicResource BgBaseColor}"/>
+
+            <Grid RowDefinitions="Auto,*">
+
+            <!-- ============================= HEADER ============================= -->
+            <!-- Mirrors MainWindow's header styling (title left, close-only on the
+                 right — no minimize, this is a modal-style overlay). -->
+            <Border Grid.Row="0" Height="48" Background="{DynamicResource BgPanelBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,0.5"
+                    Padding="16,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="{Binding Loc[settings.title]}"
+                               FontSize="16" FontWeight="Black" LetterSpacing="-0.3"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center"/>
+                    <!-- Close = "Save &amp; apply" — no separate Save button by design.
+                         Settings are already applied live as the user changes them
+                         (see LanguageCombo/ThemeCombo/switch handlers in code-behind);
+                         this click just hides the overlay (see Close_Click in
+                         SettingsPanel.axaml.cs — no more Window.Close()).
+                         Sized/animated to match MainWindow's own win-ctrl.close button
+                         exactly (34x34, CornerRadius=9, 14px icon, hover-zoom
+                         ScaleTransform). Icon has NO inline Foreground — MainWindow's
+                         own CloseIcon doesn't set one either, letting the style chain
+                         (Buttons.axaml: TextMutedBrush at rest, ErrorBrush on
+                         :pointerover) drive the color. An earlier version here set
+                         Foreground inline, which — same as the switch-track Background
+                         issue elsewhere — always wins over a style Setter no matter what
+                         that style says, silently killing the red hover highlight. -->
+                    <Button Grid.Column="1" Classes="win-ctrl close" Width="34" Height="34" CornerRadius="9"
+                            Click="Close_Click"
+                            RenderTransformOrigin="50%,50%"
+                            PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                            VerticalAlignment="Center">
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1">
+                                <ScaleTransform.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                    </Transitions>
+                                </ScaleTransform.Transitions>
+                            </ScaleTransform>
+                        </Button.RenderTransform>
+                        <materialIcons:MaterialIcon x:Name="CloseIcon" Kind="Close" Width="14" Height="14"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ============================= BODY ============================= -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16" Spacing="12">
+
+                    <!-- ── Block 1: Interface (language + theme) ── -->
+                    <Border Classes="card enter enter-1 shown">
+                        <Grid>
+                            <!-- Faded watermark icon bleeding off the card's top-right
+                                 corner (Cards.axaml) — replaces the old separate icon-plate. -->
+                            <materialIcons:MaterialIcon Kind="Tune" Classes="card-watermark"/>
+
+                            <StackPanel Spacing="14">
+                                <TextBlock Classes="card-header-title" Text="{Binding Loc[settings.section_interface]}"/>
+                                <Border Classes="card-header-divider"/>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0" Classes="option-title" Text="{Binding Loc[settings.theme]}"
+                                               VerticalAlignment="Center"/>
+                                    <controls:ThemeSwitch Grid.Column="2"
+                                                           IsDarkTheme="{Binding IsDarkTheme}"
+                                                           Toggled="ThemeSwitch_Toggled"/>
+                                </Grid>
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="field-label" Text="{Binding Loc[settings.language]}"/>
+                                    <controls:AppDropdown x:Name="LanguageCombo" HorizontalAlignment="Stretch"
+                                                           SelectionChanged="LanguageCombo_SelectionChanged"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="field-label" Text="{Binding Loc[settings.ui_scale]}"/>
+                                    <controls:AppDropdown x:Name="UiScaleCombo" HorizontalAlignment="Stretch"
+                                                           SelectionChanged="UiScaleCombo_SelectionChanged"/>
+                                    <TextBlock Classes="hint" Margin="0,1,0,0"
+                                               TextWrapping="Wrap"
+                                               Text="{Binding Loc[settings.ui_scale_hint]}"/>
+                                </StackPanel>
+
+                                <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                                <!-- Limit preview FPS: skips every other decoded frame's UI
+                                     hand-off in PreviewArea (see PreviewArea.axaml.cs) purely
+                                     to reduce render/CPU cost of the preview surface itself —
+                                     the phone's stream (bitrate/fps) and the virtual camera
+                                     both keep receiving every frame regardless. Belongs here
+                                     (Interface), not in Stream behavior, since it only affects
+                                     how this window renders, not the stream/connection itself. -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <TextBlock Classes="option-title" Text="{Binding Loc[settings.limit_preview_fps]}"/>
+                                        <TextBlock Classes="hint" Margin="0,3,0,0"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Loc[settings.limit_preview_fps_hint]}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="switch-btn" Click="LimitPreviewFpsSwitch_Click"
+                                            VerticalAlignment="Top">
+                                        <Border Classes="switch-track">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{x:Static local:VCamAccentConverter.Instance}">
+                                                    <Binding Path="LimitPreviewFps"/>
+                                                    <Binding Path="IsStreaming"/>
+                                                    <Binding Path="IsDarkTheme"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Ellipse Classes="switch-thumb"
+                                                     HorizontalAlignment="Left" Margin="2">
+                                                <Ellipse.RenderTransform>
+                                                    <TranslateTransform X="{Binding LimitPreviewFps, Converter={x:Static local:BoolToThumbOffsetConverter.Instance}}">
+                                                        <!-- Same SpringEasing as .press / AppDropdown's DropBody —
+                                                             thumb overshoots its resting offset by a hair and
+                                                             settles back, instead of a flat CubicEaseOut glide. -->
+                                                        <TranslateTransform.Transitions>
+                                                            <Transitions>
+                                                                <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.4">
+                                                                    <DoubleTransition.Easing>
+                                                                        <SpringEasing Mass="1" Stiffness="280" Damping="18"/>
+                                                                    </DoubleTransition.Easing>
+                                                                </DoubleTransition>
+                                                            </Transitions>
+                                                        </TranslateTransform.Transitions>
+                                                    </TranslateTransform>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
+                                        </Border>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Ambient light fill: soft color bars behind the letterbox
+                                     gap on portrait streams, sampled from the decoded frame's
+                                     edges (see PreviewArea.axaml.cs: ShouldUpdateAmbientFill /
+                                     UpdateAmbientFill). Deliberately cheap (no bitmap, no
+                                     per-frame GPU blur), but still its own switch so it can be
+                                     ruled out or disabled independently on weaker hardware. -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <TextBlock Classes="option-title" Text="{Binding Loc[settings.ambient_fill]}"/>
+                                        <TextBlock Classes="hint" Margin="0,3,0,0"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Loc[settings.ambient_fill_hint]}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="switch-btn" Click="AmbientFillSwitch_Click"
+                                            VerticalAlignment="Top">
+                                        <Border Classes="switch-track">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{x:Static local:VCamAccentConverter.Instance}">
+                                                    <Binding Path="AmbientFillEnabled"/>
+                                                    <Binding Path="IsStreaming"/>
+                                                    <Binding Path="IsDarkTheme"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Ellipse Classes="switch-thumb"
+                                                     HorizontalAlignment="Left" Margin="2">
+                                                <Ellipse.RenderTransform>
+                                                    <TranslateTransform X="{Binding AmbientFillEnabled, Converter={x:Static local:BoolToThumbOffsetConverter.Instance}}">
+                                                        <!-- Same SpringEasing as .press / AppDropdown's DropBody —
+                                                             thumb overshoots its resting offset by a hair and
+                                                             settles back, instead of a flat CubicEaseOut glide. -->
+                                                        <TranslateTransform.Transitions>
+                                                            <Transitions>
+                                                                <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.4">
+                                                                    <DoubleTransition.Easing>
+                                                                        <SpringEasing Mass="1" Stiffness="280" Damping="18"/>
+                                                                    </DoubleTransition.Easing>
+                                                                </DoubleTransition>
+                                                            </Transitions>
+                                                        </TranslateTransform.Transitions>
+                                                    </TranslateTransform>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
+                                        </Border>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ── Block 2: Stream behavior ── -->
+                    <Border Classes="card enter enter-2 shown">
+                        <Grid>
+                            <materialIcons:MaterialIcon Kind="Cast" Classes="card-watermark"/>
+
+                            <StackPanel Spacing="14">
+                                <TextBlock Classes="card-header-title" Text="{Binding Loc[settings.section_stream_behavior]}"/>
+                                <Border Classes="card-header-divider"/>
+
+                                <!-- Stop stream on manual Disconnect.
+                                     Track color reuses VCamAccentConverter (same as the VCam
+                                     switch): on-state follows IsStreaming (amber while a stream
+                                     is live, indigo otherwise), off is always the neutral surface
+                                     fill. Thumb offset still just depends on the switch's own
+                                     on/off state. -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <TextBlock Classes="option-title" Text="{Binding Loc[settings.stop_on_disconnect]}"/>
+                                        <TextBlock Classes="hint" Margin="0,3,0,0"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Loc[settings.stop_on_disconnect_hint]}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="switch-btn" Click="StopOnDisconnectSwitch_Click"
+                                            VerticalAlignment="Top">
+                                        <Border Classes="switch-track">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{x:Static local:VCamAccentConverter.Instance}">
+                                                    <Binding Path="StopStreamOnDisconnect"/>
+                                                    <Binding Path="IsStreaming"/>
+                                                    <Binding Path="IsDarkTheme"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Ellipse Classes="switch-thumb"
+                                                     HorizontalAlignment="Left" Margin="2">
+                                                <Ellipse.RenderTransform>
+                                                    <TranslateTransform X="{Binding StopStreamOnDisconnect, Converter={x:Static local:BoolToThumbOffsetConverter.Instance}}">
+                                                        <!-- Same SpringEasing as .press / AppDropdown's DropBody —
+                                                             thumb overshoots its resting offset by a hair and
+                                                             settles back, instead of a flat CubicEaseOut glide. -->
+                                                        <TranslateTransform.Transitions>
+                                                            <Transitions>
+                                                                <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.4">
+                                                                    <DoubleTransition.Easing>
+                                                                        <SpringEasing Mass="1" Stiffness="280" Damping="18"/>
+                                                                    </DoubleTransition.Easing>
+                                                                </DoubleTransition>
+                                                            </Transitions>
+                                                        </TranslateTransform.Transitions>
+                                                    </TranslateTransform>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
+                                        </Border>
+                                    </Button>
+                                </Grid>
+
+                                <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                                <!-- Stop stream on app close — same pattern as above,
+                                     bound to _vm.StopStreamOnAppClose. -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <TextBlock Classes="option-title" Text="{Binding Loc[settings.stop_on_app_close]}"/>
+                                        <TextBlock Classes="hint" Margin="0,3,0,0"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Loc[settings.stop_on_app_close_hint]}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="switch-btn" Click="StopOnAppCloseSwitch_Click"
+                                            VerticalAlignment="Top">
+                                        <Border Classes="switch-track">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{x:Static local:VCamAccentConverter.Instance}">
+                                                    <Binding Path="StopStreamOnAppClose"/>
+                                                    <Binding Path="IsStreaming"/>
+                                                    <Binding Path="IsDarkTheme"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Ellipse Classes="switch-thumb"
+                                                     HorizontalAlignment="Left" Margin="2">
+                                                <Ellipse.RenderTransform>
+                                                    <TranslateTransform X="{Binding StopStreamOnAppClose, Converter={x:Static local:BoolToThumbOffsetConverter.Instance}}">
+                                                        <!-- Same SpringEasing as .press / AppDropdown's DropBody —
+                                                             thumb overshoots its resting offset by a hair and
+                                                             settles back, instead of a flat CubicEaseOut glide. -->
+                                                        <TranslateTransform.Transitions>
+                                                            <Transitions>
+                                                                <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.4">
+                                                                    <DoubleTransition.Easing>
+                                                                        <SpringEasing Mass="1" Stiffness="280" Damping="18"/>
+                                                                    </DoubleTransition.Easing>
+                                                                </DoubleTransition>
+                                                            </Transitions>
+                                                        </TranslateTransform.Transitions>
+                                                    </TranslateTransform>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
+                                        </Border>
+                                    </Button>
+                                </Grid>
+
+                                <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                                <!-- Screenshot save location. One-row field (matches the reference
+                                     mock) styled to inherit AppDropdown's Head proportions exactly
+                                     (CornerRadius 16, Padding 14,12, MinHeight 44, FontSize 14,
+                                     SurfaceContainerBrush/BorderSubtleBrush) so this reads as the same
+                                     "kind" of input as the language dropdown above.
+                                     Inside the field, left→right: a small copy-path icon, the editable
+                                     path TextBox itself (real typing, Enter/LostFocus commits — see
+                                     ScreenshotPathBox_LostFocus), then a small folder icon that opens
+                                     the resolved folder in Explorer (view, not change — quick "show me
+                                     where it is" action right next to the path you're looking at).
+                                     "Огляд..." sits outside the field and opens the folder *picker*
+                                     (changes the path) — matching what "Browse..." actually means, and
+                                     keeping the two "folder" actions visually distinct (icon-only vs.
+                                     labeled button) so they don't read as duplicates of each other. -->
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Spacing="3">
+                                            <TextBlock Classes="option-title" Text="{Binding Loc[settings.screenshot_path]}"/>
+                                            <TextBlock Classes="hint" TextWrapping="Wrap"
+                                                       Text="{Binding Loc[settings.screenshot_path_hint]}"/>
+                                        </StackPanel>
+
+                                        <!-- Reset-to-default action. The outer Border always occupies
+                                             the same 110px column regardless of state — only the Button
+                                             inside toggles IsVisible — so this row never shifts width
+                                             depending on whether a custom path is set. -->
+                                        <Border Grid.Column="1" Width="110" VerticalAlignment="Top">
+                                            <Button Padding="0" Margin="0"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    HorizontalAlignment="Right" HorizontalContentAlignment="Right"
+                                                    Cursor="Hand"
+                                                    IsVisible="{Binding HasCustomScreenshotPath}"
+                                                    Click="ResetScreenshotPath_Click">
+                                                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                    <materialIcons:MaterialIcon Kind="Restore" Width="13" Height="13"
+                                                                                 Foreground="{DynamicResource AccentAmberBrush}"/>
+                                                    <TextBlock Classes="field-label" Margin="0"
+                                                               Foreground="{DynamicResource AccentAmberBrush}"
+                                                               Text="{Binding Loc[settings.screenshot_path_reset]}"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </Border>
+                                    </Grid>
+
+                                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                                        <!-- Row 1: field + compact folder-open icon button side by
+                                             side. Folder button is now a small square icon (not a
+                                             wide outline button) so the field keeps most of the row's
+                                             width — "Огляд..." moved to its own row below instead of
+                                             competing for horizontal space here. -->
+                                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                            <!-- Path field. AppTextField owns its own borderless
+                                                 card-surface look and focus feedback (background
+                                                 lighten + slight grow — see AppTextField.axaml).
+                                                 Copying relies on the field's native Ctrl+C
+                                                 (select-all first for the full path if it's longer
+                                                 than the visible width). -->
+                                            <controls:AppTextField Grid.Column="0"
+                                                      x:Name="ScreenshotPathBox"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Stretch"
+                                                      MinHeight="44"
+                                                      Margin="0,0,8,0"
+                                                      Text="{Binding ScreenshotPath, Mode=TwoWay}"
+                                                      LostFocus="ScreenshotPathBox_LostFocus"/>
+
+                                            <!-- Folder icon = opens the resolved folder in Explorer
+                                                 (view, not change — OpenScreenshotFolder_Click already
+                                                 does exactly this — reused as-is rather than
+                                                 duplicating its logic under a new handler). Small
+                                                 square icon button sitting right next to the field,
+                                                 same height, so it reads as an attached action rather
+                                                 than a separate row item. -->
+                                            <Button Grid.Column="1" Classes="outline" Padding="0"
+                                                    Width="44" MinHeight="44"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalAlignment="Stretch"
+                                                    Cursor="Hand"
+                                                    ToolTip.Tip="{Binding Loc[settings.open_folder]}"
+                                                    Click="OpenScreenshotFolder_Click">
+                                                <materialIcons:MaterialIcon Kind="FolderOutline" Width="16" Height="16"/>
+                                            </Button>
+                                        </Grid>
+
+                                        <!-- Row 2: "Огляд..." — opens the folder *picker* to change
+                                             the path (BrowseScreenshotPath_Click). Full-width now that
+                                             it has its own row, matching the reference mock's stacked
+                                             field+button layout. -->
+                                        <Button Grid.Row="1" Classes="outline" Padding="16,0" MinHeight="44"
+                                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                                Click="BrowseScreenshotPath_Click">
+                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <materialIcons:MaterialIcon Kind="FolderOpenOutline" Width="15" Height="15"/>
+                                                <TextBlock Text="{Binding Loc[settings.browse]}" FontSize="13" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+
+        </Panel>
+
+    </Border>
+</UserControl>

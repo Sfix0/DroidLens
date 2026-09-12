@@ -1,0 +1,510 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:DroidLens.Client.Views"
+             xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+             xmlns:vm="clr-namespace:DroidLens.Client.ViewModels"
+             xmlns:services="clr-namespace:DroidLens.Client.Services"
+             x:Class="DroidLens.Client.Views.Controls.Sidebar"
+             x:DataType="vm:MainViewModel">
+
+    <UserControl.Styles>
+    </UserControl.Styles>
+
+    <!-- Left sidebar: Connection card (Auto-discovery / Manual IP tabs), Session
+         card (Start/Stop, Quality, Codec), Virtual Camera card, and the
+         always-visible Quick Commands card (Flip/Rotate/BlackScreen/Flashlight).
+         DataContext is set by the host (MainWindow) to the shared MainViewModel —
+         same binding this markup used when it lived inline in MainWindow.axaml. -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <!-- Background intentionally removed — AppBackgroundTexture (glow + grain)
+                     sits behind this column now instead of a flat BgBaseBrush fill. -->
+                <StackPanel Margin="14,12,14,12" Spacing="12">
+
+                    <!-- ── Block 1: Connection ── -->
+                    <Border x:Name="ConnectionCard" Classes="card enter enter-1">
+                        <!-- MinHeight pins both Idle and Connected states to the same footprint -->
+                        <Grid MinHeight="158">
+
+                            <!-- Idle state -->
+                            <StackPanel x:Name="IdleStatePanel" Classes="state-fade" Spacing="10">
+
+                                <!-- Segmented tabs: Auto-discovery / Manual IP, plus rescan.
+                                     Manual is the fallback path (auto-discovery finds devices
+                                     on its own), so it's collapsed to just its icon by default;
+                                     clicking it expands it to show its label and collapses Auto
+                                     down to an icon instead — width + label opacity both animate
+                                     in code-behind (SetConnectionTab), see Cards.axaml for the
+                                     Width transition. The rescan icon-button lives in the space
+                                     this collapsing frees up, instead of its own full-width row. -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Border Grid.Column="0" Classes="tab-track">
+                                        <StackPanel Orientation="Horizontal" Spacing="3">
+                                            <Button x:Name="AutoTabButton" Classes="tab-segment active"
+                                                    Click="AutoTab_Click" Width="128">
+                                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                                    <!-- Classes.auto-discover-pulse is toggled on/off from code-behind
+                                                         (MainViewModel.AutoDiscoveryPulsed handler, MainWindow.axaml.cs)
+                                                         as a one-shot animation each time a background mDNS requery
+                                                         actually fires — not a continuous animation for the whole
+                                                         time discovery is listening. Also gated on the Auto tab
+                                                         currently being visible (SetConnectionTab), since pulsing is
+                                                         pointless motion while the user's looking at Manual IP.
+                                                         See Animations.axaml. -->
+                                                    <materialIcons:MaterialIcon x:Name="AutoWifiIcon" Kind="Wifi" Width="13" Height="13"
+                                                                                 Foreground="{DynamicResource TextMutedBrush}"
+                                                                                 RenderTransformOrigin="50%,50%">
+                                                        <materialIcons:MaterialIcon.RenderTransform>
+                                                            <TransformGroup>
+                                                                <RotateTransform Angle="0"/>
+                                                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                            </TransformGroup>
+                                                        </materialIcons:MaterialIcon.RenderTransform>
+                                                    </materialIcons:MaterialIcon>
+                                                    <TextBlock Classes="tab-label" Text="{Binding Loc[tab.auto_discovery]}"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button x:Name="ManualTabButton" Classes="tab-segment"
+                                                    Click="ManualTab_Click" Width="34">
+                                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                                    <materialIcons:MaterialIcon Kind="Keyboard" Width="13" Height="13"/>
+                                                    <TextBlock Classes="tab-label" Text="{Binding Loc[tab.manual_ip]}"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                    <Button x:Name="ScanIconButton" Grid.Column="1" Classes="icon-round"
+                                            Background="Transparent" BorderBrush="Transparent"
+                                            Margin="8,0,0,0"
+                                            Click="ScanBtn_Click"
+                                            ToolTip.Tip="{Binding Loc[btn.scan]}">
+                                    <!-- Spin is a one-shot declarative KeyFrame animation (Animations.axaml,
+                                         .scan-spin), applied via Classes on click and removed after a fixed
+                                         duration (ScanBtn_Click in MainWindow.Sidebar.cs) — fully decoupled
+                                         from the real scan/mDNS timing, not synced to IsScanning. -->
+                                        <materialIcons:MaterialIcon x:Name="ScanIcon" Kind="Refresh" Width="17" Height="17"
+                                                                     Foreground="{DynamicResource AccentIndigoBrush}"
+                                                                     RenderTransformOrigin="50%,50%">
+                                            <materialIcons:MaterialIcon.RenderTransform>
+                                                <TransformGroup>
+                                                    <RotateTransform Angle="0"/>
+                                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                </TransformGroup>
+                                            </materialIcons:MaterialIcon.RenderTransform>
+                                        </materialIcons:MaterialIcon>
+                                    </Button>
+                                </Grid>
+
+                                <!-- ── Tab 1: Auto-discovery ── -->
+                                <StackPanel x:Name="AutoDiscoveryPanel" Spacing="8">
+
+                                    <!-- Fixed-height frame so the card never resizes as devices come and
+                                         go. Rows are 40px icon + 12px button padding (reduced from 16px,
+                                         see Cards.axaml device-item Padding) = 52px each, so 2 rows need
+                                         104px exactly. Kept at/under the original 108px on purpose — the
+                                         whole left column sits in an outer Auto-scroll ScrollViewer with a
+                                         tight height budget, so growing this frame further pushes that
+                                         outer scrollbar into view instead of just this inner one.
+                                         Scrolls internally if 3+ devices are found. -->
+                                    <Border Height="104">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <Grid>
+                                                <!-- Discovered devices list — clicking a device connects directly -->
+                                                <ItemsControl ItemsSource="{Binding DiscoveredDevices}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="services:DiscoveredDevice">
+                                                            <Button Classes="device-item"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    HorizontalContentAlignment="Left"
+                                                                    Click="DeviceItem_Click" Tag="{Binding}">
+                                                                <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                                                    <!-- Icon tile — 40px, single indigo accent for both connection
+                                                                         types (USB and Wi-Fi no longer color-coded differently;
+                                                                         that distinction lives only in the badge on the right).
+                                                                         Cellphone = plain smartphone glyph — CellphoneLink was the
+                                                                         laptop+phone screen-mirroring icon, wrong for this row. -->
+                                                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="12"
+                                                                            Background="{DynamicResource AccentIndigoSoftBrush}">
+                                                                        <materialIcons:MaterialIcon Kind="Cellphone" Width="20" Height="20"
+                                                                                                     Foreground="{DynamicResource AccentIndigoBrush}"/>
+                                                                    </Border>
+
+                                                                    <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
+                                                                        <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"/>
+                                                                        <TextBlock Text="{Binding IpAddress}" Classes="muted" FontSize="11" Margin="0,2,0,0"/>
+                                                                    </StackPanel>
+
+                                                                    <!-- Connection-type badge — replaces the small inline USB glyph.
+                                                                         Same two-tile-swap approach as the icon above. -->
+                                                                    <Border Grid.Column="2" CornerRadius="6" Padding="7,3"
+                                                                            Background="{DynamicResource SurfaceContainerBrush}"
+                                                                            VerticalAlignment="Center">
+                                                                        <Grid>
+                                                                            <materialIcons:MaterialIcon Kind="Usb" Width="14" Height="14"
+                                                                                                         Foreground="{DynamicResource TextMutedBrush}"
+                                                                                                         IsVisible="{Binding IsUsb}"/>
+                                                                            <materialIcons:MaterialIcon Kind="Wifi" Width="14" Height="14"
+                                                                                                         Foreground="{DynamicResource TextMutedBrush}"
+                                                                                                         IsVisible="{Binding !IsUsb}"/>
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </Grid>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+
+                                                <!-- Empty state while no devices have been found yet —
+                                                     centered in the same fixed frame, not just top-aligned. -->
+                                                <TextBlock Text="{Binding Loc[label.no_devices]}"
+                                                           Classes="muted" FontSize="11"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           IsVisible="{Binding !DiscoveredDevices.Count}"/>
+                                            </Grid>
+                                        </ScrollViewer>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- ── Tab 2: Manual IP entry ── -->
+                                <StackPanel x:Name="ManualEntryPanel" IsVisible="False" Spacing="8">
+                                    <controls:AppTextField x:Name="HostField"
+                                                            Text="{Binding Host, Mode=TwoWay}"
+                                                            Watermark="{Binding Loc[settings.host]}"/>
+                                    <Button Classes="primary" Click="ConnectBtn_Click">
+                                        <TextBlock Text="{Binding Loc[btn.connect]}"/>
+                                    </Button>
+                                </StackPanel>
+
+                            </StackPanel>
+
+                            <!-- Connected state — fixed-height layout matching the idle-state search
+                                 block so the card never resizes when switching states (crossfade only). -->
+                            <StackPanel x:Name="ConnectedStatePanel" Classes="state-fade" Spacing="12" IsVisible="False">
+
+                                <!-- Header row: device identity + autoconnect toggle only.
+                                     Disconnect moved out of this row entirely — it's now the
+                                     full-width solid-red button at the bottom of the card
+                                     (matches reference mock), not a quiet corner icon here.
+                                     Network IP removed from this card entirely per user request — no
+                                     longer shown here at all (previously tried as a second subtitle line,
+                                     before that as its own bottom plate). -->
+                                <Grid ColumnDefinitions="34,*,Auto">
+                                    <Border Grid.Column="0" Width="34" Height="34" CornerRadius="17">
+                                        <materialIcons:MaterialIcon Kind="Cellphone" Width="17" Height="17"
+                                                                     Foreground="{DynamicResource ScrollbarAccentBrush}"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock Text="{Binding DeviceModel}" FontWeight="Medium"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Classes="muted" FontSize="11" Text="{Binding AndroidVersion}"/>
+                                            <Ellipse Width="2.5" Height="2.5" VerticalAlignment="Center"
+                                                     Fill="{DynamicResource TextMutedBrush}"/>
+                                            <TextBlock Classes="muted" FontSize="11" Text="{Binding Host}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Classes="icon-round" Classes.active="{Binding IsAutoConnectEnabled}"
+                                            Click="AutoConnectToggle_Click"
+                                            ToolTip.Tip="{Binding Loc[btn.autoconnect]}">
+                                        <Grid>
+                                            <materialIcons:MaterialIcon Kind="Autorenew" Width="16" Height="16"
+                                                                         Classes="wobble"
+                                                                         RenderTransformOrigin="50%,50%"
+                                                                         IsVisible="{Binding !IsAutoConnectEnabled}"
+                                                                         Foreground="{DynamicResource TextMutedBrush}">
+                                                <materialIcons:MaterialIcon.RenderTransform>
+                                                    <TransformGroup>
+                                                        <RotateTransform Angle="0"/>
+                                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                    </TransformGroup>
+                                                </materialIcons:MaterialIcon.RenderTransform>
+                                            </materialIcons:MaterialIcon>
+                                            <materialIcons:MaterialIcon Kind="CheckboxMarkedCircle" Width="16" Height="16"
+                                                                         Classes="wobble"
+                                                                         RenderTransformOrigin="50%,50%"
+                                                                         IsVisible="{Binding IsAutoConnectEnabled}"
+                                                                         Foreground="{DynamicResource ScrollbarAccentBrush}">
+                                                <materialIcons:MaterialIcon.RenderTransform>
+                                                    <TransformGroup>
+                                                        <RotateTransform Angle="0"/>
+                                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                    </TransformGroup>
+                                                </materialIcons:MaterialIcon.RenderTransform>
+                                            </materialIcons:MaterialIcon>
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Stat chips — restyled to match the reference mock: value text
+                                     and gauge icon sit side-by-side in a single row (no label-above-
+                                     value stack anymore), with the gauge pushed to the chip's trailing
+                                     edge instead of a leading icon-circle. Still Border.metric-card
+                                     underneath for consistent surface/radius/border with the rest of
+                                     the app; only the internal layout changed. -->
+                                <Grid ColumnDefinitions="*,*">
+                                    <Border Classes="metric-card chip-tall" Grid.Column="0" Margin="0,0,4,0" Padding="12,14" VerticalAlignment="Stretch">
+                                        <!-- Restyled to match the reference mock's quiet-chip layout:
+                                             "100%   29,0°   [icon]" — percentage as the primary bold
+                                             readout, temperature as a small muted middle detail, and the
+                                             battery shape shrunk down to a plain trailing status icon
+                                             (ShowLabel now defaults false on BatteryGauge, so the gauge
+                                             no longer draws its own number — this TextBlock is the only
+                                             place the percentage appears). -->
+                                        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                                            <TextBlock Grid.Column="0" Classes="metric-val" VerticalAlignment="Center"
+                                                       TextWrapping="NoWrap"
+                                                       Text="{Binding BatteryLevel, StringFormat={}{0}%}"/>
+                                            <TextBlock Grid.Column="1" Classes="metric-val-sm" VerticalAlignment="Center"
+                                                       Margin="8,0,0,0" TextWrapping="NoWrap"
+                                                       Text="{Binding BatteryTemp, StringFormat={}{0:F1}°}"/>
+                                            <controls:BatteryGauge Grid.Column="3" Width="28" Height="15"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="8,0,0,0"
+                                                                   Classes.pulse-subtle="{Binding BatteryCharging}"
+                                                                   Level="{Binding BatteryLevel}"
+                                                                   IsCharging="{Binding BatteryCharging}">
+                                            </controls:BatteryGauge>
+                                        </Grid>
+                                    </Border>
+                                    <Border Classes="metric-card chip-tall" Grid.Column="1" Margin="4,0,0,0" Padding="12,14" VerticalAlignment="Stretch">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Classes="metric-val" VerticalAlignment="Center"
+                                                       TextWrapping="NoWrap">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{x:Static local:UsbOrNetworkTextConverter.Instance}">
+                                                        <Binding Path="IsUsbConnection"/>
+                                                        <Binding Path="NetworkSpeedText"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <controls:WifiSignalGauge Grid.Column="1" Width="20" Height="20"
+                                                                      Margin="8,0,0,0"
+                                                                      HorizontalAlignment="Center"
+                                                                      VerticalAlignment="Center"
+                                                                      SignalLevel="{Binding NetworkSignalLevel}"
+                                                                      IsUsbMode="{Binding IsUsbConnection}">
+                                                <controls:WifiSignalGauge.FillBrush>
+                                                    <SolidColorBrush Color="{DynamicResource AccentIndigoColor}"/>
+                                                </controls:WifiSignalGauge.FillBrush>
+                                            </controls:WifiSignalGauge>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Disconnect — full-width solid-red button at the very bottom of
+                                     the card, matching the reference mock. Replaces the old round
+                                     icon-button that used to sit in the header row. -->
+                                <Button Classes="outline-danger" Click="DisconnectBtn_Click"
+                                        ToolTip.Tip="{Binding Loc[btn.disconnect]}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="ExitToApp" Width="16" Height="16"
+                                                                     Foreground="{DynamicResource ErrorBrush}"/>
+                                        <TextBlock Text="{Binding Loc[btn.disconnect]}"/>
+                                    </StackPanel>
+                                </Button>
+
+                            </StackPanel>
+
+                        </Grid>
+                    </Border>
+
+                    <!-- ── Block 2: Session ──
+                         Start/Stop + Quality/Codec/Resolution are locked until a device
+                         connects (IsEnabled on each of THOSE two elements individually,
+                         not on the card) — Virtual camera below is a real OS-level toggle
+                         with nothing to do with the phone connection, so it must stay
+                         interactive with no device connected. Avalonia's IsEnabled is
+                         inherited down the visual tree with no way for a child to opt back
+                         in, which is exactly why this used to be two separate cards (see
+                         git history) — now it's one, with the gate applied only to the
+                         two sub-trees that need it instead of the whole Border. -->
+                    <Border x:Name="SessionCard" Classes="card enter enter-2">
+                        <StackPanel>
+                            <Button Classes.primary="{Binding !IsStreaming}"
+                                    Classes.danger="{Binding IsStreaming}"
+                                    Classes.btn-pulse="{Binding IsStreamBusy}"
+                                    Click="StreamToggle_Click"
+                                    IsEnabled="{Binding IsConnected}"
+                                    Margin="0,0,0,10"
+                                    RenderTransformOrigin="50%,50%">
+                                <Button.RenderTransform>
+                                    <!-- Scale target for the btn-pulse breathing animation —
+                                         keyframes animate ScaleX/ScaleY, so the control really
+                                         grows/shrinks around its center. The DoubleTransitions
+                                         ease it back after the startup handshake finishes. -->
+                                    <ScaleTransform ScaleX="1" ScaleY="1">
+                                        <ScaleTransform.Transitions>
+                                            <Transitions>
+                                                <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                                                <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                                            </Transitions>
+                                        </ScaleTransform.Transitions>
+                                    </ScaleTransform>
+                                </Button.RenderTransform>
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <!-- Start (primary/indigo) uses white text/icon to match Android's
+                                         Start button. Stop (danger/amber) keeps the dark OnAccentBrush —
+                                         white on amber contrasts far worse (~1.9:1) than dark on amber
+                                         (~9.6:1), and this now matches Android's Stop button too. -->
+                                    <TextBlock Text="{Binding StreamButtonText}"
+                                               Foreground="{Binding IsStreaming, Converter={x:Static local:StreamButtonTextColorConverter.Instance}}"/>
+                                    <materialIcons:MaterialIcon Width="15" Height="15"
+                                                                 IsVisible="{Binding !IsStreamStarting}"
+                                                                 Foreground="{Binding IsStreaming, Converter={x:Static local:StreamButtonTextColorConverter.Instance}}">
+                                        <materialIcons:MaterialIcon.Kind>
+                                            <Binding Path="IsStreaming" Converter="{x:Static local:StreamIconConverter.Instance}"/>
+                                        </materialIcons:MaterialIcon.Kind>
+                                    </materialIcons:MaterialIcon>
+                                </StackPanel>
+                            </Button>
+
+                            <Grid ColumnDefinitions="*,*" IsEnabled="{Binding IsConnected}">
+                                <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                                    <TextBlock Classes="muted" FontSize="10" Text="{Binding Loc[label.quality]}" Margin="0,0,0,6"/>
+                                    <controls:AppDropdown x:Name="QualityCombo" HorizontalAlignment="Stretch"
+                                                          SelectionChanged="QualityCombo_SelectionChanged"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                                    <TextBlock Classes="muted" FontSize="10" Text="{Binding Loc[label.codec]}" Margin="0,0,0,6"/>
+                                    <controls:AppDropdown x:Name="CodecCombo" HorizontalAlignment="Stretch"
+                                                          SelectionChanged="CodecCombo_SelectionChanged"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Resolution used to be a cramped 3rd column (icon-only cycle button,
+                                 value shown via ToolTip only) — merging the Virtual camera card into
+                                 this one freed up enough vertical room to give it its own full-width
+                                 row instead, styled the same as Quality/Codec above it. Changing it
+                                 mid-stream still isn't supported (see VirtualCameraService — recreating
+                                 the vcam pin at a new size while OBS/Discord hold it open hangs them),
+                                 so it stays disabled (not hidden) while streaming. -->
+                            <StackPanel Margin="0,4,0,0" IsEnabled="{Binding !IsStreaming}">
+                                <TextBlock Classes="muted" FontSize="10" Text="{Binding Loc[label.resolution]}" Margin="0,0,0,6"/>
+                                <controls:AppDropdown x:Name="ResolutionCombo" HorizontalAlignment="Stretch"
+                                                      SelectionChanged="ResolutionCombo_SelectionChanged"/>
+                            </StackPanel>
+
+                            <!-- ── Virtual camera row ──
+                                 Deliberately OUTSIDE both IsEnabled scopes above (it's a sibling
+                                 in this same StackPanel, not nested under either Grid/Button) so it
+                                 stays interactive with no device connected — this is what used to
+                                 require a whole separate card; a thin divider now does the same job
+                                 for a fraction of the vertical cost (no second card's Padding=14
+                                 top+bottom, no extra inter-card Spacing). -->
+                            <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                    Margin="0,12,0,10"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="Video" Width="15" Height="15" Foreground="{DynamicResource TextMutedBrush}"/>
+                                    <TextBlock Text="{Binding Loc[label.virtual_camera]}"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Classes="switch-btn" Click="VCamToggle_Click">
+                                    <Border Classes="switch-track">
+                                        <Border.Background>
+                                            <MultiBinding Converter="{x:Static local:VCamAccentConverter.Instance}">
+                                                <Binding Path="IsVCamActive"/>
+                                                <Binding Path="IsStreaming"/>
+                                                <Binding Path="IsDarkTheme"/>
+                                            </MultiBinding>
+                                        </Border.Background>
+                                        <!-- Thumb slides via RenderTransform (TranslateTransform.X) instead of an
+                                             HorizontalAlignment snap. The transition lives ON the TranslateTransform
+                                             itself (not on Ellipse.RenderTransform) — Avalonia transitions only fire
+                                             when the property they're declared against changes value directly;
+                                             binding X here changes TranslateTransform.X, not the Ellipse's
+                                             RenderTransform reference, so a transition declared in the switch-thumb
+                                             style (targeting RenderTransform) never saw it change. Track is 46px
+                                             wide, thumb is 21px with 2px margin on each side, so the full travel
+                                             distance is 46 - 21 - 2*2 = 21px. -->
+                                        <Ellipse Classes="switch-thumb"
+                                                 HorizontalAlignment="Left"
+                                                 Margin="2">
+                                            <Ellipse.RenderTransform>
+                                                <TranslateTransform X="{Binding IsVCamActive, Converter={x:Static local:BoolToThumbOffsetConverter.Instance}}">
+                                                    <!-- Same SpringEasing as .press / AppDropdown's DropBody /
+                                                         the two stream-behavior switches — thumb overshoots its
+                                                         resting offset by a hair and settles back, instead of a
+                                                         flat CubicEaseOut glide. -->
+                                                    <TranslateTransform.Transitions>
+                                                        <Transitions>
+                                                            <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.4">
+                                                                <DoubleTransition.Easing>
+                                                                    <SpringEasing Mass="1" Stiffness="280" Damping="18"/>
+                                                                </DoubleTransition.Easing>
+                                                            </DoubleTransition>
+                                                        </Transitions>
+                                                    </TranslateTransform.Transitions>
+                                                </TranslateTransform>
+                                            </Ellipse.RenderTransform>
+                                        </Ellipse>
+                                    </Border>
+                                </Button>
+                            </Grid>
+                            <TextBlock Text="{Binding Loc[label.win11_required]}" Classes="muted" FontSize="10"
+                                       Margin="0,6,0,0" IsVisible="{Binding !IsVCamAvailable}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ── Block 3: Quick commands ──
+                         Moved here from the old floating live-controls overlay on the video
+                         preview. Always visible (not hover-revealed), matching the reference's
+                         permanent "Швидкі команди" sidebar block. Same animation classes as
+                         before (flip-card 3D flip, wobble icon) — only the location changed,
+                         not the motion. -->
+                    <Border x:Name="QuickCommandsCard" Classes="card enter enter-3" IsEnabled="{Binding IsConnected}">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,*,*,*">
+                                <!-- Camera flip is the one control allowed as soon as we're connected,
+                                     even before the stream itself has started — no IsStreaming gate here. -->
+                                <Button Grid.Column="0" Classes="ctrl ctrl-row flip-card" Margin="0,0,4,0"
+                                        Click="FlipCamera_Click" RenderTransformOrigin="50%,50%"
+                                        ToolTip.Tip="{Binding Loc[btn.flip]}">
+                                    <materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon.Kind>
+                                            <Binding Path="IsFrontCamera" Converter="{x:Static local:CameraLensIconConverter.Instance}"/>
+                                        </materialIcons:MaterialIcon.Kind>
+                                    </materialIcons:MaterialIcon>
+                                </Button>
+                                <!-- Rotate/Black screen/Flashlight only make sense while frames are
+                                     actually flowing, so these three stay locked until IsStreaming. -->
+                                <Button Grid.Column="1" Classes="ctrl ctrl-row" Margin="4,0,4,0" Click="Rotate_Click"
+                                        IsEnabled="{Binding IsStreaming}"
+                                        ToolTip.Tip="{Binding Loc[btn.rotate]}">
+                                    <materialIcons:MaterialIcon Classes="wobble" Kind="ScreenRotation"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                 RenderTransformOrigin="50%,50%"/>
+                                </Button>
+                                <Button Grid.Column="2" Classes="ctrl ctrl-row" Classes.active="{Binding IsBlackScreen}"
+                                        Margin="4,0,4,0" Click="BlackScreen_Click"
+                                        IsEnabled="{Binding IsStreaming}"
+                                        ToolTip.Tip="{Binding Loc[btn.blackscreen]}">
+                                    <materialIcons:MaterialIcon Classes="wobble" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                 RenderTransformOrigin="50%,50%">
+                                        <materialIcons:MaterialIcon.Kind>
+                                            <Binding Path="IsBlackScreen" Converter="{x:Static local:BlackScreenIconConverter.Instance}"/>
+                                        </materialIcons:MaterialIcon.Kind>
+                                    </materialIcons:MaterialIcon>
+                                </Button>
+                                <Button Grid.Column="3" Classes="ctrl ctrl-row" Classes.active="{Binding IsFlashlightOn}"
+                                        Margin="4,0,0,0" Click="Flashlight_Click"
+                                        IsEnabled="{Binding IsStreaming}"
+                                        ToolTip.Tip="{Binding Loc[btn.flashlight]}">
+                                    <materialIcons:MaterialIcon Classes="wobble" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                 RenderTransformOrigin="50%,50%">
+                                        <materialIcons:MaterialIcon.Kind>
+                                            <MultiBinding Converter="{x:Static local:FlashlightIconConverter.Instance}">
+                                                <Binding Path="IsFlashlightOn"/>
+                                                <Binding Path="IsFrontCamera"/>
+                                            </MultiBinding>
+                                        </materialIcons:MaterialIcon.Kind>
+                                    </materialIcons:MaterialIcon>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+    </ScrollViewer>
+</UserControl>

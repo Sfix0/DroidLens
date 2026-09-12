@@ -1,0 +1,759 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <LinearGradientBrush x:Key="CtrlBtnBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#FFFFFF" Offset="0"/>
+                        <GradientStop Color="#F3F5FC" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="CtrlBtnBorderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#20000000" Offset="0"/>
+                        <GradientStop Color="#0A000000" Offset="1"/>
+                    </LinearGradientBrush>
+                    <!-- Same top-lit "volume" language as CtrlBtnBackgroundBrush/CtrlBtnBorderBrush,
+                         tinted red for the Disconnect button (outline-danger), so it gets the
+                         same soft depth instead of a flat tonal fill. -->
+                    <LinearGradientBrush x:Key="DangerBtnBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#14E5484D" Offset="0"/>
+                        <GradientStop Color="#1FE5484D" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="DangerBtnHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#1FE5484D" Offset="0"/>
+                        <GradientStop Color="#2BE5484D" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="DangerBtnBorderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#40E5484D" Offset="0"/>
+                        <GradientStop Color="#14E5484D" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="CtrlBtnHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#F8F9FE" Offset="0"/>
+                        <GradientStop Color="#E8ECF7" Offset="1"/>
+                    </LinearGradientBrush>
+                    <!-- Same top-lit radial concept as Dark, tuned lighter/less saturated
+                         since amber needs less punch against a white surface. -->
+                    <RadialGradientBrush x:Key="CtrlBtnActiveBorderBrush" Center="50%,15%" GradientOrigin="50%,15%" RadiusX="75%" RadiusY="75%">
+                        <GradientStop Color="#FFBA7517" Offset="0"/>
+                        <GradientStop Color="#66BA7517" Offset="0.5"/>
+                        <GradientStop Color="#00BA7517" Offset="1"/>
+                    </RadialGradientBrush>
+                    <RadialGradientBrush x:Key="CtrlBtnActiveBorderHoverBrush" Center="50%,15%" GradientOrigin="50%,15%" RadiusX="75%" RadiusY="75%">
+                        <GradientStop Color="#FF9C5E0F" Offset="0"/>
+                        <GradientStop Color="#80BA7517" Offset="0.5"/>
+                        <GradientStop Color="#00BA7517" Offset="1"/>
+                    </RadialGradientBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- Soft top-down lighting gives depth/volume to the pill without needing high-contrast outlines -->
+                    <LinearGradientBrush x:Key="CtrlBtnBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#27243B" Offset="0"/>
+                        <GradientStop Color="#1C1A29" Offset="1"/>
+                    </LinearGradientBrush>
+                    <!-- Delicate top-lit specular edge that fades out downward, preventing harsh white rings -->
+                    <LinearGradientBrush x:Key="CtrlBtnBorderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#14FFFFFF" Offset="0"/>
+                        <GradientStop Color="#00FFFFFF" Offset="1"/>
+                    </LinearGradientBrush>
+                    <!-- Dark-theme counterpart of the DangerBtn* brushes above: same top-lit
+                         volume language, tinted red, tuned brighter to read against dark surfaces. -->
+                    <LinearGradientBrush x:Key="DangerBtnBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#26E5484D" Offset="0"/>
+                        <GradientStop Color="#1AE5484D" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="DangerBtnHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#33E5484D" Offset="0"/>
+                        <GradientStop Color="#26E5484D" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="DangerBtnBorderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#4DFF6B6E" Offset="0"/>
+                        <GradientStop Color="#14E5484D" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="CtrlBtnHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#332F4C" Offset="0"/>
+                        <GradientStop Color="#252238" Offset="1"/>
+                    </LinearGradientBrush>
+                    <!-- Subtle gradient border for the active (amber) ctrl-button state:
+                         a soft light source anchored top-center that fades to fully
+                         transparent toward the edges/bottom, instead of a flat-color
+                         ring. Border fills BorderBrush across the whole geometry (it
+                         doesn't trace a stroke like CSS conic-gradient borders do), so
+                         the "ring" look comes from BorderThickness clipping it to a
+                         thin band — the gradient just varies that band's opacity/color
+                         by position, brightest top-center, fading to fully transparent. -->
+                    <RadialGradientBrush x:Key="CtrlBtnActiveBorderBrush" Center="50%,15%" GradientOrigin="50%,15%" RadiusX="75%" RadiusY="75%">
+                        <GradientStop Color="#FFEF9F27" Offset="0"/>
+                        <GradientStop Color="#80EF9F27" Offset="0.5"/>
+                        <GradientStop Color="#00EF9F27" Offset="1"/>
+                    </RadialGradientBrush>
+                    <RadialGradientBrush x:Key="CtrlBtnActiveBorderHoverBrush" Center="50%,15%" GradientOrigin="50%,15%" RadiusX="75%" RadiusY="75%">
+                        <GradientStop Color="#FFFFB84D" Offset="0"/>
+                        <GradientStop Color="#99EF9F27" Offset="0.5"/>
+                        <GradientStop Color="#00EF9F27" Offset="1"/>
+                    </RadialGradientBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!--
+        Generic square-ish control button (Flip / Rotate / Black screen / Flashlight).
+        Height is fixed so buttons stay a uniform size regardless of label length
+        (previously "Rotate" vs "Black screen" produced different heights).
+        Press-scale animation lives in Animations.axaml (Classes are merged via the same selector).
+    -->
+    <Style Selector="Button.ctrl">
+        <Setter Property="Background"          Value="{DynamicResource CtrlBtnBackgroundBrush}"/>
+        <Setter Property="BorderBrush"         Value="{DynamicResource CtrlBtnBorderBrush}"/>
+        <Setter Property="BorderThickness"     Value="1"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize"            Value="11"/>
+        <Setter Property="Height"              Value="76"/>
+        <Setter Property="Padding"             Value="6,12"/>
+        <Setter Property="CornerRadius"        Value="18"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.ctrl StackPanel">
+        <Setter Property="MaxWidth" Value="100"/>
+    </Style>
+    <Style Selector="Button.ctrl materialIcons|MaterialIcon">
+        <Setter Property="Width"  Value="22"/>
+        <Setter Property="Height" Value="22"/>
+    </Style>
+    <Style Selector="Button.ctrl TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="LineHeight" Value="13"/>
+    </Style>
+
+    <!-- Compact icon-only variant — used when 4 ctrl buttons sit side-by-side in a
+         single row (sidebar "Live controls" card). No text label anymore (labels
+         didn't fit at this width); each button shows a ToolTip.Tip instead. -->
+    <Style Selector="Button.ctrl.ctrl-row">
+        <Setter Property="Height" Value="52"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.ctrl.ctrl-row materialIcons|MaterialIcon">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+    </Style>
+    <Style Selector="Button.ctrl /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CtrlBtnBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CtrlBtnBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="18"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- Hover — inactive buttons: a calm, single-step lift toward the border color. -->
+    <Style Selector="Button.ctrl:not(.active):not(.vcam-on-idle):not(.vcam-on-live):pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CtrlBtnHoverBrush}"/>
+    </Style>
+
+    <!-- Active (on) state for toggleable ctrl buttons: Black screen / Flashlight / Virtual camera.
+         Border uses a radial gradient (top-center light source, fading to transparent)
+         instead of a flat AccentAmberBrush ring — reads as a subtle glow rather than
+         a hard neon outline. See CtrlBtnActiveBorderBrush above. -->
+    <Style Selector="Button.ctrl.active">
+        <Setter Property="Background"      Value="{DynamicResource AccentAmberSoftBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource CtrlBtnActiveBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground"      Value="{DynamicResource AccentAmberBrush}"/>
+        <Setter Property="FontWeight"      Value="Medium"/>
+    </Style>
+    <Style Selector="Button.ctrl.active /template/ ContentPresenter">
+        <Setter Property="Background"      Value="{DynamicResource AccentAmberSoftBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource CtrlBtnActiveBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- Hover — active buttons: deepen the amber tint instead of fading it out -->
+    <Style Selector="Button.ctrl.active:pointerover /template/ ContentPresenter">
+        <Setter Property="Background"  Value="{DynamicResource AccentAmberHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CtrlBtnActiveBorderHoverBrush}"/>
+    </Style>
+
+    <!-- VCam active-state color depends on whether a stream is running, not just
+         on/off — see chat discussion: VCam "on" while idle (no stream) reads as
+         indigo (matches the app's idle/indigo language), while VCam "on" during
+         an active stream reads as amber (matches the LIVE/amber language). The
+         plain inactive (VCam off) state stays the default neutral ctrl look —
+         untouched, no indigo/amber tint applied there.
+         View must set these two classes (not .active) based on IsVCamActive AND
+         IsStreaming together, e.g.:
+           Classes.vcam-on-idle="{Binding VCamOnIdle}"   (IsVCamActive && !IsStreaming)
+           Classes.vcam-on-live="{Binding VCamOnLive}"   (IsVCamActive && IsStreaming) -->
+    <Style Selector="Button.ctrl.vcam-on-idle">
+        <Setter Property="Background"      Value="{DynamicResource AccentIndigoSoftBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground"      Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="FontWeight"      Value="Medium"/>
+    </Style>
+    <Style Selector="Button.ctrl.vcam-on-idle /template/ ContentPresenter">
+        <Setter Property="Background"      Value="{DynamicResource AccentIndigoSoftBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.ctrl.vcam-on-idle:pointerover /template/ ContentPresenter">
+        <Setter Property="Background"  Value="{DynamicResource AccentIndigoSoftBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="Opacity"     Value="0.8"/>
+    </Style>
+
+    <Style Selector="Button.ctrl.vcam-on-live">
+        <Setter Property="Background"      Value="{DynamicResource AccentAmberSoftBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource AccentAmberBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground"      Value="{DynamicResource AccentAmberBrush}"/>
+        <Setter Property="FontWeight"      Value="Medium"/>
+    </Style>
+    <Style Selector="Button.ctrl.vcam-on-live /template/ ContentPresenter">
+        <Setter Property="Background"      Value="{DynamicResource AccentAmberSoftBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource AccentAmberBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.ctrl.vcam-on-live:pointerover /template/ ContentPresenter">
+        <Setter Property="Background"  Value="{DynamicResource AccentAmberHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentAmberBrush}"/>
+    </Style>
+
+    <!-- Primary indigo button (Start stream) -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background"          Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="Foreground"          Value="{DynamicResource OnAccentBrush}"/>
+        <Setter Property="FontWeight"          Value="Medium"/>
+        <Setter Property="FontSize"            Value="14"/>
+        <Setter Property="Padding"             Value="14,15"/>
+        <Setter Property="CornerRadius"        Value="18"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+                <BrushTransition Property="Background" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.primary /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="Opacity" Value="0.9"/>
+    </Style>
+
+    <!-- Stop-stream state: filled amber, matching the reference's active-session look.
+         Amber reads as "session is live" (consistent with the amber active-toggle
+         language used elsewhere), not as an error — red stays reserved for Disconnect. -->
+    <Style Selector="Button.danger">
+        <Setter Property="Background"          Value="{DynamicResource AccentAmberBrush}"/>
+        <Setter Property="Foreground"          Value="{DynamicResource OnAccentBrush}"/>
+        <Setter Property="FontWeight"          Value="Medium"/>
+        <Setter Property="FontSize"            Value="14"/>
+        <Setter Property="Padding"             Value="14,15"/>
+        <Setter Property="CornerRadius"        Value="18"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+                <BrushTransition Property="Background" Duration="0:0:0.6" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.danger /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.6" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentAmberHoverSolidBrush}"/>
+    </Style>
+
+    <!-- Disconnect button: soft filled tint instead of a bare outline, so it carries
+         real visual weight instead of reading as a faint secondary link — while staying
+         calmer than a full solid-danger fill (this is a routine action, not a destructive-confirm).
+         Same "volume" treatment as Button.ctrl: a top-lit gradient background + a subtle
+         gradient border (brighter at top, fading down), rather than a flat tonal fill,
+         so it visually matches the depth of the Quick Commands ctrl buttons. -->
+    <Style Selector="Button.outline-danger">
+        <Setter Property="Background"          Value="{DynamicResource DangerBtnBackgroundBrush}"/>
+        <Setter Property="BorderBrush"         Value="{DynamicResource DangerBtnBorderBrush}"/>
+        <Setter Property="BorderThickness"     Value="1"/>
+        <Setter Property="Foreground"          Value="{DynamicResource ErrorBrush}"/>
+        <Setter Property="FontSize"            Value="13"/>
+        <Setter Property="FontWeight"          Value="Medium"/>
+        <Setter Property="Padding"             Value="10,13"/>
+        <Setter Property="CornerRadius"        Value="16"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.outline-danger /template/ ContentPresenter">
+        <Setter Property="Background"      Value="{DynamicResource DangerBtnBackgroundBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource DangerBtnBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.outline-danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource DangerBtnHoverBrush}"/>
+    </Style>
+
+    <!-- Solid full-width disconnect button — matches the reference mock's bottom
+         "Від'єднати пристрій" bar: solid red fill (ErrorBrush) with white text/icon,
+         not the soft tonal fill used by outline-danger. Sits at the very bottom of
+         the connected-state card, full width, so it reads as the card's single
+         clear exit action instead of a quiet corner icon. -->
+    <Style Selector="Button.danger-full">
+        <Setter Property="Background"          Value="{DynamicResource ErrorBrush}"/>
+        <Setter Property="BorderThickness"     Value="0"/>
+        <Setter Property="Foreground"          Value="White"/>
+        <Setter Property="FontSize"            Value="13.5"/>
+        <Setter Property="FontWeight"          Value="Medium"/>
+        <Setter Property="Padding"             Value="10,13"/>
+        <Setter Property="CornerRadius"        Value="16"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.danger-full /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ErrorBrush}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.danger-full:pointerover">
+        <Setter Property="Opacity" Value="0.9"/>
+    </Style>
+    <Style Selector="Button.danger-full:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.98)"/>
+    </Style>
+
+    <!-- Round disconnect icon button — replaces the old full-width outline-danger.
+         Same soft-red tonal fill as before, but sized/shaped like icon-round so it
+         sits quietly in the connected-state header instead of dominating the card. -->
+    <Style Selector="Button.icon-round-danger">
+        <Setter Property="Width"           Value="36"/>
+        <Setter Property="Height"          Value="36"/>
+        <Setter Property="Background"      Value="{DynamicResource ErrorSoftBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius"    Value="18"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment"   Value="Center"/>
+        <Setter Property="RenderTransform" Value="scale(1)"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.icon-round-danger /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ErrorSoftBrush}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.icon-round-danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ErrorHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.icon-round-danger:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.9)"/>
+    </Style>
+
+    <!-- Scan network / manual-connect outline button -->
+    <Style Selector="Button.outline">
+        <Setter Property="Background"          Value="Transparent"/>
+        <Setter Property="BorderBrush"         Value="{DynamicResource BorderSubtleBrush}"/>
+        <Setter Property="BorderThickness"     Value="1"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize"            Value="13"/>
+        <Setter Property="Padding"             Value="10,13"/>
+        <Setter Property="CornerRadius"        Value="16"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Round icon button used in the header (theme toggle) -->
+    <Style Selector="Button.icon-round">
+        <Setter Property="Width"           Value="34"/>
+        <Setter Property="Height"          Value="34"/>
+        <Setter Property="Background"      Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="17"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment"   Value="Center"/>
+    </Style>
+    <!-- Resting Background is SurfaceContainerHoverBrush0 (same hue as the hover fill,
+         Opacity=0) instead of plain Transparent — Avalonia's BrushTransition
+         interpolates RGB+alpha together, so animating from a colorless Transparent
+         to a colored brush snaps instead of fading (this was the "white flash").
+         Sharing the RGB means only alpha animates now, which fades cleanly. -->
+    <Style Selector="Button.icon-round /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.icon-round:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+    </Style>
+    <!-- Hover zoom for icon-round is driven in CODE (MainWindow.TitleBar.cs),
+         not here: in this Avalonia build TransformOperationsTransition on
+         RenderTransform does not animate (a string scale(1.x) style-setter hover
+         snaps with no visible motion), so each title-bar button carries an
+         explicit ScaleTransform + DoubleTransition and the pointer handlers just
+         tweak ScaleX/ScaleY. See HeaderBtn_PointerEntered/Exited. -->
+    <Style Selector="Button.icon-round materialIcons|MaterialIcon">
+        <!-- Explicit rotate(0deg) resting transform — same reasoning as the button
+             above: the 0.3s BackEaseOut tilt on hover only interpolates when there
+             is a concrete starting transform, otherwise it snaps. -->
+        <Setter Property="RenderTransform" Value="rotate(0deg)"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="BackEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.icon-round:pointerover materialIcons|MaterialIcon">
+        <Setter Property="RenderTransform" Value="rotate(20deg)"/>
+    </Style>
+
+    <!-- Window control buttons (minimize / close) -->
+    <Style Selector="Button.win-ctrl">
+        <Setter Property="Width"           Value="32"/>
+        <Setter Property="Height"          Value="32"/>
+        <Setter Property="CornerRadius"    Value="8"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Background"      Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment"   Value="Center"/>
+    </Style>
+    <Style Selector="Button.win-ctrl /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <!-- Hover zoom for win-ctrl is driven in code too (see the icon-round
+         comment above) — TransformOperationsTransition doesn't animate in this
+         Avalonia build, so each button uses an explicit ScaleTransform +
+         DoubleTransition set up in MainWindow.axaml. -->
+    <Style Selector="Button.win-ctrl:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.win-ctrl materialIcons|MaterialIcon">
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+    <Style Selector="Button.win-ctrl.close:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.win-ctrl.close:pointerover materialIcons|MaterialIcon#CloseIcon">
+        <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}"/>
+    </Style>
+
+    <!-- ============================= CAMERA FLIP CARD ============================= -->
+    <!--
+        Distinct from Button.ctrl: this mirrors Android's CameraToggleCard/FlipCameraButton,
+        which does a two-phase 3D rotationY flip of the whole card:
+          Phase 1 (isCameraSwitching=true):  fast tween to edge-on (90°) while hardware switches
+          Phase 2 (isCameraSwitching=false): springy settle to final angle, with overshoot
+        Avalonia has no true 3D perspective transform, so this fakes the same two-phase
+        feel with a horizontal ScaleX collapse-and-expand through zero:
+          Phase 1 (Classes="flipping"):   quick collapse to scaleX(0) — "edge-on" —
+                                           CubicEaseIn, no overshoot
+          Phase 2 (Classes="flipped-in"): spring back out to scaleX(1) with a small
+                                           overshoot past 1, mirroring Android's
+                                           DampingRatioLowBouncy/StiffnessLow settle
+        The actual content-swap (which icon/label shows) is still driven by the isFrontCamera
+        bool in the view — this class only supplies the motion.
+
+        Usage: add Classes="flipping" on click; once it finishes (card is edge-on),
+        swap the icon/label, then remove "flipping" and add "flipped-in" to spring
+        back out onto the new content. See PlayFlipCardAsync in MainWindow.axaml.cs.
+    -->
+    <Style Selector="Button.flip-card">
+        <Setter Property="Background"          Value="{DynamicResource CtrlBtnBackgroundBrush}"/>
+        <Setter Property="BorderBrush"         Value="{DynamicResource CtrlBtnBorderBrush}"/>
+        <Setter Property="BorderThickness"     Value="1"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize"            Value="11"/>
+        <Setter Property="Height"              Value="76"/>
+        <Setter Property="Padding"             Value="6,12"/>
+        <Setter Property="CornerRadius"        Value="18"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+    </Style>
+    <Style Selector="Button.flip-card /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CtrlBtnBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CtrlBtnBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="18"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.flip-card:not(.active):pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CtrlBtnHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.flip-card StackPanel">
+        <Setter Property="MaxWidth" Value="100"/>
+    </Style>
+    <Style Selector="Button.flip-card materialIcons|MaterialIcon">
+        <Setter Property="Width"  Value="22"/>
+        <Setter Property="Height" Value="22"/>
+    </Style>
+    <Style Selector="Button.flip-card TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="LineHeight" Value="13"/>
+    </Style>
+
+    <!-- Compact override when flip-card sits alongside the other 3 ctrl-row buttons
+         (sidebar "Live controls" row) — without this, flip-card kept its standalone
+         76px Height / 6,12 Padding / 22px icon (its own base style, entirely separate
+         from Button.ctrl), so it visually stood taller/larger than its neighbors even
+         though the icon glyph itself was the same size. Mirrors Button.ctrl.ctrl-row. -->
+    <Style Selector="Button.flip-card.ctrl-row">
+        <Setter Property="Height" Value="52"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.flip-card.ctrl-row materialIcons|MaterialIcon">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+    </Style>
+
+    <!-- Phase 1: collapse edge-on. Fast, no bounce — mirrors the FastOutSlowInEasing
+         tween Android uses while waiting on the hardware camera switch. -->
+    <Style Selector="Button.flip-card.flipping">
+        <Style.Animations>
+            <Animation Duration="0:0:0.14" FillMode="Forward" Easing="CubicEaseIn">
+                <KeyFrame Cue="0%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- Phase 2: spring back out onto the new content, with a slight overshoot past
+         scaleX(1) before settling — mirrors Android's DampingRatioLowBouncy/StiffnessLow. -->
+    <Style Selector="Button.flip-card.flipped-in">
+        <Style.Animations>
+            <Animation Duration="0:0:0.32" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0"/>
+                </KeyFrame>
+                <KeyFrame Cue="65%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.12"/>
+                </KeyFrame>
+                <KeyFrame Cue="85%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0.96"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- ============================= ICON WOBBLE ============================= -->
+    <!--
+        Mirrors Android's AnimatedIcon. Add Classes="wobble" to the MaterialIcon,
+        and give it an explicit TransformGroup (RotateTransform + ScaleTransform)
+        in the view instead of a shorthand RenderTransform string — keyframe
+        Animations in Avalonia need to target discrete properties (Angle, ScaleX,
+        ScaleY) rather than a combined transform-operations string, or the style
+        can fail to apply at startup.
+
+        Required in the view for any icon using this class:
+            <MaterialIcon Classes="wobble" RenderTransformOrigin="50%,50%">
+              <MaterialIcon.RenderTransform>
+                <TransformGroup>
+                  <RotateTransform x:Name="WobbleRotate" Angle="0"/>
+                  <ScaleTransform x:Name="WobbleScale" ScaleX="1" ScaleY="1"/>
+                </TransformGroup>
+              </MaterialIcon.RenderTransform>
+            </MaterialIcon>
+
+        Usage: toggle Classes="spin" on the icon for ~260ms right when you swap
+        its Kind in code-behind, then remove it.
+    -->
+    <Style Selector="materialIcons|MaterialIcon.wobble.spin">
+        <Style.Animations>
+            <Animation Duration="0:0:0.2" FillMode="Forward">
+                <!-- 0-40%: rotation leads, clearly visible at near-full size -->
+                <KeyFrame Cue="0%">
+                    <Setter Property="(RotateTransform.Angle)" Value="0"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+                <KeyFrame Cue="40%">
+                    <Setter Property="(RotateTransform.Angle)" Value="-45"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0.85"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="0.85"/>
+                </KeyFrame>
+                <!-- 40-55%: shrink to the swap point (new Kind lands around here) -->
+                <KeyFrame Cue="55%">
+                    <Setter Property="(RotateTransform.Angle)" Value="-65"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="0.25"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="0.25"/>
+                </KeyFrame>
+                <!-- 55-100%: spring back in with a small rotational overshoot,
+                     mirroring Compose's DampingRatioMediumBouncy/StiffnessMedium -->
+                <KeyFrame Cue="80%">
+                    <Setter Property="(RotateTransform.Angle)" Value="8"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1.08"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1.08"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="(RotateTransform.Angle)" Value="0"/>
+                    <Setter Property="(ScaleTransform.ScaleX)" Value="1"/>
+                    <Setter Property="(ScaleTransform.ScaleY)" Value="1"/>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    <!-- ============================= PREVIEW OVERLAY CONTROLS ============================= -->
+    <!--
+        Bottom-center "pause preview rendering" pill, modern-video-player style
+        (YouTube/VLC-esque translucent capsule). Sits inside PreviewArea over a
+        bottom gradient scrim (see MainWindow.axaml) so it stays readable against
+        any frame content. Hover-revealed via .state-fade + "hidden" (same pattern
+        as the Connection card's idle/connected crossfade) — always in the visual
+        tree, just faded to Opacity=0 and non-hit-testable when not hovering.
+        See PreviewArea_PointerEntered/Exited in MainWindow.axaml.cs.
+    -->
+    <!-- Shared glass capsule wrapping both preview-overlay buttons (+ divider),
+         mirroring the reference's single translucent "glass-panel" pill instead
+         of two independently-backed floating buttons. Buttons inside go
+         transparent at rest (see Button.preview-pill below) so this Border is
+         the only thing painting the resting background/border/shadow; each
+         button's own hover/active fill still layers on top of it unchanged. -->
+    <Style Selector="Border.preview-capsule">
+        <Setter Property="Background"      Value="#B3101014"/>
+        <Setter Property="BorderBrush"     Value="#26FFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="18"/>
+        <Setter Property="Padding"         Value="6"/>
+        <Setter Property="BoxShadow"       Value="0 8 24 0 #40000000"/>
+    </Style>
+
+    <Style Selector="Button.preview-pill">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderBrush"     Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground"      Value="#FFFFFFFF"/>
+        <Setter Property="FontSize"        Value="12"/>
+        <Setter Property="FontWeight"      Value="Medium"/>
+        <Setter Property="Padding"         Value="14,9"/>
+        <Setter Property="CornerRadius"    Value="12"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment"   Value="Center"/>
+    </Style>
+    <Style Selector="Button.preview-pill materialIcons|MaterialIcon">
+        <Setter Property="Width"  Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Foreground" Value="#FFFFFFFF"/>
+    </Style>
+    <!-- Resting fill starts from the SAME hue as the hover fill, just at
+         Opacity="0" (see App.axaml's SurfaceContainerHoverBrush0 comment for
+         why): a BrushTransition interpolates RGB+alpha together, so going
+         from a colorless Transparent to a colored brush has no shared RGB to
+         interpolate from and snaps instantly instead of fading. Starting
+         from the same RGB at alpha 0 fixes the flash — only alpha animates. -->
+    <Style Selector="Button.preview-pill /template/ ContentPresenter">
+        <Setter Property="Background" Value="#001A1A20"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.preview-pill:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#CC1A1A20"/>
+    </Style>
+    <!-- Active (paused) state — amber accent, consistent with the app's other
+         "session state is different from default" language (LIVE badge etc). -->
+    <Style Selector="Button.preview-pill.active">
+        <Setter Property="Foreground"  Value="{DynamicResource AccentAmberBrush}"/>
+    </Style>
+    <Style Selector="Button.preview-pill.active materialIcons|MaterialIcon">
+        <Setter Property="Foreground" Value="{DynamicResource AccentAmberBrush}"/>
+    </Style>
+    <Style Selector="Button.preview-pill.active /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentAmberSoftBrush}"/>
+    </Style>
+    <Style Selector="Button.preview-pill.active:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentAmberHoverBrush}"/>
+    </Style>
+
+    <!-- Icon-only rounded-square variant — used by the screenshot pill, which sits
+         next to the pause pill's text+icon capsule. Same visual language (translucent
+         dark fill, subtle border, hover deepen) but a soft rounded square instead of
+         a full circle, matching the reference's modern-player capsule look. -->
+    <Style Selector="Button.preview-pill.icon-only">
+        <Setter Property="Width"   Value="40"/>
+        <Setter Property="Height"  Value="40"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="CornerRadius" Value="12"/>
+    </Style>
+    <Style Selector="Button.preview-pill.icon-only:disabled">
+        <Setter Property="Opacity" Value="0.4"/>
+    </Style>
+
+
+</Styles>

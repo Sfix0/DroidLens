@@ -1,0 +1,85 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize"   Value="13.5"/>
+    </Style>
+
+    <!-- Small uppercase section header inside a card — kept for any place that
+         still wants a plain muted label without the new icon-header pattern. -->
+    <Style Selector="TextBlock.section">
+        <Setter Property="Foreground"      Value="{DynamicResource TextMutedBrush}"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="FontWeight"      Value="Medium"/>
+        <Setter Property="LetterSpacing"   Value="1"/>
+        <Setter Property="Margin"          Value="0,0,0,10"/>
+    </Style>
+
+    <!-- Card-header title: sits next to the icon plate in Border.card-header
+         (see Cards.axaml). Larger + bolder than .section so it reads as a
+         real title, not a muted eyebrow label. -->
+    <Style Selector="TextBlock.card-header-title">
+        <Setter Property="Foreground"    Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize"      Value="14.5"/>
+        <Setter Property="FontWeight"    Value="SemiBold"/>
+        <Setter Property="LetterSpacing" Value="0.1"/>
+    </Style>
+
+    <!-- Option row label (e.g. "Stop stream on disconnect"). Previously just
+         inherited the plain TextBlock default with no visual separation from
+         the hint text underneath it. -->
+    <Style Selector="TextBlock.option-title">
+        <Setter Property="FontSize"   Value="14"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+
+    <!-- Hint text under an option-title (was hardcoded FontSize="10" inline in
+         SettingsWindow.axaml). Centralized, bumped up, and given a little
+         line-height so two-line wraps don't feel cramped.
+         Uses HintTextBrush (TextPrimary-based, per-theme opacity) instead of
+         TextMutedBrush — .hint is now used across Settings/Help/About as the
+         main descriptive line under a title, not just a tiny eyebrow label,
+         so it needs the same per-theme contrast tuning as .help-body. -->
+    <Style Selector="TextBlock.hint">
+        <Setter Property="Foreground"  Value="{DynamicResource HintTextBrush}"/>
+        <Setter Property="FontSize"    Value="11.5"/>
+        <Setter Property="LineSpacing" Value="2"/>
+    </Style>
+
+    <!-- Field label above a ComboBox/TextBox (was hardcoded FontSize="10"
+         Classes="muted" inline in SettingsWindow.axaml). -->
+    <Style Selector="TextBlock.field-label">
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+        <Setter Property="FontSize"   Value="12"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+
+    <!-- Body text for Help-section explanatory paragraphs (AboutPanel). .hint is
+         tuned for a short second-line caption under an option-title, not a
+         paragraph the reader is meant to actually read start to finish — same
+         muted brush at 11.5px reads as too small/low-contrast once it's the
+         main content instead of a footnote. Uses HelpBodyBrush which is
+         tuned per-theme (Dark 0.82, Light 0.92) to keep contrast even. -->
+    <Style Selector="TextBlock.help-body">
+        <Setter Property="Foreground"  Value="{DynamicResource HelpBodyBrush}"/>
+        <Setter Property="FontSize"    Value="13"/>
+        <Setter Property="LineSpacing" Value="3"/>
+    </Style>
+
+    <!-- Metrics bar label / value -->
+    <Style Selector="TextBlock.metric-label">
+        <Setter Property="Foreground"    Value="{DynamicResource TextMutedBrush}"/>
+        <Setter Property="FontSize"      Value="10"/>
+        <Setter Property="LetterSpacing" Value="0.5"/>
+    </Style>
+    <Style Selector="TextBlock.metric-value">
+        <Setter Property="FontSize"   Value="16"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+
+</Styles>

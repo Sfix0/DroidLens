@@ -1,0 +1,425 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:DroidLens.Client.Views"
+             xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+             xmlns:vm="clr-namespace:DroidLens.Client.ViewModels"
+             x:Class="DroidLens.Client.Views.Controls.PreviewArea"
+             x:DataType="vm:MainViewModel">
+
+    <!-- Right column: video preview tile (frame + cold-start/paused overlays +
+         hover capsule + LIVE/orientation tags) plus the metric row underneath
+         (FPS/RTT/Latency/Resolution). DataContext is set by the host
+         (MainWindow) to the shared MainViewModel, same as it was inline. -->
+            <Grid RowDefinitions="*,Auto">
+
+                <Border Grid.Row="0" Classes="preview-frame" Margin="0,0,0,14">
+                    <Grid x:Name="PreviewSurface"
+                          Background="Transparent"
+                          PointerEntered="PreviewSurface_PointerEntered"
+                          PointerExited="PreviewSurface_PointerExited">
+                        <!-- Ambient light fill — YouTube "Ambient Mode"-style effect for the
+                             thin letterbox bars left by VideoImage's Stretch="Uniform" on
+                             portrait streams. Unlike a live blurred video copy (tried first,
+                             caused UI-thread stutter and looked choppy at low update rates),
+                             this samples ONE averaged color from each edge strip of the
+                             decoded frame — a few dozen bytes read directly off the pixel
+                             buffer on a background thread, see SampleEdgeColors — and
+                             animates two solid-color bars toward it via each Border's
+                             Transitions. Cost is effectively zero (no bitmap, no GPU blur
+                             pass): the BlurEffect below only softens the color-to-video seam,
+                             it isn't blurring a frame. Updated at a throttled, low rate (see
+                             _ambientStopwatch) and skipped entirely while paused/minimized —
+                             see ShouldUpdateAmbientFill. -->
+                        <Border x:Name="AmbientTopBar"
+                                VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                                Height="0"
+                                IsHitTestVisible="False"
+                                IsVisible="False"
+                                Background="Transparent">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <BrushTransition Property="Background" Duration="0:0:0.6"/>
+                                </Transitions>
+                            </Border.Transitions>
+                            <Border.Effect>
+                                <BlurEffect Radius="30"/>
+                            </Border.Effect>
+                        </Border>
+                        <Border x:Name="AmbientBottomBar"
+                                VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                                Height="0"
+                                IsHitTestVisible="False"
+                                IsVisible="False"
+                                Background="Transparent">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <BrushTransition Property="Background" Duration="0:0:0.6"/>
+                                </Transitions>
+                            </Border.Transitions>
+                            <Border.Effect>
+                                <BlurEffect Radius="30"/>
+                            </Border.Effect>
+                        </Border>
+
+                        <Image x:Name="VideoImage" Stretch="Uniform"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Image.RenderTransform>
+                                <RotateTransform Angle="0"/>
+                            </Image.RenderTransform>
+                        </Image>
+
+                        <!-- Cold-start / stopped-stream blur mask: covers (a) the first
+                             ~600ms of a fresh stream's very first start, where the phone's
+                             encoder rate controller hasn't warmed up and emits blocky
+                             frames, and (b) the "stream stopped" state, where it blurs the
+                             last frame under NoSignalPanel instead of leaving a sharp static
+                             image on screen. Not interactive (IsHitTestVisible="False") so it
+                             never blocks PreviewArea's own pointer events. See
+                             MainWindow.axaml.cs: ShowColdStartBlur / ShowStoppedPlaceholder. -->
+                        <Image x:Name="ColdStartBlurOverlay"
+                               Source="{Binding #VideoImage.Source}"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                               IsHitTestVisible="False"
+                               IsVisible="False"
+                               Opacity="1"
+                               RenderTransformOrigin="50%,50%">
+                            <Image.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Image.RenderTransform>
+                            <Image.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.35"/>
+                                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.5" Easing="CubicEaseOut"/>
+                                </Transitions>
+                            </Image.Transitions>
+                            <Image.Effect>
+                                <BlurEffect Radius="18"/>
+                            </Image.Effect>
+                        </Image>
+
+                        <!-- Darkening scrim over the blurred/zoomed frame — mirrors the
+                             reference's brightness-50 dimming (Avalonia has no direct
+                             brightness filter on Image, so a black overlay at partial
+                             opacity gives the same effect). Always toggled in lockstep
+                             with ColdStartBlurOverlay's IsVisible/Opacity in code-behind
+                             (ShowColdStartBlur/FadeOutColdStartBlurAsync/ShowStoppedPlaceholder/
+                             HideStoppedPlaceholder) since it exists purely to accompany it. -->
+                        <Border x:Name="BlurDimScrim"
+                                Background="#66000000"
+                                IsHitTestVisible="False"
+                                IsVisible="False"
+                                Opacity="0">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.35"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+
+                        <!-- No-signal placeholder — frosted glass card (icon badge + title +
+                             hint), matching the reference's "disabled-overlay" card and sharing
+                             Border.preview-state-card with PreviewPausedPanel below. Neutral
+                             white/gray icon+text (vs that panel's amber) so the two empty-preview
+                             states never look interchangeable despite the identical card shape. -->
+                        <Border x:Name="NoSignalPanel"
+                                Classes="preview-state-card"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <StackPanel Spacing="14" HorizontalAlignment="Center">
+                                <Border Width="52" Height="52"
+                                        CornerRadius="16"
+                                        Background="#14FFFFFF"
+                                        BorderBrush="#1FFFFFFF" BorderThickness="1"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="CameraOutline" Width="22" Height="22"
+                                                                 Foreground="#66FFFFFF"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Loc[label.no_signal]}" Foreground="#FFFFFFFF"
+                                               FontSize="14" FontWeight="Bold" LetterSpacing="0.2"
+                                               HorizontalAlignment="Center" TextAlignment="Center"/>
+                                    <TextBlock Text="{Binding Loc[label.no_signal_hint]}" Foreground="#99CBD5E1"
+                                               FontSize="11.5" FontWeight="Normal" TextWrapping="Wrap"
+                                               HorizontalAlignment="Center" TextAlignment="Center" LineHeight="16"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Preview-paused indicator — center-screen, replaces NoSignalPanel's role
+                             while the stream is live but rendering is manually paused: without
+                             something in the center, a frozen last frame reads as "app hung", not
+                             "intentionally paused". Shares Border.preview-state-card with
+                             NoSignalPanel above (same frosted-glass shape/fade-scale entrance) —
+                             only amber-tinted icon/text differ, so the two empty-preview states
+                             stay visually related but never interchangeable. Only IsVisible/class-
+                             toggled from code-behind (ApplyPreviewPausedVisualState) — not bound
+                             directly to a VM property, since this is a MainWindow-local UI flag
+                             (_manualPreviewPaused), not view-model state. -->
+                        <Border x:Name="PreviewPausedPanel"
+                                Classes="preview-state-card"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                IsVisible="False" IsHitTestVisible="False">
+                            <StackPanel Spacing="14" HorizontalAlignment="Center">
+                                <Border Width="52" Height="52"
+                                        CornerRadius="16"
+                                        Background="{DynamicResource AccentAmberSoftBrush}"
+                                        BorderBrush="#33FBBF24" BorderThickness="1"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="VideoOff" Width="22" Height="22"
+                                                                 Foreground="{DynamicResource AccentAmberBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Loc[label.preview_paused]}" Foreground="#FFFFFFFF"
+                                               FontSize="14" FontWeight="Bold" LetterSpacing="0.2"
+                                               HorizontalAlignment="Center" TextAlignment="Center"/>
+                                    <TextBlock Text="{Binding Loc[label.preview_paused_hint]}" Foreground="#99CBD5E1"
+                                               FontSize="11.5" FontWeight="Normal" TextWrapping="Wrap"
+                                               HorizontalAlignment="Center" TextAlignment="Center" LineHeight="16"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Bottom hover-reveal scrim + pill row (pause-preview, screenshot),
+                             modern-video-player style. Scrim is a plain gradient (no blur)
+                             purely so the pills stay legible over bright frame content;
+                             IsHitTestVisible="False" so it never blocks pointer events meant
+                             for the pills/frame beneath. Scrim and PausePreviewButton fade via
+                             .state-fade/"hidden" together, driven from
+                             PreviewArea_PointerEntered/Exited — except while paused, where the
+                             pause pill is forced visible regardless of hover (see code-behind: a
+                             frozen preview with no visible control would read as the app having
+                             hung, so the escape hatch stays on screen). ScreenshotButton shares
+                             the same hover-reveal but is NEVER forced visible while paused — it
+                             disables instead (see ApplyPreviewPausedVisualState): PREVIEW_PAUSE_PLAN.md
+                             deliberately keeps screenshot capture off the VCam buffer, so with no
+                             live preview frame there's nothing new for it to capture. -->
+                        <Border x:Name="PreviewBottomScrim"
+                                VerticalAlignment="Bottom" Height="90"
+                                IsHitTestVisible="False"
+                                Classes="state-fade hidden">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
+                                    <GradientStop Color="#CC000000" Offset="0"/>
+                                    <GradientStop Color="#00000000" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <Border x:Name="PreviewControlsCapsule"
+                                Classes="preview-capsule state-fade hidden"
+                                HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                Margin="0,0,0,16">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <Button x:Name="ScreenshotButton"
+                                        Classes="preview-pill icon-only"
+                                        Click="ScreenshotButton_Click"
+                                        PointerEntered="PillBtn_PointerEntered"
+                                        PointerExited="PillBtn_PointerExited"
+                                        RenderTransformOrigin="50%,50%"
+                                        ToolTip.Tip="{Binding Loc[label.screenshot]}">
+                                    <Button.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                    </Button.RenderTransform>
+                                    <Button.Transitions>
+                                        <Transitions>
+                                            <DoubleTransition Property="(ScaleTransform.ScaleX)" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+                                            <DoubleTransition Property="(ScaleTransform.ScaleY)" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+                                        </Transitions>
+                                    </Button.Transitions>
+                                    <materialIcons:MaterialIcon Kind="CameraOutline"/>
+                                </Button>
+                                <!-- Thin divider between the two pill buttons, matching the
+                                     reference capsule's separator between snapshot/toggle actions. -->
+                                <Rectangle Width="1" Height="24" Fill="#26FFFFFF"
+                                           VerticalAlignment="Center"/>
+                                <Button x:Name="PausePreviewButton"
+                                        Classes="preview-pill icon-only"
+                                        Click="PausePreviewButton_Click"
+                                        PointerEntered="PillBtn_PointerEntered"
+                                        PointerExited="PillBtn_PointerExited"
+                                        RenderTransformOrigin="50%,50%"
+                                        ToolTip.Tip="{Binding Loc[label.hide_preview]}">
+                                    <Button.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                    </Button.RenderTransform>
+                                    <Button.Transitions>
+                                        <Transitions>
+                                            <DoubleTransition Property="(ScaleTransform.ScaleX)" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+                                            <DoubleTransition Property="(ScaleTransform.ScaleY)" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+                                        </Transitions>
+                                    </Button.Transitions>
+                                    <materialIcons:MaterialIcon x:Name="PausePreviewIcon" Kind="VideoOff"
+                                                                 Classes="wobble" RenderTransformOrigin="50%,50%">
+                                        <materialIcons:MaterialIcon.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="0"/>
+                                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                            </TransformGroup>
+                                        </materialIcons:MaterialIcon.RenderTransform>
+                                    </materialIcons:MaterialIcon>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+
+                        <!-- Screenshot flash — short opacity flash on capture, macOS-style
+                             feedback. Same DoubleTransition pattern as ColdStartBlurOverlay,
+                             just white/opaque instead of a blurred frame copy, and much
+                             shorter-lived (see ShowScreenshotFlash in MainWindow.Preview.cs). -->
+                        <Border x:Name="ScreenshotFlashOverlay"
+                                Background="White"
+                                IsHitTestVisible="False"
+                                IsVisible="False"
+                                Opacity="0">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+
+                        <!-- Combined top-left status capsule — LIVE + elapsed timer + orientation
+                             live together in a single dark glass pill (was three separate
+                             video-tag chips split across the top-left/top-right corners). Amber
+                             stays the "stream is active" accent (LIVE dot/text, same
+                             AccentAmberBrush used by the Start/Stop button and metric row) —
+                             deliberately not the red used by the reference this was styled after.
+                             LIVE no longer gets its own lifted chip/background — just the dot +
+                             text sitting directly on the capsule's own dark glass, so the capsule
+                             reads as one continuous surface rather than a chip-inside-a-chip. -->
+                        <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14"
+                                Classes="video-tag"
+                                Padding="10,6"
+                                IsVisible="{Binding IsStreaming}">
+                            <StackPanel Orientation="Horizontal" Spacing="0">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Ellipse Width="7" Height="7" Fill="{DynamicResource AccentAmberBrush}" Classes="pulse"/>
+                                    <TextBlock Text="{Binding Loc[label.live]}" Foreground="{DynamicResource AccentAmberBrush}"
+                                               FontSize="11" FontWeight="Bold" LetterSpacing="0.5"/>
+                                </StackPanel>
+
+                                <Rectangle Width="1" Height="16" Fill="#26FFFFFF"
+                                           VerticalAlignment="Center" Margin="10,0"/>
+
+                                <!-- Elapsed stream time, counted locally on the PC from the moment it
+                                     confirms an active stream (see MainViewModel.StartStreamElapsedTimer).
+                                     Fixed Width + centered text keeps the capsule from shifting width as
+                                     digits change (proportional-font glyphs like "1" are narrower than
+                                     "0"/"8" etc, which was causing the visible jitter). Sized for the
+                                     "00:00" mm:ss format StreamElapsedText produces. -->
+                                <TextBlock Text="{Binding StreamElapsedText}" Foreground="#FFFFFFFF"
+                                           FontSize="11.5" FontWeight="SemiBold" LetterSpacing="0.3"
+                                           Width="34" TextAlignment="Center"
+                                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                                <Rectangle Width="1" Height="16" Fill="#26FFFFFF"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                <!-- Orientation — folded into the capsule from its old top-right
+                                     corner spot; FPS/RTT/Resolution remain in the metric row below
+                                     the preview. Only two device orientations exist (landscape /
+                                     landscape reversed), so rather than two separate icon assets this
+                                     reuses one PhoneRotateLandscape glyph and spins it 180° for the
+                                     reversed case via RotationToAngleConverter, same approach as
+                                     VideoImage's own RotateTransform. -->
+                                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="PhoneRotateLandscape" Width="12" Height="12"
+                                                                 Foreground="#CCFFFFFF"
+                                                                 RenderTransformOrigin="50%,50%">
+                                        <materialIcons:MaterialIcon.RenderTransform>
+                                            <RotateTransform Angle="{Binding Rotation, Converter={x:Static local:RotationToAngleConverter.Instance}}"/>
+                                        </materialIcons:MaterialIcon.RenderTransform>
+                                    </materialIcons:MaterialIcon>
+                                    <TextBlock Text="{Binding OrientationText}" Foreground="#CCFFFFFF"
+                                               FontSize="10.5" FontWeight="Medium" TextWrapping="NoWrap"
+                                               VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- ═══════════ BOTTOM METRIC ROW ═══════════
+                     FPS / RTT+Network / Resolution as three individual plates, mirroring the
+                     reference's Latency / Network / Quality row under the preview. -->
+                <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*">
+                    <Border Classes="metric-card" Grid.Column="0" Margin="0,0,5,0">
+                        <Panel>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Classes="metric-icon">
+                                    <materialIcons:MaterialIcon Kind="SpeedometerMedium" Width="15" Height="15"
+                                                                 Foreground="{Binding IsStreaming, Converter={x:Static local:IsStreamingToAccentConverter.Instance}}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock Classes="metric-title" Text="{Binding Loc[label.fps]}"/>
+                                    <TextBlock x:Name="FpsLabel" Classes="metric-val value-anim" Text="0"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- "½" watermark: sits in the card's top-right corner, same idea
+                                 as the card-watermark icons elsewhere (Cards.axaml) — a quiet,
+                                 low-contrast texture rather than an inline UI element competing
+                                 for attention next to the FPS number. Shown only while Settings
+                                 > Interface > "Limit preview FPS" is on; visibility driven from
+                                 code-behind (UpdateFpsCapBadge), toggled on Initialize() and on
+                                 the VM's PropertyChanged. FpsLabel itself always shows the real
+                                 incoming rate — this badge is purely a "render is capped" note. -->
+                            <TextBlock x:Name="FpsCapBadge" Text="½"
+                                       FontSize="20" FontWeight="Bold"
+                                       Opacity="0.16"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Top"
+                                       Margin="0,2,6,0"
+                                       IsVisible="False"
+                                       ToolTip.Tip="{Binding Loc[label.fps_cap_hint]}"/>
+                        </Panel>
+                    </Border>
+                    <Border Classes="metric-card" Grid.Column="1" Margin="5,0,5,0">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Classes="metric-icon">
+                                <materialIcons:MaterialIcon Kind="Wifi" Width="15" Height="15"
+                                                             Foreground="{Binding IsStreaming, Converter={x:Static local:IsStreamingToAccentConverter.Instance}}"
+                                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Classes="metric-title" Text="{Binding Loc[label.rtt]}"/>
+                                <TextBlock Classes="metric-val value-anim" Text="{Binding RttText}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <!-- Diagnostic-only latency plate: network-arrival -> decoded-frame-ready.
+                         Only meaningful for H.264 (decoder pipeline); MJPEG frames don't flow
+                         through H264Decoder, so DecodeLatencyMs stays at its default (—) then. -->
+                    <Border Classes="metric-card" Grid.Column="2" Margin="5,0,5,0">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Classes="metric-icon">
+                                <materialIcons:MaterialIcon Kind="TimerOutline" Width="15" Height="15"
+                                                             Foreground="{Binding IsStreaming, Converter={x:Static local:IsStreamingToAccentConverter.Instance}}"
+                                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Classes="metric-title" Text="{Binding Loc[label.latency]}"/>
+                                <TextBlock Classes="metric-val value-anim" Text="{Binding DecodeLatencyText}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Classes="metric-card" Grid.Column="3" Margin="5,0,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Classes="metric-icon">
+                                <materialIcons:MaterialIcon Kind="Monitor" Width="15" Height="15"
+                                                             Foreground="{Binding IsStreaming, Converter={x:Static local:IsStreamingToAccentConverter.Instance}}"
+                                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Classes="metric-title" Text="{Binding Loc[label.resolution]}"/>
+                                <TextBlock x:Name="ResolutionLabel" Classes="metric-val value-anim" Text="—"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+            </Grid>
+</UserControl>

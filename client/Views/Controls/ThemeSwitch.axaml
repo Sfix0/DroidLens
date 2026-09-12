@@ -1,0 +1,220 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DroidLens.Client.Views.Controls.ThemeSwitch"
+             HorizontalAlignment="Left" VerticalAlignment="Center">
+
+    <!--
+        Sun <-> Saturn theme toggle, ported from the Theme_Toggle.html reference.
+        Structure mirrors it 1:1:
+
+          Button.switch-btn-theme (hit target, no chrome — same convention as
+                                    the app's existing Button.switch-btn)
+            Border.switch-track-theme        (the pill; recolors day/night)
+              Panel                          (thumb host, holds the moving ball
+                                               + the three decorative dots, all
+                                               absolutely positioned like the
+                                               HTML's .switch-thumb)
+                Border.switch-thumb-theme    (the round moving "ball" — position
+                                               animated via TranslateTransform,
+                                               same technique as the app's other
+                                               switches: see .Transitions on the
+                                               transform below, not on the Border)
+                  Panel "SunLayer"  .body-swap   -> Ellipse.sun-spin (sun disc)
+                  Panel "SaturnLayer" .body-swap -> ring-back + body + ring
+                Ellipse x3 "Cloud1..3" .cloud-swap  (day: clouds / night: stars,
+                                                      cross-fades + re-positions
+                                                      via Classes, not two full
+                                                      element sets, to keep the
+                                                      tree small)
+
+        Sizing: 72x35 (compact — scaled down from the original 110x54 pass).
+    -->
+
+    <UserControl.Styles>
+
+        <!-- ── Track ── -->
+        <Style Selector="Border.switch-track-theme">
+            <Setter Property="Width" Value="72"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="CornerRadius" Value="17.5"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="ClipToBounds" Value="True"/>
+            <!-- Day: sky-blue gradient, matches reference's #38bdf8 -> #7dd3fc -->
+            <Setter Property="BorderBrush" Value="#CCFFFFFF"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                    <GradientStop Color="#38BDF8" Offset="0"/>
+                    <GradientStop Color="#7DD3FC" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="BoxShadow" Value="inset 0 3 8 0 #4D000000, 0 6 16 0 #33000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.18"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.18"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <!-- Night: deep indigo/violet gradient, matches #1e1b4b -> #4c1d95 -->
+        <Style Selector="Border.switch-track-theme.night">
+            <Setter Property="BorderBrush" Value="#804C1D95"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                    <GradientStop Color="#1E1B4B" Offset="0"/>
+                    <GradientStop Color="#4C1D95" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <!-- ── Thumb (moving ball) ── -->
+        <!-- 28x28, 3px inset — scaled to match the smaller 72x35 track. -->
+        <Style Selector="Border.switch-thumb-theme">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="3,0"/>
+        </Style>
+
+        <!-- Sun disc: radial-gradient glow, matches #fde047 -> #eab308.
+             Highlight moved from 35%,35% to 50%,45% — the old offset read as
+             the whole disc sitting off-center within the thumb rather than
+             as a light source, since there's nothing else in the 28x28
+             circle to anchor the eye to the true center. -->
+        <Style Selector="Ellipse.sun-body">
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="Fill">
+                <RadialGradientBrush Center="50%,50%" RadiusX="70%" RadiusY="70%">
+                    <GradientStop Color="#FDE047" Offset="0"/>
+                    <GradientStop Color="#EAB308" Offset="1"/>
+                </RadialGradientBrush>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <RotateTransform Angle="0"/>
+            </Setter>
+        </Style>
+
+        <!-- Saturn body -->
+        <Style Selector="Ellipse.saturn-body">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="RenderTransform">
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Setter>
+            <Setter Property="Fill">
+                <RadialGradientBrush Center="30%,30%" RadiusX="75%" RadiusY="75%">
+                    <GradientStop Color="#FEF08A" Offset="0"/>
+                    <GradientStop Color="#CA8A04" Offset="0.7"/>
+                    <GradientStop Color="#854D0E" Offset="1"/>
+                </RadialGradientBrush>
+            </Setter>
+        </Style>
+        <!-- Saturn rings: two ellipses (front/back) using stroke-only fill, same
+             layering trick as the reference's border-only ring divs. -->
+        <Style Selector="Ellipse.saturn-ring-back">
+            <Setter Property="Width" Value="31"/>
+            <Setter Property="Height" Value="9"/>
+            <Setter Property="Stroke" Value="#80A16207"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="Fill" Value="Transparent"/>
+            <Setter Property="RenderTransform" Value="rotate(-22deg)"/>
+        </Style>
+        <Style Selector="Ellipse.saturn-ring-front">
+            <Setter Property="Width" Value="31"/>
+            <Setter Property="Height" Value="9"/>
+            <Setter Property="Stroke" Value="#E6FEF08A"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="Fill" Value="Transparent"/>
+            <Setter Property="RenderTransform" Value="rotate(-22deg)"/>
+        </Style>
+
+        <!-- ── Decorative dots behind the thumb: clouds (day) / stars (night) ── -->
+        <!-- Day look: soft white pill clouds. -->
+        <Style Selector="Border.cloud-shape">
+            <Setter Property="Background" Value="#F2FFFFFF"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <!-- Night look, applied additionally via the "star" class swap below. -->
+        <Style Selector="Ellipse.star-shape">
+            <Setter Property="Fill" Value="#FEF08A"/>
+        </Style>
+
+    </UserControl.Styles>
+
+    <Button Classes="switch-btn" Click="OnToggleClick" PointerPressed="OnToggleButtonPointerPressed"
+            HorizontalAlignment="Left" VerticalAlignment="Center">
+        <Border x:Name="Track" Classes="switch-track-theme">
+            <Panel>
+
+                <!-- Background dots: 3 clouds (day) that swap into 3 stars (night).
+                     Positions/sizes below are scaled ~0.73 from the HTML reference's
+                     cloud-1/2/3 and night star-1/2/3 rules. -->
+                <Border x:Name="Cloud1" Classes="cloud-swap cloud-shape"
+                        Width="16" Height="6" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,7,9,0"/>
+                <Border x:Name="Cloud2" Classes="cloud-swap cloud-shape"
+                        Width="12" Height="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                        Margin="0,0,22,6"/>
+                <Border x:Name="Cloud3" Classes="cloud-swap cloud-shape"
+                        Width="10" Height="4" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,13,39,0"/>
+
+                <!-- Night mode: thumb (and Saturn inside it) sits on the RIGHT
+                     side of the track. Stars were previously also anchored
+                     Right, so they landed directly behind/on top of Saturn.
+                     Anchored Left instead, so they sit in the empty space the
+                     thumb vacates when it slides right. -->
+                <Ellipse x:Name="Star1" Classes="cloud-swap star-shape hidden star-pulse"
+                         Width="3.5" Height="3.5" HorizontalAlignment="Left" VerticalAlignment="Top"
+                         Margin="11,6,0,0"/>
+                <Ellipse x:Name="Star2" Classes="cloud-swap star-shape hidden star-pulse d2"
+                         Width="4.5" Height="4.5" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                         Margin="17,0,0,7"/>
+                <Ellipse x:Name="Star3" Classes="cloud-swap star-shape hidden star-pulse"
+                         Width="3" Height="3" HorizontalAlignment="Left" VerticalAlignment="Center"
+                         Margin="7,0,0,0"/>
+
+                <!-- Moving thumb: slides left/right via TranslateTransform, exactly
+                     the same technique your other switches already use (transition
+                     declared on the transform itself, not on the Border). -->
+                <Border x:Name="Thumb" Classes="switch-thumb-theme">
+                    <Border.RenderTransform>
+                        <TranslateTransform X="0">
+                            <TranslateTransform.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="TranslateTransform.X"
+                                                       Duration="0:0:0.55" Easing="CubicEaseOut"/>
+                                </Transitions>
+                            </TranslateTransform.Transitions>
+                        </TranslateTransform>
+                    </Border.RenderTransform>
+
+                    <Panel>
+                        <!-- Sun -->
+                        <Panel x:Name="SunLayer" Classes="body-swap"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Ellipse x:Name="SunDisc" Classes="sun-body sun-spin"/>
+                        </Panel>
+
+                        <!-- Saturn -->
+                        <Panel x:Name="SaturnLayer" Classes="body-swap hidden">
+                            <Ellipse Classes="saturn-ring-back"/>
+                            <Ellipse x:Name="SaturnBody" Classes="saturn-body"/>
+                            <Ellipse Classes="saturn-ring-front"/>
+                        </Panel>
+                    </Panel>
+                </Border>
+
+            </Panel>
+        </Border>
+    </Button>
+
+</UserControl>

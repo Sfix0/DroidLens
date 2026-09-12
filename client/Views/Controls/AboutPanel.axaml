@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:DroidLens.Client.Views"
+        xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+        x:Class="DroidLens.Client.Views.Controls.AboutPanel"
+        Width="780" Height="580"
+        FontFamily="Inter,Segoe UI,sans-serif">
+
+    <!-- Overlay like SettingsPanel — MainWindow toggles IsVisible/Opacity, no standalone Window. Root 1:1 with SettingsPanel. -->
+    <!-- Tab switcher like Sidebar Connection card (see Cards.axaml / Sidebar.axaml.cs:SetConnectionTab). Help is placeholder. -->
+
+    <Border CornerRadius="14" ClipToBounds="True"
+            Background="{DynamicResource BgBaseBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1"
+            BoxShadow="0 12 40 0 #66000000"
+            Focusable="True">
+
+        <Panel>
+
+            <!-- App texture like MainWindow/SettingsPanel. -->
+            <controls:AppBackgroundTexture HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                           GlowColor="{DynamicResource AccentIndigoColor}"
+                                           BackgroundTintColor="{DynamicResource BgBaseColor}"/>
+
+            <Grid RowDefinitions="Auto,*">
+
+            <!-- ============================= HEADER ============================= -->
+            <!-- Header like SettingsPanel: switch left, close right. -->
+            <Border Grid.Row="0" Height="52" Background="{DynamicResource BgPanelBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,0.5"
+                    Padding="16,9">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- Tab switch like Sidebar; widths/state from SetTab(). Padding/CornerRadius tightened for 52px header. -->
+                    <Border Grid.Column="0" Classes="tab-track" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="3">
+                            <Button x:Name="AboutTabButton" Classes="tab-segment active"
+                                    Click="AboutTab_Click" Width="128"
+                                    Padding="4,5" CornerRadius="11">
+                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="InformationOutline" Width="13" Height="13"/>
+                                    <TextBlock Classes="tab-label" Text="{Binding Loc[about.tab_about]}"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="HelpTabButton" Classes="tab-segment"
+                                    Click="HelpTab_Click" Width="30"
+                                    Padding="4,5" CornerRadius="11">
+                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="HelpCircleOutline" Width="13" Height="13"/>
+                                    <TextBlock Classes="tab-label" Text="{Binding Loc[about.tab_help]}"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Close like SettingsPanel. No Save — nothing to persist. -->
+                    <Button Grid.Column="1" Classes="win-ctrl close" Width="34" Height="34" CornerRadius="9"
+                            Click="Close_Click"
+                            RenderTransformOrigin="50%,50%"
+                            PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                            VerticalAlignment="Center">
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1">
+                                <ScaleTransform.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                    </Transitions>
+                                </ScaleTransform.Transitions>
+                            </ScaleTransform>
+                        </Button.RenderTransform>
+                        <materialIcons:MaterialIcon x:Name="CloseIcon" Kind="Close" Width="14" Height="14"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ============================= BODY ============================= -->
+            <!-- Tab content swap via IsVisible like Sidebar (instant, no crossfade). -->
+            <Panel Grid.Row="1">
+
+            <controls:AboutContent x:Name="AboutContentControl" IsVisible="True"/>
+
+            <controls:HelpContent x:Name="HelpContentControl" IsVisible="False"/>
+
+            </Panel>
+
+            </Grid>
+
+        </Panel>
+
+    </Border>
+</UserControl>

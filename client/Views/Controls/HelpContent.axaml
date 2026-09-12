@@ -1,0 +1,735 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+         xmlns:local="clr-namespace:DroidLens.Client.Views"
+         xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+         xmlns:helpers="clr-namespace:DroidLens.Client.Helpers"
+         x:Class="DroidLens.Client.Views.Controls.HelpContent"
+         FontFamily="Inter,Segoe UI,sans-serif">
+
+    <!-- Extracted from AboutPanel.axaml (was the HelpContentPanel Grid). Root Grid unchanged 1:1;
+         AboutPanel now just toggles this whole control's IsVisible instead of an inline named Grid. -->
+
+    <Grid x:Name="HelpContentPanel" ColumnDefinitions="140,*">
+
+                <!-- ── Left: section nav ── -->
+                <Border Grid.Column="0" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0.5,0">
+                    <StackPanel Margin="6,12" Spacing="4">
+
+                        <Button x:Name="HelpNavStart" Classes="device-item help-nav active" Click="HelpSection_Click" Tag="start"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <materialIcons:MaterialIcon Grid.Column="0" Kind="CableData" Width="16" Height="16"
+                                                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.start]}" Classes="option-title"
+                                           FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="HelpNavSettings" Classes="device-item help-nav" Click="HelpSection_Click" Tag="settings"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <materialIcons:MaterialIcon Grid.Column="0" Kind="TuneVariant" Width="16" Height="16"
+                                                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.settings]}" Classes="option-title"
+                                           FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="HelpNavQuality" Classes="device-item help-nav" Click="HelpSection_Click" Tag="quality"
+                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                             <Grid ColumnDefinitions="Auto,*">
+                                 <materialIcons:MaterialIcon Grid.Column="0" Kind="HighDefinition" Width="16" Height="16"
+                                                              VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                 <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.quality]}" Classes="option-title"
+                                            FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                             </Grid>
+                         </Button>
+
+                         <Button x:Name="HelpNavControls" Classes="device-item help-nav" Click="HelpSection_Click" Tag="controls"
+                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                             <Grid ColumnDefinitions="Auto,*">
+                                 <materialIcons:MaterialIcon Grid.Column="0" Kind="GestureTap" Width="16" Height="16"
+                                                              VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                 <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.controls]}" Classes="option-title"
+                                            FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                             </Grid>
+                         </Button>
+
+                         <Button x:Name="HelpNavPreview" Classes="device-item help-nav" Click="HelpSection_Click" Tag="preview"
+                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                             <Grid ColumnDefinitions="Auto,*">
+                                 <materialIcons:MaterialIcon Grid.Column="0" Kind="CameraOutline" Width="16" Height="16"
+                                                              VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                 <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.preview]}" Classes="option-title"
+                                            FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                             </Grid>
+                         </Button>
+
+                         <Button x:Name="HelpNavVcam" Classes="device-item help-nav" Click="HelpSection_Click" Tag="vcam"
+                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                             <Grid ColumnDefinitions="Auto,*">
+                                 <materialIcons:MaterialIcon Grid.Column="0" Kind="Webcam" Width="16" Height="16"
+                                                              VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                 <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.vcam]}" Classes="option-title"
+                                            FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                             </Grid>
+                         </Button>
+
+                         <Button x:Name="HelpNavTray" Classes="device-item help-nav" Click="HelpSection_Click" Tag="tray"
+                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,8">
+                             <Grid ColumnDefinitions="Auto,*">
+                                 <materialIcons:MaterialIcon Grid.Column="0" Kind="DockWindow" Width="16" Height="16"
+                                                              VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                 <TextBlock Grid.Column="1" Text="{Binding Loc[help.nav.tray]}" Classes="option-title"
+                                            FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                             </Grid>
+                         </Button>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Right: section content, swapped by IsVisible ── -->
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,18" Spacing="14">
+                        <StackPanel x:Name="HelpSecStart" IsVisible="True" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.start.title]}" Classes="card-header-title"/>
+
+                            <!-- Step 1: install the Android app -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{Binding Loc[help.start.step1_title]}" Classes="option-title" FontSize="13"/>
+                                <TextBlock Text="{Binding Loc[help.start.step1_body]}" Classes="help-body" TextWrapping="Wrap"/>
+                                <!-- Same TODO-URL pattern as GitHubLink_Click; points at Releases once published. -->
+                                <Button Classes="outline" Padding="16,0" MinHeight="40"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Click="DownloadAppLink_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="Android" Width="14" Height="14"/>
+                                        <TextBlock Text="{Binding Loc[help.start.download_app]}" FontSize="13" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+
+                            <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                            <!-- Step 2: open the app — shows IP badge -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{Binding Loc[help.start.step2_title]}" Classes="option-title" FontSize="13"/>
+                                <TextBlock Text="{Binding Loc[help.start.step2_body]}" Classes="help-body" TextWrapping="Wrap"/>
+                            </StackPanel>
+
+                            <!-- IP badge preview: 2 pills stacked vertically (idle on top, connected below) — replica of ViewportComponents.kt:IpBadge, vertical gives more width for side text -->
+                            <Grid ColumnDefinitions="160,*" ColumnSpacing="16">
+                                <StackPanel Grid.Column="0" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <!-- Idle: Wi-Fi + IP, indigo tint (#B01C1C2F ≈ lerp 0x0E0D14/primary 0.12) -->
+                                    <Border CornerRadius="20" Background="#B01C1C2F" Padding="12,6" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <materialIcons:MaterialIcon Kind="Wifi" Width="14" Height="14" Foreground="{DynamicResource AccentIndigoBrush}"/>
+                                            <TextBlock Text="192.168.1.42:8080" FontSize="11" FontWeight="Black" Foreground="White"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <materialIcons:MaterialIcon Kind="ChevronDown" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                                    <!-- Connected: Link + IP, green tint (#B015251E ≈ lerp 0x0E0D14/#4CD964 0.12) -->
+                                    <Border CornerRadius="20" Background="#B015251E" Padding="12,6" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <materialIcons:MaterialIcon Kind="Link" Width="14" Height="14" Foreground="#4CD964"/>
+                                            <TextBlock Text="192.168.1.42:8080" FontSize="11" FontWeight="Black" Foreground="White"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Loc[help.start.badge_hint]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                            <!-- Step 3: connect over USB or Wi-Fi -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{Binding Loc[help.start.step3_title]}" Classes="option-title" FontSize="13"/>
+                                <TextBlock Text="{Binding Loc[help.start.step3_body]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                                <!-- Live fragment: mirrors the discovered-device row from Sidebar's
+                                     Auto-discovery list (Button.device-item), just non-interactive here.
+                                     Two rows now — Wi-Fi and USB — so both connection types are shown side by side. -->
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <Border Width="34" Height="34" CornerRadius="10" Background="{DynamicResource AccentIndigoSoftBrush}">
+                                                <materialIcons:MaterialIcon Kind="Cellphone" Width="17" Height="17"
+                                                                             Foreground="{DynamicResource AccentIndigoBrush}"
+                                                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                <TextBlock Text="POCO F6" Classes="option-title" FontSize="13"/>
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="192.168.31.9" Classes="muted" FontSize="11"/>
+                                                    <materialIcons:MaterialIcon Kind="Wifi" Width="11" Height="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <Border Width="34" Height="34" CornerRadius="10" Background="{DynamicResource AccentIndigoSoftBrush}">
+                                                <materialIcons:MaterialIcon Kind="Cellphone" Width="17" Height="17"
+                                                                             Foreground="{DynamicResource AccentIndigoBrush}"
+                                                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                <TextBlock Text="Google Pixel 10a" Classes="option-title" FontSize="13"/>
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="USB" Classes="muted" FontSize="11"/>
+                                                    <materialIcons:MaterialIcon Kind="Usb" Width="11" Height="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="{Binding Loc[help.start.connection_hint]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                                <!-- Auto-connect preview: connected row with toggle (mirrors Sidebar ConnectedStatePanel autorenew button) -->
+                                <Grid ColumnDefinitions="280,*" ColumnSpacing="16">
+                                    <Border Grid.Column="0" Classes="card" Padding="10" VerticalAlignment="Center">
+                                        <Grid ColumnDefinitions="34,*,Auto">
+                                            <Border Grid.Column="0" Width="34" Height="34" CornerRadius="17" Background="{DynamicResource AccentIndigoSoftBrush}">
+                                                <materialIcons:MaterialIcon Kind="Cellphone" Width="17" Height="17" Foreground="{DynamicResource AccentIndigoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" Spacing="1">
+                                                <TextBlock Text="POCO F6" FontWeight="Medium" FontSize="13"/>
+                                                <TextBlock Text="192.168.31.9 · Android 16" Classes="muted" FontSize="11"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="2" Width="32" Height="32" CornerRadius="16" Background="{DynamicResource SurfaceContainerBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1">
+                                                <materialIcons:MaterialIcon Kind="Autorenew" Width="16" Height="16" Foreground="{DynamicResource AccentIndigoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Loc[help.start.autoconnect_hint]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- USB debugging guide — only for wired connection, skipped for Wi-Fi -->
+                            <Border Classes="card">
+                                <Grid>
+                                    <materialIcons:MaterialIcon Kind="DeveloperBoard" Classes="card-watermark"/>
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{Binding Loc[help.start.usb_debug_title]}" Classes="card-header-title"/>
+                                        <Border Classes="card-header-divider" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding Loc[help.start.usb_debug_intro]}" Classes="hint" TextWrapping="Wrap"/>
+
+                                        <Grid ColumnDefinitions="Auto,*" Margin="0,4,0,0">
+                                            <Border Width="22" Height="22" CornerRadius="11" Background="{DynamicResource AccentIndigoSoftBrush}" VerticalAlignment="Top">
+                                                <TextBlock Text="1" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentIndigoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Margin="10,2,0,0" Text="{Binding Loc[help.start.usb_debug_step1]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Border Width="22" Height="22" CornerRadius="11" Background="{DynamicResource AccentIndigoSoftBrush}" VerticalAlignment="Top">
+                                                <TextBlock Text="2" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentIndigoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Margin="10,2,0,0" Text="{Binding Loc[help.start.usb_debug_step2]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Border Width="22" Height="22" CornerRadius="11" Background="{DynamicResource AccentIndigoSoftBrush}" VerticalAlignment="Top">
+                                                <TextBlock Text="3" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentIndigoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Margin="10,2,0,0" Text="{Binding Loc[help.start.usb_debug_step3]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                        </Grid>
+
+                                        <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,4,0,0"/>
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                            <materialIcons:MaterialIcon Grid.Column="0" Kind="InformationOutline" Width="13" Height="13" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Loc[help.start.usb_debug_hint2]}" Classes="hint" TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Screen-lock note stays plain hint text per design call — not a callout,
+                                 just the last line in the step list. -->
+                            <TextBlock Text="{Binding Loc[help.start.lock_hint]}" Classes="help-body" TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <!-- ═══════════ Section 2: Stream settings ═══════════ -->
+                        <StackPanel x:Name="HelpSecSettings" IsVisible="False" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.settings.title]}" Classes="card-header-title"/>
+
+                            <!-- Row 1: Session preview (Quality/Codec/Resolution + VCam) — narrowed to Sidebar width (320 incl. card padding) with per-row annotations to the side, precisely level with the controls (mirrors HelpSecTray per-element alignment) -->
+                            <Grid ColumnDefinitions="320,*" ColumnSpacing="16">
+                                <!-- Live fragment: same Grid layout as Sidebar's Session card (Sidebar.axaml ~line 363) -->
+                                <Border Grid.Column="0" Classes="card" VerticalAlignment="Top">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="*,*">
+                                            <StackPanel Grid.Column="0" Margin="0,0,4,0" Spacing="6">
+                                                <TextBlock Text="{Binding Loc[label.quality]}" Classes="field-label"/>
+                                                <controls:AppDropdown x:Name="HelpQualityPreview" HorizontalAlignment="Stretch" IsHitTestVisible="False"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="4,0,0,0" Spacing="6">
+                                                <TextBlock Text="{Binding Loc[label.codec]}" Classes="field-label"/>
+                                                <controls:AppDropdown x:Name="HelpCodecPreview" HorizontalAlignment="Stretch" IsHitTestVisible="False"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Resolution — locked once streaming starts -->
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{Binding Loc[label.resolution]}" Classes="field-label"/>
+                                            <controls:AppDropdown x:Name="HelpResolutionPreview" HorizontalAlignment="Stretch" IsHitTestVisible="False"/>
+                                        </StackPanel>
+
+                                        <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,4"/>
+
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <materialIcons:MaterialIcon Kind="Video" Width="15" Height="15" Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <TextBlock Text="{Binding Loc[label.virtual_camera]}" FontSize="13"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Classes="switch-track">
+                                                <Ellipse Classes="switch-thumb" HorizontalAlignment="Right" Margin="2"/>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Side annotations — 1:1 row-matched to the card on the left. Each top row has a field-label (12) + Spacing 6 + AppDropdown 44 = ~62 total; the hint must be centered on the dropdown (bottom 44), not on the whole row, so we mirror that 20+44 split with an inner Grid. -->
+                                <StackPanel Grid.Column="1" Spacing="10" VerticalAlignment="Top">
+                                    <!-- Row 1: Quality/Codec dropdowns -->
+                                    <Grid Height="62">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="1" helpers:RichText.Text="{Binding Loc[help.settings.body]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <!-- Row 2: Resolution dropdown -->
+                                    <Grid Height="62">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="1" helpers:RichText.Text="{Binding Loc[help.settings.resolution_label]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,4"/>
+                                    <TextBlock helpers:RichText.Text="{Binding Loc[help.settings.resolution_hint]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center" MinHeight="27"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Row 2: Start button — same primary style as Sidebar's StreamToggle, with hint to the side -->
+                            <Grid ColumnDefinitions="320,*" ColumnSpacing="16">
+                                <Border Grid.Column="0" Classes="card" VerticalAlignment="Top">
+                                    <Button Classes="primary" HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center" IsHitTestVisible="False">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding Loc[btn.start]}"/>
+                                            <materialIcons:MaterialIcon Kind="Play" Width="15" Height="15"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Border>
+                                <TextBlock Grid.Column="1" helpers:RichText.Text="{Binding Loc[help.settings.start_button_hint]}" Classes="help-body" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- ═══════════ Section 3: Video quality ═══════════ -->
+                        <StackPanel x:Name="HelpSecQuality" IsVisible="False" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.quality.title]}" Classes="card-header-title"/>
+                            <TextBlock Text="{Binding Loc[help.quality.body]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                            <!-- Codec comparison — three rows with dot + label, mirrors metric cards style -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.quality.codec_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <!-- Was 3 near-identical Grid rows (dot + TextBlock each) — collapsed into one RichText
+                                         bullet list now that help.quality.codec_list is "- H.264 — ...\n- H.265 — ...\n- MJPEG — ...".
+                                         Loses the per-row indigo/indigo/muted dot coloring (all bullets render the same "•");
+                                         that distinction wasn't carrying real meaning (H.264 vs H.265 aren't ranked), so
+                                         acceptable to flatten. Re-split into rows if a future row needs its own accent again. -->
+                                    <TextBlock helpers:RichText.Text="{Binding Loc[help.quality.codec_list]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.quality.quality_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <!-- Was 3 separate TextBlocks with StackPanel Spacing giving the gap between them —
+                                         now one RichText bullet list (help.quality.quality_list), same visual result. -->
+                                    <TextBlock helpers:RichText.Text="{Binding Loc[help.quality.quality_list]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.quality.resolution_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <!-- Was 3 near-identical Grid rows (indigo dot + TextBlock) — collapsed into one
+                                         RichText bullet list (help.quality.resolution_list). All 3 dots were the same
+                                         indigo color anyway (unlike codec's indigo/indigo/muted), so nothing lost. -->
+                                    <TextBlock helpers:RichText.Text="{Binding Loc[help.quality.resolution_list]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Variability callout — stream-following tint (HelpNavAccent*): indigo at idle,
+                                 amber while live. Same swap as the help-nav active tab (MainWindow), so the
+                                 callout stays in the tab's accent language instead of being hardcoded amber. -->
+                            <Border Classes="card" BorderThickness="1" BorderBrush="{DynamicResource HelpNavAccentBrush}" Background="{DynamicResource HelpNavAccentSoftBrush}">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <materialIcons:MaterialIcon Kind="InformationOutline" Width="16" Height="16" Foreground="{DynamicResource HelpNavAccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Text="{Binding Loc[help.quality.variability_title]}" Classes="option-title" FontSize="12.5" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Loc[help.quality.variability_body]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ═══════════ Section 4: Live controls ═══════════ -->
+                        <StackPanel x:Name="HelpSecControls" IsVisible="False" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.controls.title]}" Classes="card-header-title"/>
+                            <TextBlock Text="{Binding Loc[help.controls.body]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                            <!-- Row 1: Quick Commands preview narrowed to Sidebar width (320) with active-state hint to the side — mirrors Settings layout -->
+                            <Grid ColumnDefinitions="320,*" ColumnSpacing="16">
+                                <!-- Live fragment: byte-for-byte same classes as Sidebar's QuickCommandsCard (Buttons.axaml: .ctrl.ctrl-row). Flash is active to demo amber highlight. -->
+                                <Border Grid.Column="0" Classes="card" VerticalAlignment="Top">
+                                    <Grid ColumnDefinitions="*,*,*,*">
+                                        <Button Grid.Column="0" Classes="ctrl ctrl-row" Margin="0,0,4,0" IsHitTestVisible="False">
+                                            <materialIcons:MaterialIcon Kind="Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                        <Button Grid.Column="1" Classes="ctrl ctrl-row" Margin="4,0,4,0" IsHitTestVisible="False">
+                                            <materialIcons:MaterialIcon Kind="ScreenRotation" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                        <Button Grid.Column="2" Classes="ctrl ctrl-row" Margin="4,0,4,0" IsHitTestVisible="False">
+                                            <materialIcons:MaterialIcon Kind="Eye" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                        <Button Grid.Column="3" Classes="ctrl ctrl-row active" Margin="4,0,0,0" IsHitTestVisible="False">
+                                            <materialIcons:MaterialIcon Kind="Flash" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Side hint: amber highlight = active, tied to the Flash button on the right edge — fixed Grid so TextBlock can wrap into 2-3 lines (Horizontal StackPanel gave infinite width) -->
+                                <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                        <Border Width="10" Height="10" CornerRadius="5" Background="{DynamicResource AccentAmberBrush}" VerticalAlignment="Top" Margin="0,4,0,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Loc[help.controls.active_hint]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Legend: fixed 44px icon column so all texts start at the same X even when row has 1 vs 2 icons (14 / 14↔14) — eliminates ragged alignment seen on screenshot -->
+                            <StackPanel Spacing="8">
+                                <Grid ColumnDefinitions="44,*" ColumnSpacing="8">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="Image" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}"/>
+                                        <TextBlock Text="↔" FontSize="8" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" Opacity="0.7"/>
+                                        <materialIcons:MaterialIcon Kind="Account" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Loc[help.controls.flip]}" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid ColumnDefinitions="44,*" ColumnSpacing="8">
+                                    <materialIcons:MaterialIcon Grid.Column="0" Kind="ScreenRotation" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Loc[help.controls.rotate]}" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid ColumnDefinitions="44,*" ColumnSpacing="8">
+                                    <materialIcons:MaterialIcon Grid.Column="0" Kind="Eye" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Loc[help.controls.preview]}" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid ColumnDefinitions="44,*" ColumnSpacing="8">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="Flash" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}"/>
+                                        <TextBlock Text="↔" FontSize="8" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" Opacity="0.7"/>
+                                        <materialIcons:MaterialIcon Kind="WbSunny" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Loc[help.controls.flashlight]}" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- ═══════════ Section 5: Preview & capture ═══════════ -->
+                        <StackPanel x:Name="HelpSecPreview" IsVisible="False" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.preview.title]}" Classes="card-header-title"/>
+                            <TextBlock Text="{Binding Loc[help.preview.body]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                            <!-- Screenshot — exact PreviewArea capsule (Buttons.axaml:685 preview-capsule + 694 preview-pill.icon-only), screenshot highlighted -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.preview.screenshot_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <TextBlock helpers:RichText.Text="{Binding Loc[help.preview.screenshot_body]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                    <!-- Mock: video frame simulation (dark #0E0D14 + scrim) with real capsule — byte-for-byte PreviewArea.axaml:210 -->
+                                    <Border CornerRadius="12" Background="#0E0D14" ClipToBounds="True" Height="86" HorizontalAlignment="Stretch">
+                                        <Grid>
+                                            <!-- Subtle scrim like PreviewBottomScrim to make capsule legible -->
+                                            <Border VerticalAlignment="Bottom" Height="60" IsHitTestVisible="False">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
+                                                        <GradientStop Color="#CC000000" Offset="0"/>
+                                                        <GradientStop Color="#00000000" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+                                            <Border Classes="preview-capsule" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" IsHitTestVisible="False">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <!-- Screenshot — wrapped with amber border to highlight target (Buttons.axaml preview-pill is Transparent, so highlight via wrapper) -->
+                                                    <Border CornerRadius="12" BorderBrush="{DynamicResource AccentAmberBrush}" BorderThickness="1.5">
+                                                        <Button Classes="preview-pill icon-only" IsHitTestVisible="False">
+                                                            <materialIcons:MaterialIcon Kind="CameraOutline"/>
+                                                        </Button>
+                                                    </Border>
+                                                    <Rectangle Width="1" Height="24" Fill="#26FFFFFF" VerticalAlignment="Center"/>
+                                                    <Button Classes="preview-pill icon-only" IsHitTestVisible="False">
+                                                        <materialIcons:MaterialIcon Kind="VideoOff"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Preview paused — exact PreviewPausedPanel + bottom capsule with pause highlighted (PreviewArea.axaml:160 + 210, Buttons.axaml:731 active) -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.preview.paused_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <TextBlock Text="{Binding Loc[help.preview.paused_body]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                    <!-- Mock: dark preview frame — increased to 240px (was 200 still tight with BoxShadow/padding) + RowDefinitions avoids overlap -->
+                                    <Border CornerRadius="12" Background="#0E0D14" ClipToBounds="True" HorizontalAlignment="Stretch" Height="240">
+                                        <Grid RowDefinitions="*,Auto">
+                                            <Border Grid.Row="0" Classes="preview-state-card shown" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Margin="0,18,0,12">
+                                                <StackPanel Spacing="10" HorizontalAlignment="Center">
+                                                    <Border Width="44" Height="44" CornerRadius="14" Background="{DynamicResource AccentAmberSoftBrush}" BorderBrush="#33FBBF24" BorderThickness="1" HorizontalAlignment="Center">
+                                                        <materialIcons:MaterialIcon Kind="VideoOff" Width="18" Height="18" Foreground="{DynamicResource AccentAmberBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                                        <TextBlock Text="{Binding Loc[label.preview_paused]}" Foreground="White" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Loc[label.preview_paused_hint]}" Foreground="#99CBD5E1" FontSize="11" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Bottom capsule — same as PreviewControlsCapsule, but Pause is amber active, Screenshot disabled 0.4 -->
+                                            <Border Grid.Row="1" Classes="preview-capsule" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" IsHitTestVisible="False">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <Button Classes="preview-pill icon-only" IsHitTestVisible="False" Opacity="0.4">
+                                                        <materialIcons:MaterialIcon Kind="CameraOutline"/>
+                                                    </Button>
+                                                    <Rectangle Width="1" Height="24" Fill="#26FFFFFF" VerticalAlignment="Center"/>
+                                                    <Button Classes="preview-pill icon-only active" IsHitTestVisible="False">
+                                                        <materialIcons:MaterialIcon Kind="VideoOff"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Footnote: Black screen on phone — not a separate card, just a hint line -->
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                <materialIcons:MaterialIcon Kind="InformationOutline" Width="13" Height="13" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Loc[help.preview.footnote]}" Classes="hint" TextWrapping="Wrap"/>
+                            </Grid>
+
+                            <!-- Metrics row — 4× exactly as PreviewArea.axaml:347 (FPS/RTT/Decode/Resolution) -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.preview.metrics_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <TextBlock Text="{Binding Loc[help.preview.metrics_body]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6" HorizontalAlignment="Stretch">
+                                        <Border Grid.Column="0" Classes="metric-card">
+                                            <Panel>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Border Classes="metric-icon">
+                                                        <materialIcons:MaterialIcon Kind="SpeedometerMedium" Width="15" Height="15" Foreground="{DynamicResource AccentAmberBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Classes="metric-title" Text="{Binding Loc[label.fps]}"/>
+                                                        <TextBlock Classes="metric-val" Text="30"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <TextBlock Text="½" FontSize="18" FontWeight="Bold" Opacity="0.16" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,4,0" ToolTip.Tip="{Binding Loc[label.fps_cap_hint]}"/>
+                                            </Panel>
+                                        </Border>
+                                        <Border Grid.Column="1" Classes="metric-card">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <Border Classes="metric-icon">
+                                                    <materialIcons:MaterialIcon Kind="Wifi" Width="15" Height="15" Foreground="{DynamicResource AccentAmberBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                    <TextBlock Classes="metric-title" Text="{Binding Loc[label.rtt]}"/>
+                                                    <TextBlock Classes="metric-val" Text="24 ms"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Column="2" Classes="metric-card">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <Border Classes="metric-icon">
+                                                    <materialIcons:MaterialIcon Kind="TimerOutline" Width="15" Height="15" Foreground="{DynamicResource AccentAmberBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                    <TextBlock Classes="metric-title" Text="{Binding Loc[label.latency]}"/>
+                                                    <TextBlock Classes="metric-val" Text="12 ms"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Column="3" Classes="metric-card">
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <Border Classes="metric-icon">
+                                                    <materialIcons:MaterialIcon Kind="Monitor" Width="15" Height="15" Foreground="{DynamicResource AccentAmberBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                    <TextBlock Classes="metric-title" Text="{Binding Loc[label.resolution]}"/>
+                                                    <TextBlock Classes="metric-val" Text="1280×720"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ═══════════ Section 6: Virtual camera ═══════════ -->
+                        <StackPanel x:Name="HelpSecVcam" IsVisible="False" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.vcam.title]}" Classes="card-header-title"/>
+                            <TextBlock Text="{Binding Loc[help.vcam.body]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.vcam.how_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <TextBlock helpers:RichText.Text="{Binding Loc[help.vcam.how_body]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap"/>
+                                    <!-- Mock: app camera picker dropdown -->
+                                    <Border Padding="10" CornerRadius="8" Background="{DynamicResource SurfaceContainerBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <materialIcons:MaterialIcon Grid.Column="0" Kind="Video" Width="14" Height="14" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <TextBlock Grid.Column="1" Text="DirectShow Softcam" FontSize="12.5" FontWeight="Medium" VerticalAlignment="Center"/>
+                                            <materialIcons:MaterialIcon Grid.Column="2" Kind="Check" Width="14" Height="14" Foreground="{DynamicResource AccentIndigoBrush}" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                        <materialIcons:MaterialIcon Grid.Column="0" Kind="InformationOutline" Width="13" Height="13" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Loc[help.vcam.tip]}" Classes="hint" TextWrapping="Wrap"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- States via switch — 3 visual rows: off / on indigo (idle) / on amber (live), exactly Sidebar.axaml:403 + Controls.axaml:57 -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{Binding Loc[help.vcam.state_title]}" Classes="card-header-title" FontSize="13"/>
+                                    <Border Classes="card-header-divider"/>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Classes="switch-track" Background="{DynamicResource SwitchTrackBrush}" VerticalAlignment="Center">
+                                            <Ellipse Classes="switch-thumb" HorizontalAlignment="Left" Margin="2"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Loc[help.vcam.state_off]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Classes="switch-track" Background="{DynamicResource AccentIndigoBrush}" VerticalAlignment="Center">
+                                            <Ellipse Classes="switch-thumb" HorizontalAlignment="Right" Margin="2"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Loc[help.vcam.state_indigo]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Classes="switch-track" Background="{DynamicResource AccentAmberBrush}" VerticalAlignment="Center">
+                                            <Ellipse Classes="switch-thumb" HorizontalAlignment="Right" Margin="2"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Loc[help.vcam.state_amber]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ═══════════ Section 7: Tray mode ═══════════ -->
+                        <StackPanel x:Name="HelpSecTray" IsVisible="False" Spacing="14">
+                            <TextBlock Text="{Binding Loc[help.tray.title]}" Classes="card-header-title"/>
+                            <TextBlock Text="{Binding Loc[help.tray.body]}" Classes="help-body" TextWrapping="Wrap"/>
+
+                            <!-- Minimize-to-tray hint: which title-bar button does it (TriangleDown, same as MainWindow.axaml) -->
+                            <Border Classes="card" Padding="12">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Border Width="32" Height="32" CornerRadius="9" Background="{DynamicResource SurfaceContainerBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="TriangleDown" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Loc[help.tray.minimize_hint]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Live mock: enlarged to 280px card (was 260) + per-element side alignment — each description row MinHeight matches the corresponding mock row height so texts sit level with their UI element -->
+                            <Grid ColumnDefinitions="300,*" ColumnSpacing="16">
+                                <Border Grid.Column="0" Classes="card" Width="280" Padding="16" VerticalAlignment="Top" IsHitTestVisible="False">
+                                    <StackPanel Spacing="12">
+                                        <!-- Header: DroidLens + LIVE badge + expand -->
+                                        <Grid ColumnDefinitions="*,Auto,Auto">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+                                                <TextBlock Text="Droid" FontSize="15" FontWeight="Black" LetterSpacing="-0.4" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="Lens" FontSize="15" FontWeight="Black" LetterSpacing="-0.4" Foreground="{DynamicResource AccentIndigoBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5" Margin="0,0,10,0" VerticalAlignment="Center">
+                                                <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentAmberBrush}"/>
+                                                <TextBlock Text="LIVE" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="0.4" Foreground="{DynamicResource AccentAmberBrush}"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="2" Width="32" Height="32" CornerRadius="16" Background="{DynamicResource SurfaceContainerBrush}">
+                                                <materialIcons:MaterialIcon Kind="OpenInNew" Width="14" Height="14" Foreground="{DynamicResource AccentIndigoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+
+                                        <TextBlock Text="POCO F6" FontSize="13.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" FontSize="12" FontWeight="Medium" VerticalAlignment="Center">
+                                                <Run Text="H.264" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                <Run Text=" · " Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <Run Text="Medium" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                            </TextBlock>
+                                            <!-- VCam active during LIVE = amber (was indigo, fixed per request — TrayPopup vcam-on-live is amber, vcam-on-idle is indigo) -->
+                                            <Border Grid.Column="1" Padding="10,0" Height="26" CornerRadius="13" Background="{DynamicResource AccentAmberSoftBrush}" BorderBrush="{DynamicResource AccentAmberBrush}" BorderThickness="1">
+                                                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                                    <materialIcons:MaterialIcon Kind="Video" Width="13" Height="13" Foreground="{DynamicResource AccentAmberBrush}"/>
+                                                    <TextBlock Text="VCam" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource AccentAmberBrush}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*,*,*" Margin="0,4,0,0">
+                                            <Border Grid.Column="0" Margin="0,0,3,0" CornerRadius="18" Background="{DynamicResource CtrlBtnBackgroundBrush}" BorderBrush="{DynamicResource CtrlBtnBorderBrush}" BorderThickness="1" Height="52" Padding="0">
+                                                <materialIcons:MaterialIcon Kind="Image" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Column="1" Margin="3,0,3,0" CornerRadius="18" Background="{DynamicResource CtrlBtnBackgroundBrush}" BorderBrush="{DynamicResource CtrlBtnBorderBrush}" BorderThickness="1" Height="52" Padding="0">
+                                                <materialIcons:MaterialIcon Kind="ScreenRotation" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Column="2" Margin="3,0,3,0" CornerRadius="18" Background="{DynamicResource CtrlBtnBackgroundBrush}" BorderBrush="{DynamicResource CtrlBtnBorderBrush}" BorderThickness="1" Height="52" Padding="0">
+                                                <materialIcons:MaterialIcon Kind="Eye" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Column="3" Margin="3,0,0,0" CornerRadius="18" Background="{DynamicResource AccentAmberSoftBrush}" BorderBrush="{DynamicResource CtrlBtnActiveBorderBrush}" BorderThickness="1" Height="52" Padding="0">
+                                                <materialIcons:MaterialIcon Kind="Flash" Width="18" Height="18" Foreground="{DynamicResource AccentAmberBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+
+                                        <Border CornerRadius="18" Background="{DynamicResource AccentAmberBrush}" Padding="14,15" HorizontalAlignment="Stretch">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                                <materialIcons:MaterialIcon Kind="Stop" Width="15" Height="15" Foreground="{DynamicResource OnAccentBrush}"/>
+                                                <TextBlock Text="{Binding Loc[btn.stop]}" Foreground="{DynamicResource OnAccentBrush}" FontWeight="Medium" FontSize="14"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Side description: 4 rows aligned per-element with the mock (header+device 62px, VCam 26px, commands 52px, button 44px) + dividers — VerticalAlignment Top so tops line up, MinHeight = mock row height -->
+                                <StackPanel Grid.Column="1" Spacing="7" VerticalAlignment="Top">
+                                    <!-- Row 1: header (32px) + device name (18px) + 12px gap = 62px combined -->
+                                    <TextBlock Text="{Binding Loc[help.tray.side_live]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" MinHeight="62" VerticalAlignment="Center"/>
+                                    <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,1"/>
+                                    <TextBlock Text="{Binding Loc[help.tray.side_vcam]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" MinHeight="26" VerticalAlignment="Center"/>
+                                    <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,1"/>
+                                    <TextBlock Text="{Binding Loc[help.tray.side_commands]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" MinHeight="52" VerticalAlignment="Center"/>
+                                    <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,1"/>
+                                    <TextBlock Text="{Binding Loc[help.tray.side_stream]}" Classes="help-body" FontSize="12.5" TextWrapping="Wrap" MinHeight="44" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,242 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:DroidLens.Client.Views"
+        xmlns:vm="clr-namespace:DroidLens.Client.ViewModels"
+        xmlns:conv="clr-namespace:Avalonia.Data.Converters;assembly=Avalonia.Base"
+        x:Class="DroidLens.Client.Views.TrayPopupWindow"
+        x:DataType="vm:MainViewModel"
+        Title="DroidLens"
+        Width="260"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        SystemDecorations="None"
+        Topmost="True"
+        WindowStartupLocation="Manual"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        FontFamily="Inter,Segoe UI,sans-serif">
+
+    <!--
+        Minimal always-on-top popup that appears next to the tray icon on left-click.
+        Reuses MainViewModel directly (same instance as MainWindow.DataContext — see
+        App.axaml.cs) and the exact same icon converters (CameraLensIconConverter,
+        BlackScreenIconConverter, FlashlightIconConverter, StreamIconConverter) and
+        Loc[...] localization keys the sidebar's own Quick Commands card uses, so
+        this stays in lockstep with the main window instead of drifting with its
+        own hardcoded copies.
+
+        No AppBackgroundTexture here (deliberately skipped for now — see chat notes):
+        this window opens/closes on every tray click, so it stays a plain Border.card
+        on transparent background rather than paying for the glow+grain layer.
+        Closes itself on Deactivated (see code-behind) — same UX as the Windows
+        clock/volume flyouts: click away and it's gone.
+    -->
+    <Border Classes="card" Margin="8" Padding="0" ClipToBounds="True">
+        <StackPanel Spacing="0">
+
+            <!-- ── Header: frosted fade (TrayHeaderFadeBrush) — pure transparency gradient in
+                 the card's own tone: opaque frosted glass at the top so the wordmark/badge
+                 read over any wallpaper, dissolving into the live card below. No dark tint,
+                 so Light stays clean. "Droid" is back to adaptive primary; "Lens" stays
+                 ScrollbarAccentBrush (title-bar/About-hero match, follows IsStreaming). -->
+            <Border Padding="16,12,16,14" Background="{DynamicResource TrayHeaderFadeBrush}">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <!-- Brand wordmark on the frosted band: adaptive "Droid" + accent "Lens". -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+                    <TextBlock Text="Droid" FontSize="15" FontWeight="Black" LetterSpacing="-0.4"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Lens" FontSize="15" FontWeight="Black" LetterSpacing="-0.4"
+                               Foreground="{DynamicResource ScrollbarAccentBrush}"/>
+                </StackPanel>
+
+                <!-- LIVE/IDLE badge — flattened per chat request: no more pill/highlight
+                     background (was reading as a clickable button). Just a colored dot
+                     + text, no Border/fill, so it reads as a plain status label. -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5" Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding IsStreaming}">
+                    <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentAmberBrush}"/>
+                    <TextBlock Text="LIVE" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="0.4"
+                               Foreground="{DynamicResource AccentAmberBrush}"/>
+                </StackPanel>
+                <!-- Idle state: quiet indigo dot — keeps the idle/live pairing visually
+                     consistent (indigo = idle, amber = live) with the rest of the app,
+                     same flattened no-fill treatment as the LIVE state above. -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5" Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding !IsStreaming}">
+                    <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentIndigoBrush}"/>
+                    <TextBlock Text="IDLE" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="0.4"
+                               Foreground="{DynamicResource AccentIndigoBrush}"/>
+                </StackPanel>
+
+                <!-- Expand-to-window — moved to the true far right edge (Column 2,
+                     no trailing margin), enlarged 32→38px, with an explicit hover-zoom
+                     ScaleTransform (style-only TransformOperationsTransition on
+                     RenderTransform doesn't animate reliably in this Avalonia build —
+                     see the icon-round comment above — so the transform is declared
+                     inline here and driven by :pointerover directly). -->
+                <!-- Expand-to-window — same ctrl material as the quick-command buttons below
+                     (CtrlBtnBackgroundBrush gradient + hairline CtrlBtnBorderBrush) so it reads
+                     as one family; geometry stays a 38px circle to fit the header row (full
+                     .ctrl/.ctrl-row classes would force 52-76px height and blow up the header).
+                     Icon stays neutral TextMutedBrush — no accent here per request. -->
+                <Button Grid.Column="2" Classes="icon-round" Width="38" Height="38" CornerRadius="19"
+                        Background="{DynamicResource CtrlBtnBackgroundBrush}"
+                        BorderBrush="{DynamicResource CtrlBtnBorderBrush}" BorderThickness="1"
+                        Click="Expand_Click"
+                        RenderTransformOrigin="50%,50%"
+                        ToolTip.Tip="{Binding Loc[tray.expand]}">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Button.RenderTransform>
+                    <Button.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                        </Transitions>
+                    </Button.Transitions>
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="RenderTransform">
+                                <ScaleTransform ScaleX="1.12" ScaleY="1.12"/>
+                            </Setter>
+                        </Style>
+                    </Button.Styles>
+                    <materialIcons:MaterialIcon Kind="OpenInNew" Width="18" Height="18"
+                                                 Foreground="{DynamicResource TextMutedBrush}"/>
+                </Button>
+            </Grid>
+            </Border>
+
+            <!-- ── Body ── -->
+            <StackPanel Spacing="12" Margin="16,2,16,16">
+
+            <!-- ── Device name ──────────────────────────────────────────────── -->
+            <TextBlock Text="{Binding DeviceModel}" FontSize="13.5" FontWeight="Medium"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+            <!-- ── Codec · Quality + Virtual Camera toggle ──
+                 VCam moved out of the phone-command row below (see chat discussion —
+                 it's a PC-local action, not something sent to the phone, so grouping it
+                 with Flip/Rotate/Black screen/Flashlight was conceptually misleading).
+                 Placed here instead, next to the stream's own codec/quality readout,
+                 since VCam-on-or-off reads as part of the "local stream status" info
+                 rather than a phone control. Codec gets AccentIndigoBrush instead of
+                 the previous all-muted text for better legibility at this size. -->
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" FontSize="12" FontWeight="Medium" VerticalAlignment="Center"
+                           Opacity="{Binding IsStreaming, Converter={x:Static local:BoolToDimOpacityConverter.Instance}}">
+                    <Run Text="{Binding CurrentCodec}" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <Run Text=" · " Foreground="{DynamicResource TextMutedBrush}"/>
+                    <Run Text="{Binding QualityDisplayText}" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                </TextBlock>
+
+                <Button Grid.Column="1" Classes="ctrl ctrl-row"
+                        Padding="10,0" Height="26" CornerRadius="13"
+                        Click="VCam_Click" ToolTip.Tip="{Binding Loc[label.virtual_camera]}">
+                    <!-- vcam-on-idle: VCam is on AND no stream running → indigo.
+                         vcam-on-live: VCam is on AND stream is running → amber.
+                         VCam "off" gets neither class, so it stays the plain
+                         neutral ctrl look. Composed in-XAML via MultiBinding so no
+                         new ViewModel properties are required. -->
+                    <Classes.vcam-on-idle>
+                        <MultiBinding Converter="{x:Static conv:BoolConverters.And}">
+                            <Binding Path="IsVCamActive"/>
+                            <Binding Path="!IsStreaming"/>
+                        </MultiBinding>
+                    </Classes.vcam-on-idle>
+                    <Classes.vcam-on-live>
+                        <MultiBinding Converter="{x:Static conv:BoolConverters.And}">
+                            <Binding Path="IsVCamActive"/>
+                            <Binding Path="IsStreaming"/>
+                        </MultiBinding>
+                    </Classes.vcam-on-live>
+                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                        <materialIcons:MaterialIcon Kind="Video" Width="13" Height="13"/>
+                        <TextBlock Text="VCam" FontSize="10.5" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- ── Quick commands row: Flip / Rotate / Black screen / Flashlight ──
+                 Phone-side commands only now — VCam moved above (see comment there).
+                 Same converters/Loc keys as the sidebar's own "Live controls" card
+                 (MainWindow.axaml). Flip stays enabled as soon as we're connected
+                 (matches the sidebar's own gating); Rotate/Black/Flashlight require
+                 IsStreaming. -->
+            <Grid ColumnDefinitions="*,*,*,*" Margin="0,4,0,0">
+                <Button Grid.Column="0" Classes="ctrl ctrl-row flip-card" Margin="0,0,3,0"
+                        IsEnabled="{Binding IsConnected}"
+                        Click="Flip_Click" ToolTip.Tip="{Binding Loc[btn.flip]}">
+                    <materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <materialIcons:MaterialIcon.Kind>
+                            <Binding Path="IsFrontCamera" Converter="{x:Static local:CameraLensIconConverter.Instance}"/>
+                        </materialIcons:MaterialIcon.Kind>
+                    </materialIcons:MaterialIcon>
+                </Button>
+                <Button Grid.Column="1" Classes="ctrl ctrl-row" Margin="3,0,3,0"
+                        IsEnabled="{Binding IsStreaming}"
+                        Click="Rotate_Click" ToolTip.Tip="{Binding Loc[btn.rotate]}">
+                    <materialIcons:MaterialIcon Kind="ScreenRotation" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+                <Button Grid.Column="2" Classes="ctrl ctrl-row" Classes.active="{Binding IsBlackScreen}" Margin="3,0,3,0"
+                        IsEnabled="{Binding IsStreaming}"
+                        Click="BlackScreen_Click" ToolTip.Tip="{Binding Loc[btn.blackscreen]}">
+                    <materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <materialIcons:MaterialIcon.Kind>
+                            <Binding Path="IsBlackScreen" Converter="{x:Static local:BlackScreenIconConverter.Instance}"/>
+                        </materialIcons:MaterialIcon.Kind>
+                    </materialIcons:MaterialIcon>
+                </Button>
+                <Button Grid.Column="3" Classes="ctrl ctrl-row" Classes.active="{Binding IsFlashlightOn}" Margin="3,0,0,0"
+                        IsEnabled="{Binding IsStreaming}"
+                        Click="Flashlight_Click" ToolTip.Tip="{Binding Loc[btn.flashlight]}">
+                    <materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <materialIcons:MaterialIcon.Kind>
+                            <MultiBinding Converter="{x:Static local:FlashlightIconConverter.Instance}">
+                                <Binding Path="IsFlashlightOn"/>
+                                <Binding Path="IsFrontCamera"/>
+                            </MultiBinding>
+                        </materialIcons:MaterialIcon.Kind>
+                    </materialIcons:MaterialIcon>
+                </Button>
+            </Grid>
+
+            <!-- ── Start / Stop stream — identical pattern to the sidebar button in
+                 MainWindow.axaml (Classes.primary/danger + StreamButtonText + the
+                 existing StreamIconConverter), just re-declared here since this is a
+                 separate Window/visual tree. ── -->
+            <Button Classes.primary="{Binding !IsStreaming}"
+                    Classes.danger="{Binding IsStreaming}"
+                    Classes.btn-pulse="{Binding IsStreamBusy}"
+                    Click="StreamToggle_Click"
+                    IsEnabled="{Binding IsConnected}"
+                    RenderTransformOrigin="50%,50%">
+                <Button.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1">
+                        <ScaleTransform.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                                <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                            </Transitions>
+                        </ScaleTransform.Transitions>
+                    </ScaleTransform>
+                </Button.RenderTransform>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <materialIcons:MaterialIcon Width="15" Height="15"
+                                                 IsVisible="{Binding !IsStreamStarting}"
+                                                 Foreground="{DynamicResource OnAccentBrush}">
+                        <materialIcons:MaterialIcon.Kind>
+                            <Binding Path="IsStreaming" Converter="{x:Static local:StreamIconConverter.Instance}"/>
+                        </materialIcons:MaterialIcon.Kind>
+                    </materialIcons:MaterialIcon>
+                    <TextBlock Text="{Binding StreamButtonText}" Foreground="{DynamicResource OnAccentBrush}"/>
+                </StackPanel>
+            </Button>
+
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

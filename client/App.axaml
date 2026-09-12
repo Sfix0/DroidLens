@@ -1,0 +1,264 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="DroidLens.Client.App"
+             RequestedThemeVariant="Dark">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+
+                <!-- ============================= DARK ============================= -->
+                <ResourceDictionary x:Key="Dark">
+
+                    <!-- Accent -->
+                    <Color x:Key="AccentIndigoColor">#818CF8</Color>
+                    <Color x:Key="AccentAmberColor">#FBBF24</Color>
+
+                    <!-- Surfaces -->
+                    <Color x:Key="BgBaseColor">#0E0D14</Color>
+                    <Color x:Key="BgPanelColor">#161420</Color>
+                    <Color x:Key="SurfaceContainerColor">#1D1B29</Color>
+
+                    <!-- Text -->
+                    <Color x:Key="TextPrimaryColor">#F1F5F9</Color>
+                    <Color x:Key="TextMutedColor">#6B6880</Color>
+
+                    <!-- Border -->
+                    <Color x:Key="BorderSubtleColor">#1AFFFFFF</Color>
+
+                    <!-- Status -->
+                    <Color x:Key="SuccessColor">#4ADE80</Color>
+                    <Color x:Key="WarningColor">#F59E0B</Color>
+                    <Color x:Key="ErrorColor">#F87171</Color>
+
+                    <!-- On-accent (text/icon color placed on top of a solid accent fill) -->
+                    <Color x:Key="OnAccentColor">#12101C</Color>
+
+                    <!-- Switch track off-state: needed a much bigger jump than the previous
+                         #38364C — one small step above SurfaceContainerHoverBrush (#28263A)
+                         still barely read against the card background in testing. This is a
+                         genuinely lighter mid-gray, clearly a "pill" shape in its own right
+                         rather than a slightly-different-shade blend. -->
+                    <Color x:Key="SwitchTrackColor">#4A4863</Color>
+
+                    <!-- Switch thumb: dark theme's near-black OnAccentColor already reads
+                         clearly against the lighter track above, so this just reuses it
+                         under the shared SwitchThumbColor name — only Light theme actually
+                         needs a different value (white) since dark-on-light looked wrong. -->
+                    <Color x:Key="SwitchThumbColor">#12101C</Color>
+
+                    <SolidColorBrush x:Key="AccentIndigoBrush"      Color="{StaticResource AccentIndigoColor}"/>
+                    <SolidColorBrush x:Key="AccentAmberBrush"       Color="{StaticResource AccentAmberColor}"/>
+                    <!-- Scrollbar thumb accent — idle = indigo, streaming = amber (same
+                         pairing as the VCam switch). Declared per-theme as a default so it
+                         exists before any stream; MainWindow overwrites it at runtime, and
+                         re-resolves it against the active theme when IsStreaming or the
+                         theme changes. -->
+                    <SolidColorBrush x:Key="ScrollbarAccentBrush"    Color="{StaticResource AccentIndigoColor}"/>
+                    <!-- Help nav active-tab accent — same indigo-idle / amber-live language as the
+                         scrollbar thumb above. Declared per-theme as idle defaults; MainWindow
+                         overwrites both at runtime and re-resolves them when IsStreaming or the
+                         theme changes. Solid defaults to AccentIndigoColor here (Dark needs no
+                         contrast fix); Light below defaults to its darker #4F46E5 instead. -->
+                    <SolidColorBrush x:Key="HelpNavAccentBrush"       Color="{StaticResource AccentIndigoColor}"/>
+                    <SolidColorBrush x:Key="HelpNavAccentSoftBrush"   Color="#818CF8" Opacity="0.14"/>
+                    <SolidColorBrush x:Key="BgBaseBrush"            Color="{StaticResource BgBaseColor}"/>
+                    <SolidColorBrush x:Key="BgPanelBrush"           Color="{StaticResource BgPanelColor}"/>
+                    <SolidColorBrush x:Key="SurfaceContainerBrush"  Color="{StaticResource SurfaceContainerColor}"/>
+                    <SolidColorBrush x:Key="TextPrimaryBrush"       Color="{StaticResource TextPrimaryColor}"/>
+                    <SolidColorBrush x:Key="TextMutedBrush"         Color="{StaticResource TextMutedColor}"/>
+                    <SolidColorBrush x:Key="BorderSubtleBrush"      Color="{StaticResource BorderSubtleColor}"/>
+                    <SolidColorBrush x:Key="SuccessBrush"           Color="{StaticResource SuccessColor}"/>
+                    <SolidColorBrush x:Key="WarningBrush"           Color="{StaticResource WarningColor}"/>
+                    <SolidColorBrush x:Key="ErrorBrush"             Color="{StaticResource ErrorColor}"/>
+                    <SolidColorBrush x:Key="OnAccentBrush"          Color="{StaticResource OnAccentColor}"/>
+                    <SolidColorBrush x:Key="SwitchTrackBrush"       Color="{StaticResource SwitchTrackColor}"/>
+                    <SolidColorBrush x:Key="SwitchThumbBrush"       Color="{StaticResource SwitchThumbColor}"/>
+
+                    <!-- Amber fill used for active toggle buttons (e.g. Flashlight on) -->
+                    <SolidColorBrush x:Key="AccentAmberSoftBrush" Color="#FBBF24" Opacity="0.14"/>
+
+                    <!-- Soft red fill used for the Disconnect button — same pattern as AccentAmberSoft,
+                         gives the button real visual weight without being a full solid-danger fill -->
+                    <SolidColorBrush x:Key="ErrorSoftBrush" Color="#F87171" Opacity="0.12"/>
+
+                    <!-- Soft tonal fills for icon-tile chips (battery/wifi stat rows) —
+                         same alpha-over-color pattern as ErrorSoftBrush/AccentAmberSoftBrush -->
+                    <SolidColorBrush x:Key="SuccessSoftBrush"      Color="#4ADE80" Opacity="0.14"/>
+                    <SolidColorBrush x:Key="AccentIndigoSoftBrush" Color="#818CF8" Opacity="0.14"/>
+
+                    <!-- Same key as the Light theme's darker indigo-on-light fix below — here it's
+                         just AccentIndigoColor unchanged, since Dark's contrast is already fine.
+                         Exists so callers (e.g. .help-nav.active Foreground) can reference one key
+                         across both themes instead of needing a per-theme override at the call site. -->
+                    <SolidColorBrush x:Key="AccentIndigoOnLightBrush" Color="{StaticResource AccentIndigoColor}"/>
+
+                    <!-- Same idea as AccentIndigoOnLightBrush but for amber: Dark's #FBBF24 reads
+                         fine on dark fills, so here it's unchanged. Light overrides it with a darker
+                         step below — plain #FFA700 text/border on the pale amber soft fill is
+                         yellow-on-yellow and practically invisible. -->
+                    <SolidColorBrush x:Key="AccentAmberOnLightBrush" Color="{StaticResource AccentAmberColor}"/>
+
+                    <!-- Hover fills — solid, one step lighter than their resting state, no opacity layering -->
+                    <SolidColorBrush x:Key="SurfaceContainerHoverBrush" Color="#28263A"/>
+                    <!-- Same hue as SurfaceContainerHoverBrush but Opacity="0" — used as the resting
+                         Background on icon-round/win-ctrl/tab-segment instead of plain Transparent.
+                         Avalonia's BrushTransition interpolates RGB+alpha together; going from a
+                         colorless Transparent to a colored brush snaps instead of fading (the "white
+                         flash"), because there's no shared RGB to interpolate from. Starting from the
+                         same RGB at alpha 0 fixes that — only alpha animates now. -->
+                    <SolidColorBrush x:Key="SurfaceContainerHoverBrush0" Color="#28263A" Opacity="0"/>
+                    <SolidColorBrush x:Key="AccentAmberHoverBrush"      Color="#FBBF24" Opacity="0.22"/>
+                    <SolidColorBrush x:Key="ErrorHoverBrush"            Color="#F87171" Opacity="0.20"/>
+
+                    <!-- Solid (non-opacity) amber hover for the filled Stop-stream button —
+                         a touch darker than AccentAmberColor so the fill stays fully opaque on hover -->
+                    <SolidColorBrush x:Key="AccentAmberHoverSolidBrush" Color="#E5A912"/>
+
+                    <!-- Help body text — same hue as TextPrimary, but tuned per-theme for contrast.
+                         Dark: white-ish at 0.82 stays crisp on dark bg (light bleed helps).
+                         Light: near-black at 0.82 washes out on light bg and anti-aliases thin — bump to 0.92. -->
+                    <SolidColorBrush x:Key="HelpBodyBrush" Color="{StaticResource TextPrimaryColor}" Opacity="0.82"/>
+
+                    <!-- Hint text — same TextPrimary-based approach as HelpBodyBrush, just a touch
+                         more muted (0.62). Replaces TextMutedBrush for .hint: TextMutedColor is a
+                         separate low-contrast hue tuned for tiny eyebrow labels, not for the
+                         short-paragraph captions .hint is now used for across Settings/Help/About. -->
+                    <SolidColorBrush x:Key="HintTextBrush" Color="{StaticResource TextPrimaryColor}" Opacity="0.62"/>
+
+                </ResourceDictionary>
+
+                <!-- ============================= LIGHT ============================= -->
+                <ResourceDictionary x:Key="Light">
+
+                    <!-- Accent -->
+                    <Color x:Key="AccentIndigoColor">#818CF8</Color>
+                    <Color x:Key="AccentAmberColor">#FFA700</Color>
+
+                    <!-- Surfaces -->
+                    <Color x:Key="BgBaseColor">#E0E3F7</Color>
+                    <Color x:Key="BgPanelColor">#FFFFFF</Color>
+                    <Color x:Key="SurfaceContainerColor">#F3F4FB</Color>
+
+                    <!-- Text -->
+                    <Color x:Key="TextPrimaryColor">#0F172A</Color>
+                    <Color x:Key="TextMutedColor">#94A3B8</Color>
+
+                    <!-- Border -->
+                    <Color x:Key="BorderSubtleColor">#1A000000</Color>
+
+                    <!-- Status -->
+                    <Color x:Key="SuccessColor">#16A34A</Color>
+                    <Color x:Key="WarningColor">#D97706</Color>
+                    <Color x:Key="ErrorColor">#DC2626</Color>
+
+                    <!-- On-accent -->
+                    <Color x:Key="OnAccentColor">#12101C</Color>
+
+                    <!-- Switch track off-state: previously mirrored SurfaceContainerHoverBrush
+                         (#E7E9F5), which turned out to be nearly identical to the card
+                         background (#F3F4FB) here too — same issue as dark theme, just
+                         inverted. This is a genuinely darker, visibly distinct gray so the
+                         track reads as its own pill shape instead of blending into the card. -->
+                    <Color x:Key="SwitchTrackColor">#C7CCE0</Color>
+
+                    <!-- Switch thumb: OnAccentBrush (#12101C, near-black) read poorly here —
+                         a dark thumb sitting on this theme's light track/card colors looks
+                         out of place rather than like a real toggle. White is the standard
+                         iOS/Android switch-thumb convention: it reads clearly against any
+                         track color (light gray off-state or indigo/amber on-state) without
+                         needing separate thumb colors per state. -->
+                    <Color x:Key="SwitchThumbColor">#FFFFFF</Color>
+
+                    <SolidColorBrush x:Key="AccentIndigoBrush"      Color="{StaticResource AccentIndigoColor}"/>
+                    <SolidColorBrush x:Key="AccentAmberBrush"       Color="{StaticResource AccentAmberColor}"/>
+                    <SolidColorBrush x:Key="ScrollbarAccentBrush"    Color="{StaticResource AccentIndigoColor}"/>
+                    <!-- Help nav active-tab accent (Light) — idle solid is the darker #4F46E5
+                         (same as AccentIndigoOnLightBrush), not plain #818CF8, so text/icons
+                         keep AA contrast on the pale soft fill. Swapped to amber while streaming. -->
+                    <SolidColorBrush x:Key="HelpNavAccentBrush"       Color="#4F46E5"/>
+                    <SolidColorBrush x:Key="HelpNavAccentSoftBrush"   Color="#818CF8" Opacity="0.16"/>
+                    <SolidColorBrush x:Key="BgBaseBrush"            Color="{StaticResource BgBaseColor}"/>
+                    <SolidColorBrush x:Key="BgPanelBrush"           Color="{StaticResource BgPanelColor}"/>
+                    <SolidColorBrush x:Key="SurfaceContainerBrush"  Color="{StaticResource SurfaceContainerColor}"/>
+                    <SolidColorBrush x:Key="TextPrimaryBrush"       Color="{StaticResource TextPrimaryColor}"/>
+                    <SolidColorBrush x:Key="TextMutedBrush"         Color="{StaticResource TextMutedColor}"/>
+                    <SolidColorBrush x:Key="BorderSubtleBrush"      Color="{StaticResource BorderSubtleColor}"/>
+                    <SolidColorBrush x:Key="SuccessBrush"           Color="{StaticResource SuccessColor}"/>
+                    <SolidColorBrush x:Key="WarningBrush"           Color="{StaticResource WarningColor}"/>
+                    <SolidColorBrush x:Key="ErrorBrush"             Color="{StaticResource ErrorColor}"/>
+                    <SolidColorBrush x:Key="OnAccentBrush"          Color="{StaticResource OnAccentColor}"/>
+                    <SolidColorBrush x:Key="SwitchTrackBrush"       Color="{StaticResource SwitchTrackColor}"/>
+                    <SolidColorBrush x:Key="SwitchThumbBrush"       Color="{StaticResource SwitchThumbColor}"/>
+
+                    <SolidColorBrush x:Key="AccentAmberSoftBrush" Color="#FFA700" Opacity="0.12"/>
+
+                    <!-- Soft red fill used for the Disconnect button -->
+                    <SolidColorBrush x:Key="ErrorSoftBrush" Color="#DC2626" Opacity="0.10"/>
+
+                    <!-- Soft tonal fills for icon-tile chips (battery/wifi stat rows) -->
+                    <SolidColorBrush x:Key="SuccessSoftBrush"      Color="#16A34A" Opacity="0.12"/>
+                    <SolidColorBrush x:Key="AccentIndigoSoftBrush" Color="#818CF8" Opacity="0.16"/>
+
+                    <!-- AccentIndigoColor (#818CF8) is tuned to glow on the Dark theme's near-black
+                         surfaces — on Light's pale card backgrounds (SurfaceContainerColor #F3F4FB)
+                         the same hue reads as light-on-light, worst example being the active
+                         .help-nav item (icon + label on AccentIndigoSoftBrush). Same root cause as
+                         HelpBodyBrush above, same fix: a Light-only darker step of the same hue for
+                         text/icons that sit on AccentIndigoSoftBrush fills. #4F46E5 keeps the indigo
+                         identity but passes AA contrast against both SurfaceContainerColor and
+                         AccentIndigoSoftBrush. Dark theme doesn't need this — AccentIndigoBrush
+                         already contrasts fine there — so this key has no Dark-theme counterpart;
+                         callers needing it on both themes should fall back to AccentIndigoBrush
+                         outside Light-specific contexts. -->
+                    <SolidColorBrush x:Key="AccentIndigoOnLightBrush" Color="#4F46E5"/>
+
+                    <!-- Darker amber step for text/border sitting on pale amber soft fills in Light.
+                         Plain AccentAmberColor (#FFA700) on AccentAmberSoftBrush is yellow-on-yellow
+                         (~1.5:1) — invisible. #D97706 (same hue family as WarningColor) keeps a true
+                         amber-gold look while restoring contrast for bold UI text and 1px borders.
+                         Dark theme keeps plain amber (contrast on dark fills is already fine), so
+                         this key has no per-state cost — callers just reference it instead of
+                         AccentAmberBrush where the background is a soft amber fill. -->
+                    <SolidColorBrush x:Key="AccentAmberOnLightBrush" Color="#D97706"/>
+
+                    <!-- Hover fills — solid, one step darker than their resting state -->
+                    <SolidColorBrush x:Key="SurfaceContainerHoverBrush" Color="#E7E9F5"/>
+                    <!-- Same hue as SurfaceContainerHoverBrush at Opacity="0" — see dark-theme comment above. -->
+                    <SolidColorBrush x:Key="SurfaceContainerHoverBrush0" Color="#E7E9F5" Opacity="0"/>
+                    <SolidColorBrush x:Key="AccentAmberHoverBrush"      Color="#FFA700" Opacity="0.20"/>
+                    <SolidColorBrush x:Key="ErrorHoverBrush"            Color="#DC2626" Opacity="0.16"/>
+
+                    <!-- Solid amber hover for the filled Stop-stream button -->
+                    <SolidColorBrush x:Key="AccentAmberHoverSolidBrush" Color="#DD8F00"/>
+
+                    <!-- Help body text — bumped to 0.92 for Light (see Dark comment above). -->
+                    <SolidColorBrush x:Key="HelpBodyBrush" Color="{StaticResource TextPrimaryColor}" Opacity="0.92"/>
+
+                    <!-- Hint text — Light-theme counterpart to HintTextBrush above. Bumped to 0.72
+                         (vs Dark's 0.62) for the same reason HelpBodyBrush is bumped here: near-black
+                         text at a Dark-tuned opacity washes out on Light's pale surfaces. -->
+                    <SolidColorBrush x:Key="HintTextBrush" Color="{StaticResource TextPrimaryColor}" Opacity="0.72"/>
+
+                </ResourceDictionary>
+
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <materialIcons:MaterialIconStyles />
+
+        <!-- Shared design-system styles (buttons, cards, typography, controls, animations) -->
+        <StyleInclude Source="/Styles/Typography.axaml"/>
+        <StyleInclude Source="/Styles/Cards.axaml"/>
+        <StyleInclude Source="/Styles/Buttons.axaml"/>
+        <StyleInclude Source="/Styles/Controls.axaml"/>
+        <StyleInclude Source="/Styles/ScrollBars.axaml"/>
+        <StyleInclude Source="/Styles/Animations.axaml"/>
+        <StyleInclude Source="/Views/Controls/WifiSignalGauge.axaml"/>
+    </Application.Styles>
+
+</Application>

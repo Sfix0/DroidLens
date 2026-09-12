@@ -1,0 +1,109 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>DroidLens</AssemblyName>
+    <RootNamespace>DroidLens.Client</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+	<Product>DroidLens</Product>
+    <Company>DroidLens</Company>
+    <AssemblyTitle>DroidLens</AssemblyTitle>
+    <Version>1.0.0</Version>
+
+    <!-- Publish settings: self-contained, so users don't need to install .NET separately.
+         No PublishSingleFile - system dlls stay as separate files next to the exe,
+         which is simpler and more reliable than packing into one file. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <DebugType>none</DebugType>
+    <ApplicationIcon>Assets\app_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia UI -->
+    <!-- NOTE: Avalonia 12 is still preview-only on NuGet (no stable release yet).
+         Staying on the latest stable 11.x line (11.3.18) for now — revisit once
+         12.0 GA lands. -->
+    <PackageReference Include="Avalonia"               Version="11.3.18" />
+    <PackageReference Include="Avalonia.Desktop"       Version="11.3.18" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.18" />
+    <PackageReference Include="Avalonia.Fonts.Inter"   Version="11.3.18" />
+	<PackageReference Include="Material.Icons.Avalonia" Version="2.4.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+
+    <!-- USB support: ADB protocol client, drives the bundled adb.exe server -->
+    <PackageReference Include="AdvancedSharpAdbClient" Version="3.6.16" />
+
+    <!-- mDNS discovery: real service discovery over multicast (RFC 6762 /
+         DNS-SD), listening for the phone's _DroidLens._tcp. announcement
+         (see NsdHelper.kt on the Android side). Replaces the old subnet
+         TCP-scan approach. -->
+    <PackageReference Include="Makaretu.Dns.Multicast.New" Version="0.38.0" />
+
+    <!-- FFmpeg: bindings + LGPL-only native runtime.
+         NOTE: Sdcb.FFmpeg.runtime.windows-x64 was replaced because it ships a
+         GPL-3.0 build (avcodec-61.dll compiled with the enable-gpl,
+         enable-libx264, enable-libx265 flags), incompatible with this
+         project's MIT license. FFmpeg.LGPL 20241017.1.0 is pinned deliberately
+         — newer versions (20260730.1.0+) ship a different FFmpeg build
+         (avcodec-63 instead of avcodec-61) that breaks compatibility with
+         Sdcb.FFmpeg 7.0.0's bindings. Verify compatibility with the
+         FFmpegCompatTest project before ever bumping this version. -->
+    <PackageReference Include="Sdcb.FFmpeg" Version="7.0.0" />
+    <PackageReference Include="FFmpeg.LGPL" Version="20241017.1.0" />
+
+    <!-- JSON -->
+    <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Localization: .lang files (simple "key = value" text with "#" comments,
+         see LocalizationService.ParseLangFile) must sit next to the exe;
+         LocalizationService reads them from AppContext.BaseDirectory\Assets\Locales\.
+         Plain text on purpose — a user can add or edit a translation with any
+         text editor, no rebuild required, and use "#" lines to group keys. -->
+    <Content Include="Assets\Locales\*.lang">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- softcam.dll is copied next to the exe (separate from the single-file bundle,
+         since it's a COM filter registered via regsvr32 and must exist
+         as a physical file on disk) -->
+    <Content Include="VirtualCamera\softcam.dll">
+      <Link>softcam.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\*.png" />
+    <AvaloniaResource Include="Assets\*.ico" />
+    <AvaloniaResource Include="Assets\*.svg" />
+    <AvaloniaResource Include="Assets\Textures\*.png" />
+    <AvaloniaResource Include="Assets\Help\*.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Bundled adb.exe + platform-tools DLLs, used by UsbDiscovery to talk to
+         phones over USB. Must exist as physical files next to the exe — adb.exe
+         is launched as a real process by AdvancedSharpAdbClient's AdbServer. -->
+    <Content Include="Tools\adb.exe;Tools\AdbWinApi.dll;Tools\AdbWinUsbApi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Styles\" />
+  </ItemGroup>
+
+</Project>

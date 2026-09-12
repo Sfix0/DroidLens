@@ -1,0 +1,40 @@
+# ══════════════════════════════════════════════════════════════
+# .NET / Visual Studio / Rider
+# ══════════════════════════════════════════════════════════════
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+*.userosscache
+*.sln.docstates
+
+# ══════════════════════════════════════════════════════════════
+# Android SDK Platform-Tools (adb.exe + support DLLs) — NOT bundled
+# in the repo. The official package is covered by Google's Android
+# SDK License Agreement, which forbids redistributing the package
+# itself, so contributors download it manually into Tools\ —
+# see README "Building from source" section.
+# ══════════════════════════════════════════════════════════════
+/Tools/adb.exe
+/Tools/AdbWinApi.dll
+/Tools/AdbWinUsbApi.dll
+
+# ══════════════════════════════════════════════════════════════
+# Publish output
+# ══════════════════════════════════════════════════════════════
+publish/
+*.pdb
+
+# ══════════════════════════════════════════════════════════════
+# Rider / ReSharper
+# ══════════════════════════════════════════════════════════════
+*.DotSettings.user
+
+# ══════════════════════════════════════════════════════════════
+# OS files
+# ══════════════════════════════════════════════════════════════
+.DS_Store
+Thumbs.db
+desktop.ini

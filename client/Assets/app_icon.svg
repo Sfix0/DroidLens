@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#5B63D3"/>
+    </linearGradient>
+    <linearGradient id="lensOuter" x1="20%" y1="20%" x2="80%" y2="80%">
+      <stop offset="0%" stop-color="#2A2850"/>
+      <stop offset="100%" stop-color="#0E0D14"/>
+    </linearGradient>
+    <linearGradient id="lensInner" x1="20%" y1="20%" x2="80%" y2="80%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#4F56C7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base with smooth curvature -->
+  <rect x="0" y="0" width="256" height="256" rx="58" fill="#0E0D14"/>
+
+  <!-- Left Antenna -->
+  <line x1="64" y1="74" x2="46" y2="28" stroke="#818CF8" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="46" cy="22" r="9" fill="#818CF8"/>
+
+  <!-- Right Antenna -->
+  <line x1="192" y1="74" x2="210" y2="28" stroke="#818CF8" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="210" cy="22" r="9" fill="#818CF8"/>
+
+  <!-- Camera Body -->
+  <rect x="20" y="74" width="216" height="142" rx="24" fill="url(#bodyGrad)"/>
+
+  <!-- Grip stripes -->
+  <rect x="29" y="106" width="38" height="11" rx="5.5" fill="#6366E8" opacity="0.8"/>
+  <rect x="29" y="123" width="26" height="8" rx="4" fill="#4F56C7" opacity="0.6"/>
+
+  <!-- Recording indicator LED -->
+  <circle cx="214" cy="90" r="9" fill="#EF4444"/>
+  <circle cx="214" cy="90" r="4.5" fill="#FCA5A5" opacity="0.65"/>
+
+  <!-- Multi-ring Camera Lens -->
+  <circle cx="138" cy="145" r="54" fill="url(#lensOuter)" stroke="#6366E8" stroke-width="2"/>
+  <circle cx="138" cy="145" r="41" fill="#161420" stroke="#818CF8" stroke-width="1.8"/>
+  <circle cx="138" cy="145" r="26" fill="url(#lensInner)"/>
+  <circle cx="138" cy="145" r="13" fill="#0E0D14"/>
+
+  <!-- Lens Glare -->
+  <circle cx="129" cy="136" r="5.5" fill="#FFFFFF" opacity="0.45"/>
+  <circle cx="143" cy="132" r="2.5" fill="#FFFFFF" opacity="0.2"/>
+</svg>

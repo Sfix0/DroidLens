@@ -1,0 +1,150 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="TextBox">
+        <Setter Property="Background"               Value="{DynamicResource SurfaceContainerBrush}"/>
+        <Setter Property="Foreground"               Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="CaretBrush"                Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush"               Value="{DynamicResource BorderSubtleBrush}"/>
+        <Setter Property="BorderThickness"           Value="0.5"/>
+        <Setter Property="CornerRadius"              Value="14"/>
+        <Setter Property="Padding"                   Value="12,10"/>
+        <Setter Property="FontSize"                  Value="13"/>
+        <Setter Property="VerticalContentAlignment"  Value="Center"/>
+    </Style>
+
+    <!--
+        ============================= COMBOBOX =============================
+        NOTE: plain ComboBox is no longer used anywhere it needs to feel like
+        a real, integrated dropdown (Settings language/theme, etc.) — those
+        now use Controls/AppDropdown.axaml instead. Reason: even fully
+        re-skinned via the ComboBoxDropDownBackground/ComboBoxItem* resource
+        keys (the only way to reach Fluent's ComboBox popup — it's resource-
+        keyed, not property-keyed), the popup is still a genuinely separate
+        floating Popup surface. No amount of color/animation on it makes the
+        open state read as "the field growing a list", which was the actual
+        design complaint — it always looks like an unrelated panel appearing
+        near the field rather than the field extending. AppDropdown solves
+        this by laying the list out in-flow directly under the field with a
+        height Transition, so field and list are visually one continuous
+        shape. If a plain ComboBox is still used anywhere incidentally (e.g.
+        third-party template), it now falls back to bare Fluent defaults —
+        deliberately, so nothing looks half-styled.
+    -->
+
+    <!-- Live/Stale/Disconnected status dot in the header of the connected-device card -->
+    <Style Selector="Ellipse.status-dot">
+        <Setter Property="Width"  Value="8"/>
+        <Setter Property="Height" Value="8"/>
+    </Style>
+
+    <!-- Toggle switch track (Virtual camera, and any settings on/off switch).
+         Background Setter below is only a fallback for the rare case nothing
+         binds Border.Background at all — every actual switch in the app sets
+         Background via a MultiBinding/Binding straight to VCamAccentConverter
+         or BoolToAccentBrushConverter (UiConverters.cs), and those converters'
+         return value always wins over this style Setter, no matter what's set
+         here. The real off-state color fix lives in those two converters:
+         they returned "SurfaceContainerBrush" (nearly identical to the card
+         background, so the track barely read as its own shape) and now
+         return the dedicated, genuinely lighter "SwitchTrackBrush" (App.axaml)
+         instead. VCam's "on" color still additionally depends on IsStreaming
+         (amber vs indigo) via VCamAccentConverter; plain settings switches go
+         through BoolToAccentBrushConverter, which doesn't need that 2nd input.
+         BrushTransition added so the on/off color swap fades instead of
+         snapping — previously only the thumb's TranslateTransform animated,
+         so the track's background color changed instantly underneath it. -->
+    <Style Selector="Border.switch-track">
+        <Setter Property="Width"           Value="46"/>
+        <Setter Property="Height"          Value="27"/>
+        <Setter Property="CornerRadius"    Value="14"/>
+        <Setter Property="Background"      Value="{DynamicResource SwitchTrackBrush}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <!-- Thumb uses a dedicated SwitchThumbBrush (App.axaml) rather than
+         OnAccentBrush directly — dark theme keeps the same near-black tone
+         (reads fine there), but light theme needed a real override: the
+         same near-black color looked out of place against light theme's
+         palette, so it's white there instead (standard iOS/Android
+         switch-thumb convention). -->
+    <Style Selector="Ellipse.switch-thumb">
+        <Setter Property="Width"  Value="21"/>
+        <Setter Property="Height" Value="21"/>
+        <Setter Property="Fill"   Value="{DynamicResource SwitchThumbBrush}"/>
+    </Style>
+
+    <!-- Wrapper button around the switch-track — strips FluentTheme's default Button
+         chrome (hover/pressed background fill, focus-visible rectangle) so only the
+         track/thumb underneath show any visual feedback. -->
+    <Style Selector="Button.switch-btn">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="FocusAdorner"    Value="{x:Null}"/>
+    </Style>
+    <Style Selector="Button.switch-btn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.switch-btn:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- ============================= TOOLTIP ============================= -->
+    <!-- Applies to every ToolTip.Tip in the app (native Avalonia ToolTip
+         control, not a custom Popup) — fade + a small upward slide on open
+         instead of the default instant snap, mirroring the reference's
+         opacity/translateY entrance. ToolTip's own Open/Close pseudo-classes
+         drive the transition; no code-behind needed since this is purely a
+         style-level Transition on Opacity + RenderTransform. -->
+    <Style Selector="ToolTip">
+        <!-- Theme-aware, unlike the old fixed-dark surface: the tooltip now
+             uses the same surface/text tokens as the rest of the app, so it
+             is a dark surface with light text in dark mode and a light
+             surface with dark text in light mode. Background can't be pinned
+             via the ToolTip control's Foreground setter alone though: the
+             global TextBlock style in Typography.axaml sets every TextBlock's
+             Foreground to TextPrimaryBrush at Style priority, and a Foreground
+             on the ToolTip only reaches the content via inheritance (Inherited
+             priority), which loses to that Style-priority rule. So the content
+             is drawn through an explicit ContentTemplate whose TextBlock pins
+             Foreground/FontSize/FontWeight as local values (always beat any
+             style) — with the Foreground still a DynamicResource so it follows
+             the current theme. All tips in the app are plain strings, so the
+             template just binds the string content. -->
+        <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="8"/>
+        <Setter Property="Padding"         Value="10,6"/>
+        <Setter Property="RenderTransform" Value="translateY(4px)"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Foreground="{DynamicResource TextPrimaryBrush}"
+                               FontSize="11.5"
+                               FontWeight="Medium"
+                               Text="{Binding}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <!-- :open is the state Avalonia applies while the popup is actually
+         showing — settle to the resting position/full opacity here so the
+         Transitions above animate FROM the translateY(4px)/implicit-0
+         starting point defined above TO this. -->
+    <Style Selector="ToolTip:open">
+        <Setter Property="RenderTransform" Value="translateY(0)"/>
+    </Style>
+
+</Styles>

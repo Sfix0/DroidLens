@@ -1,0 +1,227 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:DroidLens.Client.Views"
+        xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+        xmlns:conv="clr-namespace:Avalonia.Data.Converters;assembly=Avalonia.Base"
+        x:Class="DroidLens.Client.Views.Controls.AboutContent"
+        FontFamily="Inter,Segoe UI,sans-serif">
+
+    <ScrollViewer x:Name="AboutContentPanel" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16,14,16,18" Spacing="12">
+
+            <!-- ── App identity / Hero Card ── -->
+            <Border Classes="card enter enter-1 shown">
+                <Grid>
+                    <!-- Background subtle watermark icon -->
+                    <materialIcons:MaterialIcon Kind="CameraIris" Classes="card-watermark" Opacity="0.08" Width="72" Height="72" Margin="0,-2,-2,0"/>
+
+                    <StackPanel Spacing="12">
+                        <!-- Top header row: App emblem + Title + Version + GitHub button -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                            <!-- App Emblem -->
+                            <Image Grid.Column="0" Source="/Assets/app_icon.png"
+                                   Width="54" Height="54"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                                   VerticalAlignment="Center"/>
+
+                            <!-- App Title & Tagline -->
+                            <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center" Spacing="2">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="0">
+                                        <TextBlock Text="Droid" FontSize="18" FontWeight="Black" LetterSpacing="-0.5"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                        <TextBlock Text="Lens" FontSize="18" FontWeight="Black" LetterSpacing="-0.5"
+                                                   Foreground="{DynamicResource ScrollbarAccentBrush}"/>
+                                    </StackPanel>
+                                    <Border Classes="chip" Padding="8,2" CornerRadius="9" VerticalAlignment="Center">
+                                        <TextBlock x:Name="VersionLabel" FontSize="11" FontWeight="SemiBold"
+                                                   Classes="muted"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Classes="hint" Text="{Binding Loc[about.tagline]}" TextWrapping="Wrap" FontSize="12"/>
+                            </StackPanel>
+
+                            <!-- GitHub Repo Button -->
+                            <Button Grid.Column="2" Classes="outline" Padding="14,8" CornerRadius="14"
+                                    Click="GitHubLink_Click" VerticalAlignment="Center" Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="Github" Width="15" Height="15"
+                                                                    Foreground="{DynamicResource TextMutedBrush}"/>
+                                        <TextBlock Text="{Binding Loc[about.view_on_github]}" FontSize="12.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <Border Height="0.5" Background="{DynamicResource BorderSubtleBrush}" Margin="0,2,0,2"/>
+
+                        <!-- Developer Info Row -->
+                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Loc[about.developer]}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
+                                <Border Width="22" Height="22" CornerRadius="11" Background="{DynamicResource SurfaceContainerBrush}"
+                                        VerticalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="AccountOutline" Width="13" Height="13"
+                                                                 Foreground="{DynamicResource TextMutedBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock x:Name="AuthorNameLabel" Classes="option-title" FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <Button Grid.Column="1" Padding="8,4" Click="AuthorLink_Click" Cursor="Hand"
+                                    Background="{DynamicResource SurfaceContainerBrush}" CornerRadius="10"
+                                    BorderThickness="1" BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                    Foreground="{DynamicResource TextPrimaryBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                    <materialIcons:MaterialIcon Kind="Github" Width="13" Height="13"
+                                                                 Foreground="{DynamicResource TextMutedBrush}"/>
+                                    <TextBlock x:Name="AuthorHandleLabel" FontSize="12" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    <materialIcons:MaterialIcon Kind="OpenInNew" Width="11" Height="11"
+                                                                Foreground="{DynamicResource TextMutedBrush}"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ── Core dependencies ── -->
+            <StackPanel Spacing="8" Classes="enter enter-2 shown">
+                <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,0,0,0" VerticalAlignment="Center">
+                    <materialIcons:MaterialIcon Kind="LayersOutline" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}"/>
+                    <TextBlock Text="{Binding Loc[about.section_core]}" Classes="muted" FontSize="11"
+                               FontWeight="SemiBold" LetterSpacing="0.4"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,10,*,10,*">
+
+                    <!-- softcam -->
+                    <Border Grid.Column="0" Classes="card">
+                        <Grid>
+                            <materialIcons:MaterialIcon Kind="Webcam" Classes="card-watermark"/>
+
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="softcam" Classes="option-title"
+                                               FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="1" Classes="chip" Padding="6,2" CornerRadius="8">
+                                        <TextBlock Text="MIT" Classes="muted" FontSize="10.5" FontWeight="SemiBold"/>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="v1.8.1 · DirectShow" Classes="muted" FontSize="11"/>
+
+                                <TextBlock Classes="hint" MinHeight="18" TextWrapping="Wrap" Text="{Binding Loc[about.core_softcam_desc]}"/>
+
+                                <Button Classes="outline" Padding="10,0" MinHeight="34" Margin="0,4,0,0"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Tag="https://github.com/tshino/softcam" Click="CoreComponentLink_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="Github" Width="13" Height="13"/>
+                                        <TextBlock Text="tshino/softcam" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- FFmpeg -->
+                    <Border Grid.Column="2" Classes="card">
+                        <Grid>
+                            <materialIcons:MaterialIcon Kind="MovieOutline" Classes="card-watermark"/>
+
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="FFmpeg" Classes="option-title"
+                                               FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="1" Classes="chip" Padding="6,2" CornerRadius="8">
+                                        <TextBlock Text="LGPL-2.1+" Classes="muted" FontSize="10.5" FontWeight="SemiBold"/>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="Sdcb.FFmpeg · Decoder" Classes="muted" FontSize="11"/>
+
+                                <TextBlock Classes="hint" MinHeight="18" TextWrapping="Wrap" Text="{Binding Loc[about.core_ffmpeg_desc]}"/>
+
+                                <Button Classes="outline" Padding="10,0" MinHeight="34" Margin="0,4,0,0"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Tag="https://ffmpeg.org" Click="CoreComponentLink_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="OpenInNew" Width="13" Height="13"/>
+                                        <TextBlock Text="ffmpeg.org" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ADB -->
+                    <Border Grid.Column="4" Classes="card">
+                        <Grid>
+                            <materialIcons:MaterialIcon Kind="CellphoneLink" Classes="card-watermark"/>
+
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="Google ADB" Classes="option-title"
+                                               FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="1" Classes="chip" Padding="6,2" CornerRadius="8">
+                                        <TextBlock Text="Apache-2.0" Classes="muted" FontSize="10.5" FontWeight="SemiBold"/>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="Platform-Tools · USB" Classes="muted" FontSize="11"/>
+
+                                <TextBlock Classes="hint" MinHeight="18" TextWrapping="Wrap" Text="{Binding Loc[about.core_adb_desc]}"/>
+
+                                <Button Classes="outline" Padding="10,0" MinHeight="34" Margin="0,4,0,0"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Tag="https://developer.android.com/tools/adb" Click="CoreComponentLink_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <materialIcons:MaterialIcon Kind="Android" Width="13" Height="13"/>
+                                        <TextBlock Text="{Binding Loc[about.core_adb_link_label]}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                </Grid>
+            </StackPanel>
+
+            <!-- ── Third-party licenses ── -->
+            <StackPanel Spacing="8" Classes="enter enter-3 shown">
+                <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,0,0,0" VerticalAlignment="Center">
+                    <materialIcons:MaterialIcon Kind="License" Width="14" Height="14" Foreground="{DynamicResource TextMutedBrush}"/>
+                    <TextBlock Text="{Binding Loc[about.section_licenses]}" Classes="muted" FontSize="11"
+                               FontWeight="SemiBold" LetterSpacing="0.4"/>
+                </StackPanel>
+
+                <Border Classes="card">
+                    <ItemsControl x:Name="LicensesList">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="controls:ThirdPartyLicenseEntry">
+                                <Border Background="{DynamicResource SurfaceContainerBrush}" CornerRadius="10" Padding="10,6" Margin="4,3">
+                                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Classes="option-title" FontSize="12"
+                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <Border Grid.Column="1" Classes="chip" Padding="6,2" CornerRadius="6" Margin="6,0,0,0">
+                                            <TextBlock Text="{Binding License}" Classes="muted" FontSize="10.5" FontWeight="Medium"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </StackPanel>
+
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

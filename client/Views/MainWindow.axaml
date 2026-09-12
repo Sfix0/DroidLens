@@ -1,0 +1,315 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:DroidLens.Client.Views"
+        xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+        xmlns:vm="clr-namespace:DroidLens.Client.ViewModels"
+        xmlns:services="clr-namespace:DroidLens.Client.Services"
+        x:Class="DroidLens.Client.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="{Binding Loc[app.title]}"
+        Icon="/Assets/app_icon.ico"
+        Width="980" Height="640"
+        CanResize="False"
+        SystemDecorations="Full"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        TransparencyLevelHint="None"
+        Background="{DynamicResource BgBaseBrush}"
+        FontFamily="Inter,Segoe UI,sans-serif"
+        Opacity="0">
+        <!-- Starts fully transparent — MainWindow.axaml.cs (MainWindow_Opened) fades
+             the whole window in and only THEN kicks off the sidebar cards' cascade.
+             Without this, the OS can present the window's first real frame well
+             before our Opened handler even runs (undecorated windows don't have a
+             clean single "now it's visible" moment the way decorated ones do), so
+             by the time we flip "shown" on the cards the user has already been
+             looking at the fully-laid-out (just transparent-card) UI for a while —
+             the fade/slide then reads as happening "at the same time" as the window
+             appearing instead of as a distinct, visible entrance. Hiding everything
+             behind Window.Opacity until we're ready guarantees there is nothing to
+             see before the fade-in we control starts. -->
+        <Window.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Window.Transitions>
+
+    <!-- All shared styles (buttons, cards, typography, controls, animations) now live in
+         App.axaml -> Styles/*.axaml and apply globally. This file only holds layout/markup. -->
+
+    <Viewbox Stretch="Uniform">
+        <Panel x:Name="RootPanel" Width="980" Height="640" Focusable="True" PointerPressed="RootPanel_PointerPressed">
+
+        <!-- Layer 0: corner-glow + grain texture, sits under all window content.
+             Base color itself still comes from Window.Background="{DynamicResource BgBaseBrush}" above -->
+        <controls:AppBackgroundTexture HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                       GlowColor="{DynamicResource AccentIndigoColor}"
+                                       BackgroundTintColor="{DynamicResource BgBaseColor}"/>
+
+    <Grid x:Name="MainContentGrid" RowDefinitions="Auto,*">
+
+        <!-- ============================= HEADER ============================= -->
+        <Border Grid.Row="0" Height="52" Background="{DynamicResource BgPanelBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,0.5"
+                Padding="16,8" PointerPressed="Header_PointerPressed">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="0" VerticalAlignment="Bottom">
+                    <TextBlock Text="Droid" FontSize="20" FontWeight="Black" LetterSpacing="-0.5"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Lens" FontSize="20" FontWeight="Black" LetterSpacing="-0.5"
+                               Foreground="{DynamicResource ScrollbarAccentBrush}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                    <!-- About — same "app-action" group as Cog (see chat discussion),
+                         placed just before it so the cluster reads left-to-right as
+                         "info, then settings". Opens AboutOverlay via the same
+                         dim-backdrop + fade pattern as Settings (see
+                         MainWindow.TitleBar.cs: AboutBtn_Click). -->
+                    <Button Classes="icon-round" Width="34" Height="34" CornerRadius="17"
+                            Click="AboutBtn_Click"
+                            RenderTransformOrigin="50%,50%"
+                            PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                            ToolTip.Tip="{Binding Loc[about.title]}">
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1">
+                                <ScaleTransform.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                    </Transitions>
+                                </ScaleTransform.Transitions>
+                            </ScaleTransform>
+                        </Button.RenderTransform>
+                        <materialIcons:MaterialIcon Kind="InformationOutline" Width="16" Height="16"
+                                                     Foreground="{DynamicResource TextMutedBrush}"/>
+                    </Button>
+
+                    <!-- Settings — split off from the window-management cluster below
+                         (see chat discussion): Cog is an app-settings action, not part
+                         of the window chrome, so it gets its own group with a wider gap
+                         (16px vs the tighter 10/6px inside the chrome group) to read as
+                         a visually separate concern. -->
+                    <Button Classes="icon-round" Width="34" Height="34" CornerRadius="17"
+                            Click="SettingsBtn_Click"
+                            RenderTransformOrigin="50%,50%"
+                            PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                            ToolTip.Tip="{Binding Loc[settings.title]}">
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1">
+                                <ScaleTransform.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                    </Transitions>
+                                </ScaleTransform.Transitions>
+                            </ScaleTransform>
+                        </Button.RenderTransform>
+                        <materialIcons:MaterialIcon Kind="Cog" Width="16" Height="16"
+                                                     Foreground="{DynamicResource TextMutedBrush}"/>
+                    </Button>
+
+                    <!-- Divider between the app-action group (About/Settings) and the
+                         window-chrome group (Tray/Minimize/Close) below — makes the two
+                         clusters read as visually distinct concerns rather than one
+                         continuous row of five icons. Height kept shorter than the header
+                         itself so it reads as a subtle in-row separator, not a full rule. -->
+                    <Border Width="1" Height="18" Background="{DynamicResource BorderSubtleBrush}"
+                            VerticalAlignment="Center" Margin="0,0,-4,0"/>
+
+                    <!-- Window-management cluster: minimize-to-tray, minimize, close.
+                         Grouped tightly together (10px to tray-toggle, 6px inside the
+                         win-ctrl pair) now that Cog/About have their own wider-spaced
+                         group above. -->
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <!-- "Minimize to tray" — separate from the win-ctrl Minimize/Close pair
+                             on purpose (see chat discussion): this hides the window and
+                             keeps the stream/VCam/connection fully alive via TrayIconService,
+                             whereas win-ctrl Close is always a full app exit.
+                             Uses the same win-ctrl class as Minimize/Close now (square
+                             rounded-corner hover fill, matching its neighbors) instead of
+                             icon-round's circular hover — this is one of three window-chrome
+                             actions grouped together, not an app-action like About/Settings
+                             above, so it should read as part of that same square-cornered set.
+                             Size kept at 40x40 (CornerRadius scaled to 10 accordingly) to match
+                             its current visual weight in this header, rather than dropping to
+                             win-ctrl's smaller 32x32 default. -->
+                        <Button Classes="win-ctrl" Width="34" Height="34" CornerRadius="9"
+                                Click="MinimizeToTray_Click"
+                                RenderTransformOrigin="50%,50%"
+                                PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                                ToolTip.Tip="{Binding Loc[tray.minimize]}">
+                            <Button.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1">
+                                    <ScaleTransform.Transitions>
+                                        <Transitions>
+                                            <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                            <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        </Transitions>
+                                    </ScaleTransform.Transitions>
+                                </ScaleTransform>
+                            </Button.RenderTransform>
+                            <!-- Sized down 18→13px: TriangleDown is a solid filled shape,
+                                 so at the same pixel height as the thin WindowMinimize/Close
+                                 glyphs it reads visually heavier/larger — shrinking it below
+                                 their 14px brings the optical weight in line. -->
+                            <materialIcons:MaterialIcon Kind="TriangleDown" Width="13" Height="13"
+                                                         Foreground="{DynamicResource TextMutedBrush}"/>
+                        </Button>
+                        <Button Classes="win-ctrl" Width="34" Height="34" CornerRadius="9"
+                                Click="Minimize_Click"
+                                RenderTransformOrigin="50%,50%"
+                                PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                                ToolTip.Tip="{Binding Loc[window.minimize]}">
+                            <Button.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1">
+                                    <ScaleTransform.Transitions>
+                                        <Transitions>
+                                            <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                            <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        </Transitions>
+                                    </ScaleTransform.Transitions>
+                                </ScaleTransform>
+                            </Button.RenderTransform>
+                            <materialIcons:MaterialIcon Kind="WindowMinimize" Width="14" Height="14"/>
+                        </Button>
+                        <Button Classes="win-ctrl close" Width="34" Height="34" CornerRadius="9"
+                                Click="Close_Click"
+                                RenderTransformOrigin="50%,50%"
+                                PointerEntered="HeaderBtn_PointerEntered" PointerExited="HeaderBtn_PointerExited"
+                                ToolTip.Tip="{Binding Loc[window.close]}">
+                            <Button.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1">
+                                    <ScaleTransform.Transitions>
+                                        <Transitions>
+                                            <DoubleTransition Property="ScaleTransform.ScaleX" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                            <DoubleTransition Property="ScaleTransform.ScaleY" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                                        </Transitions>
+                                    </ScaleTransform.Transitions>
+                                </ScaleTransform>
+                            </Button.RenderTransform>
+                            <materialIcons:MaterialIcon x:Name="CloseIcon" Kind="Close" Width="14" Height="14"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ============================= BODY ============================= -->
+        <Grid Grid.Row="1" ColumnDefinitions="300,*">
+
+            <!-- ─────────────── LEFT COLUMN ─────────────── -->
+            <!-- Sidebar: Connection / Session / VCam / Quick-commands cards.
+                 Markup moved to Controls/Sidebar.axaml — this window no longer
+                 reaches into its named elements directly, only through the
+                 public API on the Sidebar code-behind (see MainWindow.axaml.cs). -->
+            <controls:Sidebar x:Name="SidebarControl" Grid.Column="0"
+                               RotateRequested="Sidebar_RotateRequested"
+                               StreamToggleRequested="Sidebar_StreamToggleRequested"/>
+
+
+            <!-- ─────────────── RIGHT COLUMN (Preview tile + metric row underneath) ───────────────
+                 Markup moved to Controls/PreviewArea.axaml — this window no longer
+                 reaches into VideoImage/ColdStartBlurOverlay/etc. directly, only
+                 through the public API on PreviewArea's code-behind (see
+                 MainWindow.axaml.cs). -->
+            <controls:PreviewArea x:Name="PreviewAreaControl" Grid.Column="1" Margin="0,18,10,18"/>
+        </Grid>
+    </Grid>
+
+    <!-- In-window settings modal: was previously a separate SettingsWindow shown
+         via ShowDialog (own taskbar entry); now just a dim backdrop + the
+         SettingsPanel control, both toggled from MainWindow.axaml.cs
+         (SettingsBtn_Click / SettingsOverlay_CloseRequested) instead of
+         opening/closing a second Window. Sits above MainContentGrid, centered,
+         since this Panel is the root.
+
+         DimOverlay is now shared between Settings and About (see
+         MainWindow.TitleBar.cs: DimOverlay_PointerPressed) — only one of the
+         two overlay panels below is ever visible at a time, so a single
+         backdrop instance is enough for both rather than duplicating it. -->
+    <Border x:Name="DimOverlay" Background="#99000000" IsVisible="False" Opacity="0"
+            PointerPressed="DimOverlay_PointerPressed">
+        <Border.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.28" Easing="CubicEaseInOut"/>
+            </Transitions>
+        </Border.Transitions>
+    </Border>
+    <controls:SettingsPanel x:Name="SettingsOverlay"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                             IsVisible="False" Opacity="0"
+                             CloseRequested="SettingsOverlay_CloseRequested"
+                             ThemeToggleRequested="SettingsOverlay_ThemeToggleRequested">
+        <controls:SettingsPanel.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.28" Easing="CubicEaseInOut"/>
+            </Transitions>
+        </controls:SettingsPanel.Transitions>
+    </controls:SettingsPanel>
+
+    <!-- In-window About modal — same overlay pattern as SettingsOverlay above,
+         just a different panel control (see MainWindow.TitleBar.cs:
+         AboutBtn_Click / AboutOverlay_CloseRequested). -->
+    <controls:AboutPanel x:Name="AboutOverlay"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          IsVisible="False" Opacity="0"
+                          CloseRequested="AboutOverlay_CloseRequested">
+        <controls:AboutPanel.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.28" Easing="CubicEaseInOut"/>
+            </Transitions>
+        </controls:AboutPanel.Transitions>
+    </controls:AboutPanel>
+
+    <!-- Notice banner (top-right, below the header): the only error feedback
+         in release builds (no debugger / file log). Single-slot "last error" —
+         MainWindow.axaml.cs (SetupNoticeBanner) mirrors VM state into it.
+         Deliberately quiet: no colored border, just a tinted severity icon —
+         severity still reads through the icon color. Sits above
+         content/overlays but below ThemeRevealOverlay. -->
+    <Border x:Name="NoticeBanner" Classes="notice" IsVisible="False"
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            Margin="0,64,16,0" MaxWidth="380"
+            Background="{DynamicResource BgPanelBrush}"
+            BorderThickness="0"
+            CornerRadius="10" Padding="12,9"
+            BoxShadow="0 8 28 0 #66000000">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <materialIcons:MaterialIcon x:Name="NoticeIcon" Grid.Column="0" Kind="AlertCircleOutline"
+                                        Width="17" Height="17" VerticalAlignment="Center"
+                                        Foreground="{DynamicResource ErrorBrush}"/>
+            <TextBlock x:Name="NoticeText" Grid.Column="1" Margin="10,0,0,0"
+                       VerticalAlignment="Center" TextWrapping="Wrap"
+                       FontSize="12.5" Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <Button Grid.Column="2" Classes="icon-round" Width="24" Height="24" CornerRadius="12"
+                    Margin="8,0,0,0" VerticalAlignment="Center"
+                    Click="NoticeDismiss_Click"
+                    ToolTip.Tip="{Binding Loc[notice.dismiss]}">
+                <materialIcons:MaterialIcon Kind="Close" Width="12" Height="12"
+                                            Foreground="{DynamicResource TextMutedBrush}"/>
+            </Button>
+        </Grid>
+    </Border>
+
+    <!-- Circular-reveal theme-switch layer: sits above EVERYTHING else in the
+         root Panel (including DimOverlay/SettingsOverlay/AboutOverlay), since the
+         reveal has to sweep across the whole window, not just MainContentGrid.
+         Holds a screenshot of the pre-toggle UI; MainWindow.axaml.cs clips it
+         with a growing/shrinking EllipseGeometry centered on the switch that
+         was clicked, so the NEW theme (already applied underneath by the time
+         this is visible) gets progressively uncovered as the circle grows.
+         IsHitTestVisible=False throughout so it never eats clicks mid-animation;
+         Stretch=None + explicit Width/Height (set in code) keep the bitmap
+         pixel-for-pixel aligned with the window instead of being rescaled. -->
+    <Image x:Name="ThemeRevealOverlay"
+           IsHitTestVisible="False"
+           IsVisible="False"
+           Stretch="Fill"
+           HorizontalAlignment="Left"
+           VerticalAlignment="Top"/>
+
+        </Panel>
+    </Viewbox>
+</Window>

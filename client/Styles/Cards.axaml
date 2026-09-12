@@ -1,0 +1,457 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+
+    <!--
+        Glass tint for Border.card — semi-transparent version of BgPanelBrush,
+        mirrors Android's glazeTintColor(themeSurface, isDark): alpha 0.65 in light,
+        0.55 in dark. NOTE: this is a placeholder fallback color (#F5F7FA / #12141C
+        bases) since the actual BgPanelBrush base color lives in the theme/colors
+        file which wasn't provided — replace the two Color values below with your
+        real BgPanel base color (same RGB as BgPanelBrush, just with alpha added),
+        or better, move this resource into your Theme.axaml next to BgPanelBrush's
+        own definition so light/dark variants are guaranteed to match.
+    -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="BgPanelGlassBrush" Color="#A6F5F7FA"/>
+                    <!-- Frosted header fade for the tray popup: same tone as the glass card,
+                         opaque at the top (blocks wallpaper bleed behind the header text),
+                         dissolving to transparent into the current card. No hue of its own —
+                         pure transparency gradient, so nothing can read as a "dirty band". -->
+                    <LinearGradientBrush x:Key="TrayHeaderFadeBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#F5F7FA" Offset="0"/>
+                        <GradientStop Color="#CCF5F7FA" Offset="0.6"/>
+                        <GradientStop Color="#00F5F7FA" Offset="1"/>
+                    </LinearGradientBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="BgPanelGlassBrush" Color="#8C12141C"/>
+                    <!-- Same frosted fade for Dark (opaque card tone → transparent). -->
+                    <LinearGradientBrush x:Key="TrayHeaderFadeBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#12141C" Offset="0"/>
+                        <GradientStop Color="#CC12141C" Offset="0.6"/>
+                        <GradientStop Color="#0012141C" Offset="1"/>
+                    </LinearGradientBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!--
+        ============================= CARD (GLASS) =============================
+        Unified with Android's floating idle panel (StreamingScreen.kt / Surface):
+          - CornerRadius 24 (was 12)                          → matches RoundedCornerShape(24.dp)
+          - Semi-transparent tint background (see block below) → matches Haze's power-save
+            fallback tint(surface, alpha .55/.65) — no live blur-behind, see note below
+          - Gradient white border (top-lit glass edge)        → matches Brush.verticalGradient(White .18f → .04f)
+          - Plain elevated shadow (neutral black, no accent glow) → matches Android's card depth without a lit halo
+        BgPanelBrush/BorderSubtleBrush are no longer used directly on the card —
+        BgPanelGlassBrush (defined above) owns background+tint now.
+    -->
+    <Style Selector="Border.card">
+        <Setter Property="CornerRadius" Value="24"/>
+        <Setter Property="Padding"      Value="14"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#2EFFFFFF" Offset="0"/>
+                <GradientStop Color="#0AFFFFFF" Offset="1"/>
+            </LinearGradientBrush>
+        </Setter>
+        <!-- Plain elevated shadow, no colored glow — Android's own card shadow reads as
+             neutral depth, not a lit accent halo. -->
+        <Setter Property="BoxShadow" Value="0 12 24 0 #59000000"/>
+    </Style>
+
+    <!--
+        ============================= PREVIEW FRAME =============================
+        Rounded container for the video preview (MainWindow.axaml, right column).
+        Previously the preview filled the entire right column edge-to-edge; now it
+        sits inset with margin on all sides and clipped corners, matching the
+        reference's "video as its own floating tile" look instead of a full-bleed
+        black panel.
+    -->
+    <Style Selector="Border.preview-frame">
+        <Setter Property="CornerRadius"    Value="22"/>
+        <Setter Property="ClipToBounds"    Value="True"/>
+        <Setter Property="Background"      Value="Black"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#26FFFFFF" Offset="0"/>
+                <GradientStop Color="#08FFFFFF" Offset="1"/>
+            </LinearGradientBrush>
+        </Setter>
+        <Setter Property="BoxShadow" Value="0 12 28 0 #59000000"/>
+    </Style>
+
+    <!--
+        Glass background. NOTE: ExperimentalAcrylicMaterial is NOT a valid value for a
+        plain Border.Background (it's not an IBrush) — that setter crashes at startup
+        with an InvalidCastException. True live background-blur in Avalonia requires
+        wrapping the card content in an <ExperimentalAcrylicBorder> element in the view
+        (MainWindow.axaml) instead of a Styles selector; that's a markup change, not a
+        style-only change, so it's left as a follow-up if real blur is wanted.
+        For now this uses a flat semi-transparent tint — the same fallback Android's
+        own panel uses in power-save mode (glazeTintColor, no Haze) — so it's still a
+        faithful "glass" look, just without the live blur-behind.
+    -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource BgPanelGlassBrush}"/>
+    </Style>
+
+    <!--
+        ============================= LIVE BADGE (glass pill over preview) =============================
+        Kept minimal — just the red "LIVE" indicator top-left of the preview.
+        The old floating quick-controls bar (Flip/Rotate/Black screen/Flashlight)
+        has moved into the sidebar as a permanent "Quick commands" card (see
+        Button.ctrl in Buttons.axaml) — no more overlay-btn styles needed.
+    -->
+
+    <!--
+        ============================= BOTTOM METRIC CARDS =============================
+        Row of three metric plates under the video preview (FPS / RTT+Network / Resolution),
+        mirroring the reference's Latency / Network / Quality row: icon-in-circle on the
+        left, label on top + value below on the right, each in its own rounded card that
+        sits on the app's normal panel surface (not glass-over-video, since it now lives
+        below the preview rather than floating on top of it).
+    -->
+    <Style Selector="Border.metric-card">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+        <Setter Property="CornerRadius"    Value="16"/>
+        <Setter Property="Padding"         Value="12,7"/>
+        <Setter Property="BorderThickness" Value="0.5"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+    </Style>
+    <Style Selector="Border.metric-icon">
+        <Setter Property="Width"           Value="30"/>
+        <Setter Property="Height"          Value="30"/>
+        <Setter Property="CornerRadius"    Value="15"/>
+        <Setter Property="Background"      Value="{DynamicResource AccentIndigoSoftBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.metric-title">
+        <Setter Property="FontSize"        Value="9.5"/>
+        <Setter Property="FontWeight"      Value="Medium"/>
+        <Setter Property="LetterSpacing"   Value="0.6"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.metric-val">
+        <Setter Property="FontSize"        Value="15"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+
+    <!-- Taller variant of metric-card, used for the connected-state battery/wifi
+         chips: extra vertical padding uses the free space that was already sitting
+         unused below the value text, and a slightly smaller value font gives long
+         strings ("86% • 3,0 W" / "0,0 Mbps") enough room to fit on one line
+         without CharacterEllipsis trimming them.
+
+         Also dialed down to a much quieter surface here — reference mock shows
+         these two chips as barely-there containers (near-transparent fill, hairline
+         border) rather than a solid SurfaceContainerBrush plate; the plain
+         metric-card look stays as-is for the FPS/RTT/latency/resolution row below
+         the preview, this override only touches the battery/wifi pair. -->
+    <Style Selector="Border.metric-card.chip-tall">
+        <Setter Property="Padding" Value="12,16"/>
+        <!-- Was a neutral white overlay (#20FFFFFF) — on top of the dark-purple glass
+             card that reads as a cold gray smudge, not "a lighter version of the same
+             card". Using a brush tinted with the panel's own hue (SurfaceContainer,
+             one step up from BgPanelGlass) at a modest opacity instead actually lifts
+             off the card the way the reference does. -->
+        <Setter Property="Background">
+            <SolidColorBrush Color="{DynamicResource SurfaceContainerColor}" Opacity="0.9"/>
+        </Setter>
+        <Setter Property="BorderBrush">
+            <SolidColorBrush Color="{DynamicResource SurfaceContainerColor}" Opacity="1"/>
+        </Setter>
+    </Style>
+    <Style Selector="Border.metric-card.chip-tall TextBlock.metric-val">
+        <Setter Property="FontSize" Value="13.5"/>
+    </Style>
+
+    <!-- Temperature readout next to the battery gauge — smaller than the
+         standard metric-val size since it's now a secondary detail (the
+         gauge itself carries the primary percentage readout), and needs to
+         fit comfortably in the chip's remaining width alongside the gauge. -->
+    <Style Selector="TextBlock.metric-val-sm">
+        <Setter Property="FontSize"   Value="12"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+
+    <!-- Small dark glass label for orientation / live-only info that still needs to sit
+         directly over the video (kept separate from metric-card, which now lives below
+         the preview and uses the normal panel surface instead of dark glass). -->
+    <Style Selector="Border.video-tag">
+        <Setter Property="Background"      Value="#99000000"/>
+        <Setter Property="CornerRadius"    Value="12"/>
+        <Setter Property="Padding"         Value="10,5"/>
+    </Style>
+
+    <!-- Frosted glass card used by the preview's center-screen states —
+         NoSignalPanel (no stream / stream stopped) and PreviewPausedPanel
+         (manually paused while live) — matching the reference's
+         "disabled-overlay" card. Both panels share this exact look so the
+         two empty-preview states read as the same visual language, only
+         differentiated by icon/text color and copy. IsVisible is toggled in
+         code-behind (see MainWindow.axaml.cs / MainWindow.Preview.cs);
+         Opacity/RenderTransform Transitions here drive the actual fade+scale
+         entrance/exit instead of the instant IsVisible snap. -->
+    <Style Selector="Border.preview-state-card">
+        <Setter Property="Background"      Value="#BF161622"/>
+        <Setter Property="BorderBrush"     Value="#1AFFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="18"/>
+        <Setter Property="Padding"         Value="28,26"/>
+        <Setter Property="MaxWidth"        Value="300"/>
+        <Setter Property="BoxShadow"       Value="0 12 32 0 #4D000000"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Opacity"         Value="0"/>
+        <Setter Property="RenderTransform">
+            <ScaleTransform ScaleX="0.94" ScaleY="0.94"/>
+        </Setter>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <!-- Settled/visible state — code-behind sets IsVisible=True first (so the
+         card is actually in the visual tree and can be measured/rendered),
+         then this class flips Opacity/RenderTransform to their resting
+         values so the Transitions above animate the entrance. Removing the
+         class (before setting IsVisible=False) plays the same transition in
+         reverse for the exit. -->
+    <Style Selector="Border.preview-state-card.shown">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="RenderTransform">
+            <ScaleTransform ScaleX="1" ScaleY="1"/>
+        </Setter>
+    </Style>
+
+    <!-- Mini stat / container chip nested inside a card.
+         Radius scaled proportionally with the new 24dp card radius
+         (was 8 under the old 12dp card — keeping the same ~2:3 ratio). -->
+    <Style Selector="Border.chip">
+        <Setter Property="Background"   Value="{DynamicResource SurfaceContainerBrush}"/>
+        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="Padding"      Value="8"/>
+    </Style>
+
+    <!-- ============================= STAT CHIP (icon watermark layout) =============================
+         Battery/network chip: the icon is no longer a separate tonal square —
+         it's a large, faded watermark bleeding off the top-right corner of the
+         pill itself, clipped to the chip's rounded rect. Label+value sit on top,
+         left-aligned, as a compact two-line stack. Icon opacity 0.14 keeps it a
+         texture, not a competing visual element. -->
+    <Style Selector="Border.chip-row">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+        <Setter Property="CornerRadius"    Value="14"/>
+        <Setter Property="Padding"         Value="12,10"/>
+        <Setter Property="ClipToBounds"    Value="True"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="Border.chip-row materialIcons|MaterialIcon.watermark">
+        <Setter Property="Opacity"             Value="0.14"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment"   Value="Top"/>
+        <Setter Property="Margin"              Value="0,-10,-10,0"/>
+    </Style>
+    <Style Selector="Border.chip-row TextBlock.chip-value">
+        <Setter Property="FontSize"   Value="15"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+
+
+    <!-- ============================= SEGMENTED TABS ============================= -->
+    <!-- Two-way switch used to pick between Auto-discovery / Manual IP entry in the
+         Connection card's idle state. Track = SurfaceContainer chip; the active
+         segment lifts to the panel color so it reads as "selected", matching the
+         chip/card layering already used elsewhere. -->
+    <Style Selector="Border.tab-track">
+        <Setter Property="Background"   Value="{DynamicResource SurfaceContainerBrush}"/>
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="Padding"      Value="3"/>
+    </Style>
+
+    <Style Selector="Button.tab-segment">
+        <Setter Property="Background"          Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="BorderThickness"     Value="0"/>
+        <Setter Property="Foreground"          Value="{DynamicResource TextMutedBrush}"/>
+        <Setter Property="FontSize"            Value="11.5"/>
+        <Setter Property="FontWeight"          Value="Medium"/>
+        <Setter Property="Padding"             Value="4,7"/>
+        <Setter Property="CornerRadius"        Value="13"/>
+        <Setter Property="Cursor"              Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <!-- Width is driven explicitly from code-behind (SetConnectionTab) rather than
+             Grid star-sizing, so it can animate: the active segment widens to fit its
+             label, the inactive one collapses down to just its icon. -->
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Width" Duration="0:0:0.28" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.tab-segment TextBlock">
+        <Setter Property="TextWrapping" Value="NoWrap"/>
+        <Setter Property="TextTrimming" Value="None"/>
+    </Style>
+    <!-- Label inside the inactive (collapsed) segment fades out just ahead of the width
+         collapse finishing, so it never visibly wraps/clips mid-animation. -->
+    <Style Selector="Button.tab-segment TextBlock.tab-label">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.16"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.tab-segment:not(.active) TextBlock.tab-label">
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+    <Style Selector="Button.tab-segment /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.tab-segment:not(.active):pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+    </Style>
+
+    <!-- Active segment: lifts to the panel surface so it visually "sits above" the track -->
+    <Style Selector="Button.tab-segment.active">
+        <Setter Property="Background" Value="{DynamicResource BgPanelBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.tab-segment.active /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgPanelBrush}"/>
+    </Style>
+    <!--
+        ============================= CARD HEADER (watermark-icon pattern) =============================
+        Same visual language as Border.chip-row above: instead of a separate
+        small icon-plate square sitting next to the title, the section icon
+        is a large, faded watermark bleeding off the card's own top-right
+        corner (clipped to the card's rounded rect via ClipToBounds already
+        set on Border.card... actually Border.card doesn't clip by default,
+        so this style adds it). The title then sits directly on the card
+        background with no plate around it — this is what lets the header
+        row (and therefore the whole card) get shorter than the old
+        icon-plate + title + divider version.
+
+        Usage (see SettingsWindow.axaml):
+            <Border Classes="card ...">
+                <Grid>
+                    <materialIcons:MaterialIcon Kind="Tune" Classes="card-watermark"/>
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="card-header-title" Text="..."/>
+                        <Border Classes="card-header-divider"/>
+                        ... body ...
+                    </StackPanel>
+                </Grid>
+            </Border>
+    -->
+    <Style Selector="Border.card">
+        <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+    <Style Selector="materialIcons|MaterialIcon.card-watermark">
+        <Setter Property="Width"               Value="56"/>
+        <Setter Property="Height"              Value="56"/>
+        <Setter Property="Opacity"             Value="0.10"/>
+        <Setter Property="Foreground"          Value="{DynamicResource AccentIndigoBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment"   Value="Top"/>
+        <!-- Was Margin="0,-16,-16,0" — pulled the icon past the card's own
+             14px padding so it sat almost flush with the corner. Now uses a
+             small positive inset instead, so it reads as tucked into the
+             corner rather than clipped against it. -->
+        <Setter Property="Margin"              Value="0,4,4,0"/>
+    </Style>
+
+    <!-- Card-header title now sits directly on the card background (no plate),
+         with the watermark icon behind/around it providing the section cue. -->
+    <Style Selector="TextBlock.card-header-title">
+        <Setter Property="Foreground"    Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize"      Value="14.5"/>
+        <Setter Property="FontWeight"    Value="SemiBold"/>
+        <Setter Property="LetterSpacing" Value="0.1"/>
+    </Style>
+
+    <!-- Hairline separating the header row from the card's body content. -->
+    <Style Selector="Border.card-header-divider">
+        <Setter Property="Height"     Value="0.5"/>
+        <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}"/>
+        <Setter Property="Margin"     Value="0,10,0,14"/>
+    </Style>
+
+    <!-- ============================= DEVICE LIST ITEM ============================= -->
+    <!-- Discovered-device row in the Auto-discovery list. No dedicated style existed
+         before — the visible gray block was FluentTheme's default Button background,
+         never overridden. Transparent at rest; a soft hover/pressed state instead of
+         a flat gray fill, so the list reads as a set of quiet rows rather than a
+         stack of gray chips. -->
+    <Style Selector="Button.device-item">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius"    Value="12"/>
+        <Setter Property="Padding"         Value="8,6"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.device-item /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.device-item:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}"/>
+    </Style>
+    <Style Selector="Button.device-item:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+    </Style>
+
+    <!-- ============================= HELP NAV ITEM ============================= -->
+    <!-- Left-nav section buttons inside AboutPanel's Help tab (see
+         HelpContentPanel.axaml). Built on Button.device-item's transparent/hover
+         base (Cards.axaml above) — this just adds a persistent "selected" look
+         on top, since device-item alone only has hover/pressed, no resting
+         active state. Tint follows the stream via HelpNavAccent* resources
+         (indigo-soft at idle, amber-soft while live) — same session language
+         as AppDropdown's dd-item:checked at rest and the VCam/metric accents. -->
+    <Style Selector="Button.help-nav.active /template/ ContentPresenter">
+        <!-- Stream-following tint (HelpNavAccentSoftBrush): indigo-soft at idle,
+             amber-soft while streaming. Swapped at runtime by MainWindow alongside
+             ScrollbarAccentBrush — same indigo/amber session language as the VCam
+             switch and metric icons. Mock illustrations inside HelpContent stay
+             hardcoded and are intentionally untouched. -->
+        <Setter Property="Background" Value="{DynamicResource HelpNavAccentSoftBrush}"/>
+    </Style>
+    <Style Selector="Button.help-nav.active TextBlock">
+        <!-- HelpNavAccentBrush resolves per-theme AND per-stream-state: idle = indigo
+             (darker #4F46E5 on Light via the AccentIndigoOnLightBrush lineage, plain
+             #818CF8 on Dark), live = amber (#FBBF24 dark / #FFA700 light). -->
+        <Setter Property="Foreground" Value="{DynamicResource HelpNavAccentBrush}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.help-nav.active materialIcons|MaterialIcon">
+        <Setter Property="Foreground" Value="{DynamicResource HelpNavAccentBrush}"/>
+    </Style>
+    <!-- Active + hover: stay on the stream tint rather than falling back to
+         device-item's neutral SurfaceContainerHoverBrush, so hovering the
+         already-selected item doesn't visually read as "about to deselect". -->
+    <Style Selector="Button.help-nav.active:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HelpNavAccentSoftBrush}"/>
+        <Setter Property="Opacity" Value="0.85"/>
+    </Style>
+
+</Styles>

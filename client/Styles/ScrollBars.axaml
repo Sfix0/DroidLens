@@ -1,0 +1,171 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls">
+
+    <!--
+        ============================= CUSTOM SCROLLBAR =============================
+        ControlTheme keyed {x:Type ScrollBar} — overrides the resource FluentTheme's own
+        default styles point ScrollBar.Theme at, so every ScrollBar in the app picks this
+        up automatically (no Classes, no per-view changes needed).
+
+        1) DRAG MUST SCROLL CONTENT. ScrollBar's drag pipeline is:
+              Thumb.DragDelta -> Track.ApplyThumbDrag -> Track.Value
+           and only a value written back into ScrollBar.Value propagates to the owning
+           ScrollViewer's Offset. So the Track's Value binding MUST be TwoWay (exactly
+           like Fluent's own template: Value="{TemplateBinding Value, Mode=TwoWay}").
+           With the default one-way binding the thumb visually moves during a drag but
+           ScrollBar/ScrollViewer never see the new value -> content stays put. The
+           IsDirectionReversed="True" on the vertical Track IS also required (matches
+           Fluent, and makes the vertical drag/thumb math non-inverted), both matter.
+
+        2) NO HOVER "TWITCH". The old version animated the Thumb's own Width/Height on
+           :pointerover/:pressed. Width/Height are layout + hit-testing drivers for the
+           exact part Track arranges, so animating them fed back into Track layout and
+           showed a wobble on every enter/leave. The hover grow is now a pure
+           RenderTransform scale on the Thumb (bounds, layout and hit-testing never
+           change), eased with a gentle spring.
+
+        Design goals (per request):
+          1. No track background, no LineUp/LineDown arrow buttons — just a floating thumb.
+          2. Thumb is neutral gray at rest (and on hover); the accent color — indigo at idle,
+             amber while a stream is live, via the "ScrollbarAccentBrush" resource (same
+             indigo/amber pairing as the VCam switch and the metric-row icons) — shows ONLY
+             while dragging. MainWindow swaps that resource whenever IsStreaming or the
+             theme changes.
+          3. "Inertia" + slight grow: a SpringEasing transition on the thumb's RenderTransform
+             scale so it eases into hover/drag size with a touch of overshoot instead of snapping.
+          4. Edge bounce: when scrolling reaches the very top/bottom (or left/right), the
+             thumb nudges a few px past the edge and springs back — iOS-style rubber-band,
+             see ScrollBarBounceBehavior.cs. Does NOT fire on an ordinary mid-list stop, only
+             when Value actually lands on Minimum/Maximum. That class owns a single
+             TransformGroup=[ScaleTransform, TranslateTransform] on the Thumb's RenderTransform,
+             so hover/press scale (driven from XAML below via the ScaleX/ScaleY attached
+             properties) and the edge-bounce translate (driven from C# only) never overwrite
+             each other. Do NOT set Thumb.RenderTransform directly anywhere in this file —
+             that would replace the whole group and silently break one of the two effects.
+    -->
+
+    <!-- ScrollBarBounceBehavior.IsEnabled/ScaleX/ScaleY are attached properties from
+         ScrollBarBounceBehavior.cs (namespace DroidLens.Client.Views.Controls, aliased
+         "controls" above) — not a Style, so nothing to declare in this Styles file beyond
+         using them as Setters/attributes below. -->
+
+    <Style>
+        <Style.Resources>
+
+            <!-- ============================= SCROLLBAR THUMB ============================= -->
+            <!-- Thumb color: neutral gray at rest (and on plain hover) — the dynamic
+                 indigo/amber accent appears ONLY while actually dragging. The accent
+                 follows the stream state exactly like the VCam switch's on-state:
+                 indigo at idle, amber while a stream is live. The brush comes from the
+                 shared "ScrollbarAccentBrush" resource (App.axaml), which MainWindow
+                 swaps at runtime whenever IsStreaming or the theme changes. -->
+            <ControlTheme x:Key="CustomScrollBarThumbTheme" TargetType="Thumb">
+                <Setter Property="Background"        Value="#4A4863"/>
+                <Setter Property="CornerRadius"      Value="3"/>
+                <!-- Template fills the Thumb's own Bounds completely (no Margin here) —
+                     Track computes drag hit-testing and position from the Thumb's actual
+                     Bounds, so shrinking/offsetting via Margin ON THE THUMB ITSELF corrupts
+                     that math. The 2px visual inset lives one level down, on the inner
+                     Border, which is purely cosmetic and doesn't feed back into Track. -->
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Name="ThumbBorder"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Margin="2">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <BrushTransition Property="Background" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+
+                <Style Selector="^:pointerover /template/ Border#ThumbBorder">
+                    <Setter Property="Background" Value="#4A4863"/>
+                </Style>
+                <Style Selector="^:pressed /template/ Border#ThumbBorder">
+                    <Setter Property="Background" Value="{DynamicResource ScrollbarAccentBrush}"/>
+                </Style>
+            </ControlTheme>
+
+            <!-- ============================= SCROLLBAR ============================= -->
+            <ControlTheme x:Key="{x:Type ScrollBar}" TargetType="ScrollBar">
+                <Setter Property="Background"    Value="Transparent"/>
+                <Setter Property="MinWidth"      Value="14"/>
+                <Setter Property="MinHeight"     Value="14"/>
+
+                <!-- ── VERTICAL ── -->
+                <Style Selector="^:vertical">
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Grid Background="{TemplateBinding Background}">
+                                <Track Name="PART_Track"
+                                       Minimum="{TemplateBinding Minimum}"
+                                       Maximum="{TemplateBinding Maximum}"
+                                       Value="{TemplateBinding Value, Mode=TwoWay}"
+                                       ViewportSize="{TemplateBinding ViewportSize}"
+                                       Orientation="Vertical"
+                                       IsDirectionReversed="True">
+                                    <Track.Thumb>
+                                        <Thumb Name="PART_ThumbVisual"
+                                               Theme="{StaticResource CustomScrollBarThumbTheme}"
+                                               Width="10"
+                                               HorizontalAlignment="Right"
+                                               controls:ScrollBarBounceBehavior.IsEnabled="True"/>
+                                    </Track.Thumb>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+                <Style Selector="^:vertical /template/ Thumb#PART_ThumbVisual:pointerover">
+                    <Setter Property="controls:ScrollBarBounceBehavior.ScaleX" Value="1.25"/>
+                </Style>
+                <Style Selector="^:vertical /template/ Thumb#PART_ThumbVisual:pressed">
+                    <Setter Property="controls:ScrollBarBounceBehavior.ScaleX" Value="1.5"/>
+                </Style>
+
+                <!-- ── HORIZONTAL ── -->
+                <Style Selector="^:horizontal">
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Grid Background="{TemplateBinding Background}">
+                                <Track Name="PART_Track"
+                                       Minimum="{TemplateBinding Minimum}"
+                                       Maximum="{TemplateBinding Maximum}"
+                                       Value="{TemplateBinding Value, Mode=TwoWay}"
+                                       ViewportSize="{TemplateBinding ViewportSize}"
+                                       Orientation="Horizontal">
+                                    <Track.Thumb>
+                                        <Thumb Name="PART_ThumbVisual"
+                                               Theme="{StaticResource CustomScrollBarThumbTheme}"
+                                               Height="10"
+                                               VerticalAlignment="Bottom"
+                                               controls:ScrollBarBounceBehavior.IsEnabled="True"/>
+                                    </Track.Thumb>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+                <Style Selector="^:horizontal /template/ Thumb#PART_ThumbVisual:pointerover">
+                    <Setter Property="controls:ScrollBarBounceBehavior.ScaleY" Value="1.25"/>
+                </Style>
+                <Style Selector="^:horizontal /template/ Thumb#PART_ThumbVisual:pressed">
+                    <Setter Property="controls:ScrollBarBounceBehavior.ScaleY" Value="1.5"/>
+                </Style>
+            </ControlTheme>
+
+        </Style.Resources>
+    </Style>
+
+    <!-- No visible seam/box where vertical and horizontal scrollbars meet in a ScrollViewer
+         corner — keep it transparent so only the floating thumbs are ever visible. -->
+    <Style Selector="ScrollViewer /template/ Rectangle#ScrollBarsSeparator">
+        <Setter Property="Fill" Value="Transparent"/>
+    </Style>
+
+</Styles>

@@ -1,0 +1,55 @@
+<!--
+    AppBackgroundTexture.axaml
+
+    Avalonia port of Android's Modifier.appBackgroundTexture() (BackgroundTexture.kt).
+
+    Three stacked layers, same as the Compose version:
+      1. Base background color   (BgBaseBrush — set by whoever hosts this control)
+      2. Top-right indigo glow   (radial gradient, alpha ~0.14)
+      3. Bottom-center indigo glow (radial gradient, alpha ~0.22 — sits behind the
+         floating panel so the panel's translucency reads clearly against it)
+      4. Tiled grain/noise overlay (256x256 PNG, blended at low alpha)
+
+    Usage — place as the first child of your window's root Grid/Panel, stretched
+    to fill, with your real content drawn on top:
+
+        Panel
+          AppBackgroundTexture  (this control, first / bottom-most child)
+          ... rest of window content ...
+
+    Optional parameters (set as attributes on the tag):
+        GlowAlpha           (double, default 0.14)  — top glow peak opacity
+        BottomGlowAlpha      (double, default 0.22)  — bottom glow peak opacity
+        GrainAlpha           (double, default 0.045) — noise overlay opacity
+        GlowColor            (Color,  default AccentIndigoColor)
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DroidLens.Client.Views.Controls"
+             x:Class="DroidLens.Client.Views.Controls.AppBackgroundTexture"
+             x:Name="Root"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             IsHitTestVisible="False">
+
+    <Grid>
+
+        <!-- Top-right + bottom-center glows are painted directly in code-behind's
+             Render() override — see AppBackgroundTexture.axaml.cs. The Border.Background
+             + RadialGradientBrush approach was tried first and produced verifiably correct
+             data but never painted anything visible, so drawing was moved to a direct
+             DrawingContext path instead. -->
+
+        <!-- ============================= GRAIN / NOISE OVERLAY ============================= -->
+        <!--
+            The noise texture is now drawn manually in code-behind's Render() using a
+            hand-computed Overlay blend against the background color (see
+            AppBackgroundTexture.axaml.cs — BuildOverlayTintedNoiseBrush). Avalonia 11.1
+            has no Visual.BlendMode API, so a plain Border+ImageBrush+Opacity here would
+            composite as a flat translucent gray layer (SrcOver) instead of Compose's
+            BlendMode.Overlay, washing out the indigo glow underneath.
+        -->
+
+    </Grid>
+
+</UserControl>

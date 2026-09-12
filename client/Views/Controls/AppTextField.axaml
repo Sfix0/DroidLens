@@ -1,0 +1,93 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DroidLens.Client.Views.Controls.AppTextField"
+             x:Name="Root">
+
+    <!--
+        ============================= APPTEXTFIELD =============================
+        Drop-in TextBox replacement matching AppDropdown's Head visual language:
+        same seamless card-surface look (no border), same CornerRadius/Padding/
+        MinHeight, and the same tactile "press" spring feel on interaction —
+        except here it grows slightly (1 -> 1.02) on focus instead of shrinking
+        on press, since focusing a field reads as "opening up" rather than
+        "tapping down". Background lightens in lockstep via a BrushTransition,
+        matching Head's BorderBrush transition timing (0.12s) but applied to
+        Background instead, since this field has no border to animate.
+
+        Usage (replaces <TextBox .../>):
+            <controls:AppTextField x:Name="ScreenshotPathBox"
+                                     Text="{Binding ScreenshotPath, Mode=TwoWay}"
+                                     LostFocus="ScreenshotPathBox_LostFocus"/>
+        API mirrors TextBox closely (Text, TextChanged, LostFocus) so existing
+        call sites need only a type change, not a rewrite.
+    -->
+
+    <UserControl.Styles>
+        <Style Selector="Border#FieldSurface">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="CornerRadius"    Value="16"/>
+            <Setter Property="MinHeight"       Value="44"/>
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35">
+                        <TransformOperationsTransition.Easing>
+                            <SpringEasing Mass="1" Stiffness="350" Damping="16"/>
+                        </TransformOperationsTransition.Easing>
+                    </TransformOperationsTransition>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- Focus reads as the field growing slightly, mirroring Classes="press"
+             elsewhere in the app but inverted: 1 -> 1.02 (grow) instead of
+             1 -> 0.94 (shrink), since focusing a field is an "opening up"
+             gesture, not a tap-down. Background lightens one step at the same
+             time, giving the field a subtle highlighted-surface feel with no
+             border needed at all. -->
+        <Style Selector="Border#FieldSurface.focused">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+            <Setter Property="RenderTransform"  Value="scale(1.02)"/>
+        </Style>
+
+        <Style Selector="TextBox#InnerBox">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding"         Value="{Binding Padding, ElementName=Root}"/>
+            <Setter Property="MinHeight"       Value="44"/>
+            <Setter Property="FontSize"        Value="14"/>
+            <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="CaretBrush"      Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="FocusAdorner"    Value="{x:Null}"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <!-- Fluent paints its own focus border on PART_BorderElement independent
+             of FocusAdorner (same issue noted in SettingsPanel.axaml before this
+             control existed) — pinned transparent across every relevant
+             pseudo-class so no state can bring it back; FieldSurface above is
+             what actually communicates focus now. -->
+        <Style Selector="TextBox#InnerBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="TextBox#InnerBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="TextBox#InnerBox:focus-within /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border x:Name="FieldSurface" Focusable="True">
+        <TextBox x:Name="InnerBox"
+                 Text="{Binding Text, ElementName=Root, Mode=TwoWay}"
+                 Watermark="{Binding Watermark, ElementName=Root}"
+                 GotFocus="InnerBox_GotFocus"
+                 LostFocus="InnerBox_LostFocus"/>
+    </Border>
+
+</UserControl>

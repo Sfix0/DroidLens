@@ -1,0 +1,271 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:DroidLens.Client.Views.Controls"
+             x:Class="DroidLens.Client.Views.Controls.AppDropdown"
+             x:Name="Root">
+
+    <!--
+        ============================= APPDROPDOWN =============================
+        Replaces ComboBox everywhere a "real" dropdown feel is needed. Why not
+        just re-skin ComboBox further (Controls.axaml already retints its Popup
+        via ComboBoxDropDownBackground/ComboBoxItem* resource keys): Avalonia's
+        ComboBox popup opens with no coordinated grow animation tying it to the
+        field, so it always reads as a disconnected panel that just appears,
+        not the field extending — that was the actual complaint.
+
+        This control fixes that with an overlay Popup instead of a plain
+        ComboBox, but keeps the "grows out of the field" feel:
+          - DropBody lives inside a Popup, anchored to Head (PlacementTarget)
+            with PlacementMode="Bottom" — so it renders ON TOP of whatever is
+            below in the card instead of pushing that content down. This was
+            switched from an earlier in-flow (StackPanel row) version, which
+            shoved the rest of the layout downward every time it opened —
+            fine for behavior, bad for feel once seen in context.
+          - Same width as Head (bound via Head.Bounds.Width) and same visual
+            language: Head's bottom corners square off while open and
+            DropBody's top corners are squared to match, sitting with zero
+            gap (Popup VerticalOffset="-1") directly beneath it — so the pair
+            reads as one shape that grew taller, not a field plus a separate
+            floating card underneath it.
+          - Height still animates 0 -> measured height via a Transition (see
+            Border#DropBody below), and the chevron rotates in lockstep — the
+            growth gesture is unchanged, only the layout impact of that
+            growth is now zero.
+          - IsLightDismissEnabled on the Popup closes it on any outside click
+            for free — no manual top-level PointerPressed plumbing needed.
+
+        Usage (replaces <ComboBox .../>):
+            <controls:AppDropdown x:Name="LanguageCombo"
+                                   SelectionChanged="LanguageCombo_SelectionChanged"/>
+        Code-behind API deliberately mirrors ComboBox closely (Items,
+        SelectedIndex, SelectedItem, SelectionChanged) so call sites in
+        SettingsWindow.axaml.cs need only a type change, not a rewrite.
+    -->
+
+    <UserControl.Styles>
+        <Style Selector="ToggleButton#Head">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="14,12"/>
+            <Setter Property="FontSize"        Value="14"/>
+            <Setter Property="MinHeight"       Value="44"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="CornerRadius"    Value="16"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.12"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="ToggleButton#Head /template/ ContentPresenter">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius"    Value="16"/>
+        </Style>
+
+        <Style Selector="ToggleButton#Head:pointerover /template/ ContentPresenter">
+            <Setter Property="Background"  Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="Opacity"     Value="0.95"/>
+        </Style>
+
+        <!-- :checked means dropdown is open (IsChecked bound to IsOpen).
+             Apply styles directly to ContentPresenter so FluentTheme's default
+             checked styles are overridden cleanly, removing the bottom border
+             and squaring bottom corners to weld seamlessly into DropBody below. -->
+        <Style Selector="ToggleButton#Head:checked">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1,1,1,0"/>
+            <Setter Property="Opacity"         Value="1"/>
+            <Setter Property="CornerRadius"    Value="16,16,0,0"/>
+        </Style>
+
+        <Style Selector="ToggleButton#Head:checked /template/ ContentPresenter">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1,1,1,0"/>
+            <Setter Property="CornerRadius"    Value="16,16,0,0"/>
+            <Setter Property="Opacity"         Value="1"/>
+        </Style>
+
+        <Style Selector="ToggleButton#Head:checked:pointerover /template/ ContentPresenter">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1,1,1,0"/>
+            <Setter Property="CornerRadius"    Value="16,16,0,0"/>
+            <Setter Property="Opacity"         Value="1"/>
+        </Style>
+
+        <!-- Chevron rotates in lockstep with the grow -->
+        <Style Selector="materialIcons|MaterialIcon#Chevron">
+            <Setter Property="Width"  Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+            <Setter Property="RenderTransform" Value="rotate(0deg)"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="ToggleButton#Head:checked materialIcons|MaterialIcon#Chevron">
+            <Setter Property="RenderTransform" Value="rotate(180deg)"/>
+        </Style>
+
+        <!-- DropBody: top corners squared, no top border line, subtle border matching Head's open border.
+             BoxShadow uses negative spread so shadow only casts downward/sideways, avoiding any dark seam line at the top. -->
+        <Style Selector="Border#DropBody">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerBrush}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1,0,1,1"/>
+            <Setter Property="CornerRadius"    Value="0,0,16,16"/>
+            <Setter Property="Padding"         Value="4,2,4,6"/>
+            <Setter Property="ClipToBounds"    Value="True"/>
+            <Setter Property="Height"          Value="0"/>
+            <Setter Property="BoxShadow"       Value="0 14 20 -4 #59000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <!-- Spring easing here (same Stiffness/Damping as .press elsewhere)
+                         instead of a flat CubicEaseOut — the body grows past its final
+                         height by a hair and settles back, matching the app's pressed-
+                         button / Saturn-body overshoot feel rather than a linear glide. -->
+                    <DoubleTransition Property="Height" Duration="0:0:0.4">
+                        <DoubleTransition.Easing>
+                            <SpringEasing Mass="1" Stiffness="280" Damping="18"/>
+                        </DoubleTransition.Easing>
+                    </DoubleTransition>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- ItemsHost carries its own small scale-overshoot on top of the Height
+             spring above — mirrors the Saturn-body.toggle-spin keyframe pattern
+             (0.7 -> 1.15 -> 1) but subtler, since this fires on every open, not
+             just a one-shot flourish. RenderTransform needs a TransformOperations
+             transition (a plain Animation keyframe on RenderTransform has no
+             registered animator, same note as elsewhere in Animations.axaml). -->
+        <Style Selector="ContentControl#ItemsHost">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="RenderTransform" Value="scale(0.96)"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,0%"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="CubicEaseOut" Delay="0:0:0.06"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.4" Delay="0:0:0.06">
+                        <TransformOperationsTransition.Easing>
+                            <SpringEasing Mass="1" Stiffness="280" Damping="16"/>
+                        </TransformOperationsTransition.Easing>
+                    </TransformOperationsTransition>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border#DropBody.expanded ContentControl#ItemsHost">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+
+        <!-- Individual option row. Built as a plain RadioButton in code-behind
+             (kept for GroupName-based mutual exclusivity + IsChecked state),
+             but given its own full ControlTemplate here instead of trying to
+             override parts of Fluent's default one. Reason: Fluent's
+             RadioButtonTemplate draws its own circular indicator dot and a
+             focus-visible ring baked into internal template parts — neither
+             belongs in a dropdown list, and reaching into another theme's
+             internal part names to hide them is fragile (part names aren't a
+             public contract and can change between Avalonia versions). A
+             from-scratch template sidesteps that entirely: just a Border that
+             is the whole hit-target and the whole highlight surface. -->
+        <Style Selector="RadioButton.dd-item">
+            <Setter Property="Background"      Value="{DynamicResource SurfaceContainerHoverBrush0}"/>
+            <Setter Property="Padding"         Value="14,10"/>
+            <Setter Property="FontSize"        Value="14"/>
+            <Setter Property="Foreground"      Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="CornerRadius"    Value="10"/>
+            <Setter Property="Margin"          Value="4,2"/>
+            <Setter Property="FocusAdorner"    Value="{x:Null}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <!-- This Border IS the row: background lives here directly,
+                         so hover/checked highlight the whole row, edge to edge —
+                         not just a box around the text. -->
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                           Padding="{TemplateBinding Padding}"
+                                           HorizontalContentAlignment="Stretch"
+                                           VerticalContentAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <!-- Same "start from same RGB at alpha 0" trick as
+                 SurfaceContainerHoverBrush0 elsewhere in the app — animating
+                 from a colorless Transparent to a colored brush snaps instead
+                 of fading (no shared RGB to interpolate), which is what read
+                 as a harsh flash here. -->
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="RadioButton.dd-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceContainerHoverBrush}"/>
+        </Style>
+        <Style Selector="RadioButton.dd-item:checked">
+            <Setter Property="Background" Value="{DynamicResource AccentIndigoSoftBrush}"/>
+        </Style>
+        <Style Selector="RadioButton.dd-item:checked TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AccentIndigoBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Panel>
+        <ToggleButton x:Name="Head" Classes="press" HorizontalAlignment="Stretch"
+                      IsChecked="{Binding IsOpen, ElementName=Root, Mode=TwoWay}">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" x:Name="HeadLabel" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Text="{Binding SelectedLabel, ElementName=Root}"/>
+                <materialIcons:MaterialIcon Grid.Column="1" x:Name="Chevron" Kind="ChevronDown"
+                                             VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </Grid>
+        </ToggleButton>
+
+        <!-- Overlay: floats above surrounding content instead of pushing it
+             down. IsLightDismissEnabled handles outside-click-to-close for
+             free. Width bound to Head so the popup never reads as a
+             differently-sized "other" element. -->
+        <Popup x:Name="DropPopup"
+               PlacementTarget="{Binding #Head}"
+               Placement="Bottom"
+               VerticalOffset="-1"
+               IsLightDismissEnabled="True"
+               IsOpen="{Binding IsOpen, ElementName=Root, Mode=TwoWay}"
+               WindowManagerAddShadowHint="False">
+            <LayoutTransformControl x:Name="PopupScaleControl">
+                <Border x:Name="DropBody" Width="{Binding #Head.Bounds.Width}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="220">
+                        <!-- Rows are built in code-behind (see AppDropdown.axaml.cs): each is a
+                             RadioButton wired with GroupName/checked-state/Click there, so this
+                             stays a drop-in ComboBox replacement for plain string lists (languages,
+                             themes) without needing a bound ViewModel item type. -->
+                        <ContentControl x:Name="ItemsHost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                    </ScrollViewer>
+                </Border>
+            </LayoutTransformControl>
+        </Popup>
+    </Panel>
+
+</UserControl>
