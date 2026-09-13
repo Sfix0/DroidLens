@@ -98,6 +98,8 @@ en.NeedSpaceShort=Required free space: ~250 MB
 uk.NeedSpaceShort=Потрібно вільного місця: ~250 МБ
 en.SoftcamLockedWarning=softcam.dll is still in use and could not be removed. Close every app using the DroidLens virtual camera (OBS, Discord, browsers), then delete the file manually or restart Windows to complete removal.
 uk.SoftcamLockedWarning=softcam.dll все ще використовується і його не вдалося видалити. Закрий усі програми, що використовують віртуальну камеру DroidLens (OBS, Discord, браузери), потім видали файл вручну або перезавантаж Windows для завершення видалення.
+en.SoftcamRebootNote=softcam.dll was in use by another app (OBS, Discord, browser) and has been scheduled for removal on the next Windows restart. Nothing else to do.
+uk.SoftcamRebootNote=softcam.dll використовувався іншою програмою (OBS, Discord, браузер), його видалення заплановано на наступне перезавантаження Windows. Більше нічого робити не треба.
 en.SpaceUnitGB=GB
 uk.SpaceUnitGB=ГБ
 en.ConfirmUninstall=Do you really want to uninstall DroidLens?%n%nDuring uninstallation:%n  • All running DroidLens processes will be terminated%n  • The virtual camera (softcam.dll) system registration will be removed%n  • All program files and created shortcuts will be deleted%n  • Personal settings (%AppData%\DroidLens) will be fully cleaned
@@ -118,6 +120,20 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Check: S
 [Code]
 function DwmSetWindowAttribute(hwnd: HWND; dwAttribute: DWORD; var pvAttribute: Integer; cbAttribute: DWORD): LongInt;
 external 'DwmSetWindowAttribute@dwmapi.dll stdcall';
+
+// Schedules a file for deletion on next reboot (used when a locked DLL like
+// softcam.dll can't be removed because another app still holds it).
+// Returns True when the schedule was accepted — Windows then deletes the
+// file itself, no manual step needed.
+const
+  MOVEFILE_DELAY_UNTIL_REBOOT = $00000004;
+function MoveFileEx(lpExistingFileName, lpNewFileName: string; dwFlags: DWORD): BOOL;
+external 'MoveFileExW@kernel32.dll stdcall';
+
+function ScheduleDeleteOnReboot(const Path: string): Boolean;
+begin
+  Result := MoveFileEx(Path, '', MOVEFILE_DELAY_UNTIL_REBOOT);
+end;
 
 var
   BgPanel: TPanel;
@@ -594,15 +610,25 @@ begin
     // Fallback: files locked at deletion time are otherwise left behind
     // (e.g. softcam.dll loaded in OBS/Discord/browser). Retry explicitly —
     // by now the filter is unregistered and our own processes are gone.
+    // If still locked, schedule reboot deletion so the user has nothing to do.
     AppDllPath := ExpandConstant('{app}\softcam.dll');
     if not DeleteLockedFileRetry(AppDllPath) then
-      MsgBox(CustomMessage('SoftcamLockedWarning'), mbInformation, MB_OK);
+    begin
+      if FileExists(AppDllPath) and ScheduleDeleteOnReboot(AppDllPath) then
+        MsgBox(CustomMessage('SoftcamRebootNote'), mbInformation, MB_OK)
+      else if FileExists(AppDllPath) then
+        MsgBox(CustomMessage('SoftcamLockedWarning'), mbInformation, MB_OK);
+    end;
 
     // Same story as softcam.dll above, but for the adb daemon files: if the
-    // daemon didn't die on kill-server, its exe/dlls stay locked.
-    DeleteLockedFileRetry(ExpandConstant('{app}\Tools\adb.exe'));
-    DeleteLockedFileRetry(ExpandConstant('{app}\Tools\AdbWinApi.dll'));
-    DeleteLockedFileRetry(ExpandConstant('{app}\Tools\AdbWinUsbApi.dll'));
+    // daemon didn't die on kill-server, its exe/dlls stay locked. Silent
+    // reboot-scheduling here — no message, these are our own files.
+    if not DeleteLockedFileRetry(ExpandConstant('{app}\Tools\adb.exe')) then
+      ScheduleDeleteOnReboot(ExpandConstant('{app}\Tools\adb.exe'));
+    if not DeleteLockedFileRetry(ExpandConstant('{app}\Tools\AdbWinApi.dll')) then
+      ScheduleDeleteOnReboot(ExpandConstant('{app}\Tools\AdbWinApi.dll'));
+    if not DeleteLockedFileRetry(ExpandConstant('{app}\Tools\AdbWinUsbApi.dll')) then
+      ScheduleDeleteOnReboot(ExpandConstant('{app}\Tools\AdbWinUsbApi.dll'));
 
     SettingsDir := ExpandConstant('{userappdata}\{#MyAppName}');
     if DirExists(SettingsDir) then
