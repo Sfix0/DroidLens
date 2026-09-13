@@ -8,6 +8,7 @@
 #define MyAppPublisher "DroidLens"
 #define MyAppURL "https://github.com/Sfix0/DroidLens"
 #define MyAppExeName "DroidLens.exe"
+#define SoftcamClsid "{AEF3B972-5FA5-4647-9571-358EB472BC9E}"
 ; Default assumes the sources are checked out as documented (script lives in
 ; client/installer/, publish output lands in client/bin/...). Override from
 ; the command line on other layouts with:
@@ -95,6 +96,8 @@ en.NeedSpaceFull=Required free space: ~250 MB   •   Available on drive (%1): %
 uk.NeedSpaceFull=Потрібно вільного місця: ~250 МБ   •   Доступно на диску (%1): %2
 en.NeedSpaceShort=Required free space: ~250 MB
 uk.NeedSpaceShort=Потрібно вільного місця: ~250 МБ
+en.SoftcamLockedWarning=softcam.dll is still in use and could not be removed. Close every app using the DroidLens virtual camera (OBS, Discord, browsers), then delete the file manually or restart Windows to complete removal.
+uk.SoftcamLockedWarning=softcam.dll все ще використовується і його не вдалося видалити. Закрий усі програми, що використовують віртуальну камеру DroidLens (OBS, Discord, браузери), потім видали файл вручну або перезавантаж Windows для завершення видалення.
 en.SpaceUnitGB=GB
 uk.SpaceUnitGB=ГБ
 en.ConfirmUninstall=Do you really want to uninstall DroidLens?%n%nDuring uninstallation:%n  • All running DroidLens processes will be terminated%n  • The virtual camera (softcam.dll) system registration will be removed%n  • All program files and created shortcuts will be deleted%n  • Personal settings (%AppData%\DroidLens) will be fully cleaned
@@ -543,14 +546,43 @@ procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   ResultCode: Integer;
   SettingsDir: string;
+  AppDllPath: string;
+  RegisteredPath: string;
+  i: Integer;
 begin
   if CurUninstallStep = usUninstall then
   begin
     Exec('taskkill.exe', '/F /IM {#MyAppExeName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec('regsvr32.exe', '/u /s "' + ExpandConstant('{app}\softcam.dll') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    // Give killed processes a moment to release their file locks (incl. softcam.dll)
+    Sleep(1000);
+
+    // Unregister the path the registry actually points at (it may differ from
+    // {app} if the app was moved/reinstalled — see VirtualCameraInstaller docs),
+    // then the installed copy itself. Exit codes are best-effort here; the
+    // explicit DeleteFile fallback in usPostUninstall is the real guarantee.
+    AppDllPath := ExpandConstant('{app}\softcam.dll');
+    if RegQueryStringValue(HKLM, 'SOFTWARE\Classes\CLSID\{#SoftcamClsid}\InprocServer32', '', RegisteredPath) then
+      if (RegisteredPath <> '') and FileExists(RegisteredPath) then
+        Exec('regsvr32.exe', '/u /s "' + RegisteredPath + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    if FileExists(AppDllPath) then
+      Exec('regsvr32.exe', '/u /s "' + AppDllPath + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end
   else if CurUninstallStep = usPostUninstall then
   begin
+    // Fallback: files locked at deletion time are otherwise left behind
+    // (e.g. softcam.dll loaded in OBS/Discord/browser). Retry explicitly —
+    // by now the filter is unregistered and our own processes are gone.
+    AppDllPath := ExpandConstant('{app}\softcam.dll');
+    for i := 1 to 10 do
+    begin
+      if not FileExists(AppDllPath) then Break;
+      DeleteFile(AppDllPath);
+      if not FileExists(AppDllPath) then Break;
+      Sleep(500);
+    end;
+    if FileExists(AppDllPath) then
+      MsgBox(CustomMessage('SoftcamLockedWarning'), mbInformation, MB_OK);
+
     SettingsDir := ExpandConstant('{userappdata}\{#MyAppName}');
     if DirExists(SettingsDir) then
     begin

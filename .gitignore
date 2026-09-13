@@ -10,6 +10,8 @@ client/**/obj/
 *.sln.docstates
 *.pdb
 publish/
+# Inno Setup build output (the released Setup exe ships as a GH Release asset)
+client/installer/Output/
 
 # ══════════════════════════════════════════════════════════════
 # Android (Kotlin / Gradle)
