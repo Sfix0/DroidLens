@@ -102,11 +102,13 @@ en.SoftcamRebootNote=softcam.dll was in use by another app (OBS, Discord, browse
 uk.SoftcamRebootNote=softcam.dll використовувався іншою програмою (OBS, Discord, браузер), його видалення заплановано на наступне перезавантаження Windows. Більше нічого робити не треба.
 en.SpaceUnitGB=GB
 uk.SpaceUnitGB=ГБ
-en.ConfirmUninstall=Do you really want to uninstall DroidLens?%n%nDuring uninstallation:%n  • All running DroidLens processes will be terminated%n  • The virtual camera (softcam.dll) system registration will be removed%n  • All program files and created shortcuts will be deleted%n  • Personal settings (%AppData%\DroidLens) will be fully cleaned
-uk.ConfirmUninstall=Ви дійсно бажаєте видалити DroidLens?%n%nПід час видалення буде:%n  • Завершено всі запущені процеси DroidLens%n  • Скасовано системну реєстрацію віртуальної камери (softcam.dll)%n  • Видалено всі файли програми та створені ярлики%n  • Повністю очищено персональні налаштування (%AppData%\DroidLens)
 
 [Messages]
-ConfirmUninstall={cm:ConfirmUninstall}
+; NOTE: deliberately bilingual static text — {cm:} constants are NOT expanded
+; in [Messages] by the uninstaller (Inno Setup 7 beta), so a per-language
+; ConfirmUninstall via CustomMessages shows up literally. All other strings
+; stay in [CustomMessages] and are resolved from code, which works fine.
+ConfirmUninstall=Ви дійсно бажаєте видалити DroidLens?%n%nПід час видалення буде:%n  • Завершено всі запущені процеси DroidLens%n  • Скасовано системну реєстрацію віртуальної камери (softcam.dll)%n  • Видалено всі файли програми та створені ярлики%n  • Повністю очищено персональні налаштування (%AppData%\DroidLens)%n%n---%n%nDo you really want to uninstall DroidLens?%n%nDuring uninstallation:%n  • All running DroidLens processes will be terminated%n  • The virtual camera (softcam.dll) system registration will be removed%n  • All program files and created shortcuts will be deleted%n  • Personal settings (%AppData%\DroidLens) will be fully cleaned
 
 [Files]
 Source: "assets\logo_48.bmp"; Flags: dontcopy
