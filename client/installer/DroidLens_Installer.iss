@@ -542,19 +542,41 @@ begin
   ApplyModernWindowStyle(UninstallProgressForm.Handle);
 end;
 
+// Best-effort retry delete for a file that may still be locked at uninstall
+// time. Returns True when the file is gone.
+function DeleteLockedFileRetry(const Path: string): Boolean;
+var
+  i: Integer;
+begin
+  Result := True;
+  for i := 1 to 10 do
+  begin
+    if not FileExists(Path) then Exit;
+    DeleteFile(Path);
+    if not FileExists(Path) then Exit;
+    Sleep(500);
+  end;
+  Result := not FileExists(Path);
+end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   ResultCode: Integer;
   SettingsDir: string;
   AppDllPath: string;
   RegisteredPath: string;
-  i: Integer;
 begin
   if CurUninstallStep = usUninstall then
   begin
     Exec('taskkill.exe', '/F /IM {#MyAppExeName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    // The bundled adb.exe runs as a persistent daemon that survives the app
+    // and locks its own files — without this, Tools\ is left behind.
+    // Graceful first (other adb clients just reconnect on next use).
+    AppDllPath := ExpandConstant('{app}\Tools\adb.exe');
+    if FileExists(AppDllPath) then
+      Exec(AppDllPath, 'kill-server', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     // Give killed processes a moment to release their file locks (incl. softcam.dll)
-    Sleep(1000);
+    Sleep(1500);
 
     // Unregister the path the registry actually points at (it may differ from
     // {app} if the app was moved/reinstalled — see VirtualCameraInstaller docs),
@@ -573,15 +595,14 @@ begin
     // (e.g. softcam.dll loaded in OBS/Discord/browser). Retry explicitly —
     // by now the filter is unregistered and our own processes are gone.
     AppDllPath := ExpandConstant('{app}\softcam.dll');
-    for i := 1 to 10 do
-    begin
-      if not FileExists(AppDllPath) then Break;
-      DeleteFile(AppDllPath);
-      if not FileExists(AppDllPath) then Break;
-      Sleep(500);
-    end;
-    if FileExists(AppDllPath) then
+    if not DeleteLockedFileRetry(AppDllPath) then
       MsgBox(CustomMessage('SoftcamLockedWarning'), mbInformation, MB_OK);
+
+    // Same story as softcam.dll above, but for the adb daemon files: if the
+    // daemon didn't die on kill-server, its exe/dlls stay locked.
+    DeleteLockedFileRetry(ExpandConstant('{app}\Tools\adb.exe'));
+    DeleteLockedFileRetry(ExpandConstant('{app}\Tools\AdbWinApi.dll'));
+    DeleteLockedFileRetry(ExpandConstant('{app}\Tools\AdbWinUsbApi.dll'));
 
     SettingsDir := ExpandConstant('{userappdata}\{#MyAppName}');
     if DirExists(SettingsDir) then
